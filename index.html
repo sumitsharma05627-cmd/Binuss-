@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth dark" data-theme="cyber-emerald">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      // Gracefully prevent unhandled rejection / error popups from sandbox Vite HMR WebSocket disconnects
+      window.addEventListener('unhandledrejection', function(e) {
+        var reason = e && (e.reason || e);
+        var msg = (reason && reason.message) ? reason.message : String(reason);
+        if (msg.indexOf('WebSocket') !== -1 || msg.indexOf('websocket') !== -1 || msg.indexOf('failed to connect') !== -1) {
+          e.preventDefault();
+          if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+        }
+      });
+      window.addEventListener('error', function(e) {
+        var msg = e && (e.message || (e.error && e.error.message)) ? (e.message || e.error.message) : '';
+        if (msg.indexOf('WebSocket') !== -1 || msg.indexOf('websocket') !== -1) {
+          e.preventDefault();
+          if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+        }
+      });
+    </script>
+    <title>GWL WebLab | Gwalior WebLab / Global WebLab</title>
+    <meta name="description" content="GWL (Gwalior WebLab / Global WebLab) engineers high-performance websites, SEO, Google Ads, social media marketing, branding, and digital growth systems." />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpolygon points='24,3 43,12 43,36 24,45 5,36 5,12' fill='%230b1120' stroke='%2310b981' stroke-width='2'/%3E%3Cellipse cx='24' cy='24' rx='16' ry='6' stroke='%232dd4bf' stroke-width='1.5' stroke-dasharray='2 2' fill='none'/%3E%3Cpath d='M17,20 L21,29 L24,22 L27,29 L31,20' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3Ccircle cx='24' cy='22' r='2' fill='%2310b981'/%3E%3C/svg%3E" />
+    <link rel="canonical" href="https://gwlweblab.com/" />
+    <meta name="robots" content="index, follow" />
+    
+    <!-- Open Graph Metadata -->
+    <meta property="og:site_name" content="GWL WebLab (Gwalior WebLab / Global WebLab)" />
+    <meta property="og:title" content="GWL WebLab | Gwalior WebLab / Global WebLab" />
+    <meta property="og:description" content="GWL (Gwalior WebLab / Global WebLab) engineers high-performance websites, SEO, Google Ads, social media marketing, branding, and digital growth systems." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://gwlweblab.com/" />
+    <meta property="og:image" content="/og-image.png" />
+    
+    <!-- Twitter / X Metadata -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="GWL WebLab | Gwalior WebLab / Global WebLab" />
+    <meta name="twitter:description" content="GWL (Gwalior WebLab / Global WebLab) helps businesses scale online through conversion-engineered websites, SEO, Google Ads, and automated digital growth systems." />
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://gwlweblab.com/#organization",
+          "name": "GWL WebLab",
+          "alternateName": "Gwalior WebLab / Global WebLab",
+          "url": "https://gwlweblab.com/",
+          "logo": "https://gwlweblab.com/logo.svg",
+          "description": "Full-service digital laboratory delivering high-performance websites, SEO, Google Ads, social media, branding, and AI growth systems.",
+          "slogan": "Gwalior WebLab • Global WebLab",
+          "sameAs": []
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://gwlweblab.com/#website",
+          "url": "https://gwlweblab.com/",
+          "name": "GWL WebLab",
+          "publisher": {
+            "@id": "https://gwlweblab.com/#organization"
+          }
+        },
+        {
+          "@type": "Service",
+          "name": "Website Design & Digital Growth Systems",
+          "provider": {
+            "@id": "https://gwlweblab.com/#organization"
+          },
+          "serviceType": "Web Development, SEO, Google Ads, Digital Marketing"
+        },
+        {
+          "@type": "Blog",
+          "@id": "https://gwlweblab.com/#insights",
+          "name": "GWL WebLab Digital Insights",
+          "description": "Tactical blueprints and engineering insights on web performance, local SEO, conversion funnels, and AI automation.",
+          "publisher": {
+            "@id": "https://gwlweblab.com/#organization"
+          }
+        }
+      ]
+    }
+    </script>
+  </head>
+  <body class="bg-[#05070c] text-slate-900 dark:text-white antialiased selection:bg-emerald-500/30 selection:text-emerald-200 overflow-x-hidden font-sans">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

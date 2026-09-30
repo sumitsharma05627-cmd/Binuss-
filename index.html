@@ -6,6 +6,65 @@
     <script>
       // Gracefully prevent unhandled rejection / error popups from sandbox Vite HMR WebSocket disconnects
       (function() {
+        if (typeof window === 'undefined') return;
+
+        function DummyWebSocket(url, protocols) {
+          this.url = url;
+          this.protocols = protocols;
+          this.readyState = 1;
+          this.bufferedAmount = 0;
+          this.extensions = '';
+          this.protocol = Array.isArray(protocols) ? protocols[0] || '' : (protocols || '');
+          this.binaryType = 'blob';
+
+          var listeners = {};
+          this.addEventListener = function(type, listener) {
+            if (!listeners[type]) listeners[type] = [];
+            listeners[type].push(listener);
+          };
+          this.removeEventListener = function(type, listener) {
+            if (!listeners[type]) return;
+            listeners[type] = listeners[type].filter(function(l) { return l !== listener; });
+          };
+          this.dispatchEvent = function(event) {
+            var list = listeners[event.type] || [];
+            for (var i = 0; i < list.length; i++) {
+              try { list[i].call(this, event); } catch (e) {}
+            }
+            var onHandler = this['on' + event.type];
+            if (typeof onHandler === 'function') {
+              try { onHandler.call(this, event); } catch (e) {}
+            }
+            return true;
+          };
+          this.send = function() {};
+          this.close = function() {
+            this.readyState = 3;
+          };
+
+          var self = this;
+          setTimeout(function() {
+            if (self.readyState === 1) {
+              self.dispatchEvent({ type: 'open', target: self });
+            }
+          }, 0);
+        }
+
+        DummyWebSocket.CONNECTING = 0;
+        DummyWebSocket.OPEN = 1;
+        DummyWebSocket.CLOSING = 2;
+        DummyWebSocket.CLOSED = 3;
+
+        try {
+          Object.defineProperty(window, 'WebSocket', {
+            value: DummyWebSocket,
+            writable: true,
+            configurable: true
+          });
+        } catch (e) {
+          window.WebSocket = DummyWebSocket;
+        }
+
         var origConsoleError = console.error;
         console.error = function() {
           var args = Array.prototype.slice.call(arguments);

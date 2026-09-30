@@ -5,21 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script>
       // Gracefully prevent unhandled rejection / error popups from sandbox Vite HMR WebSocket disconnects
-      window.addEventListener('unhandledrejection', function(e) {
-        var reason = e && (e.reason || e);
-        var msg = (reason && reason.message) ? reason.message : String(reason);
-        if (msg.indexOf('WebSocket') !== -1 || msg.indexOf('websocket') !== -1 || msg.indexOf('failed to connect') !== -1) {
-          e.preventDefault();
-          if (e.stopImmediatePropagation) e.stopImmediatePropagation();
-        }
-      });
-      window.addEventListener('error', function(e) {
-        var msg = e && (e.message || (e.error && e.error.message)) ? (e.message || e.error.message) : '';
-        if (msg.indexOf('WebSocket') !== -1 || msg.indexOf('websocket') !== -1) {
-          e.preventDefault();
-          if (e.stopImmediatePropagation) e.stopImmediatePropagation();
-        }
-      });
+      (function() {
+        var origConsoleError = console.error;
+        console.error = function() {
+          var args = Array.prototype.slice.call(arguments);
+          var msg = args.map(function(a) { return (a && a.message) ? a.message : String(a); }).join(' ');
+          if (
+            msg.indexOf('[vite] failed to connect to websocket') !== -1 ||
+            msg.indexOf('WebSocket closed without opened') !== -1 ||
+            (msg.indexOf('WebSocket') !== -1 && msg.indexOf('failed') !== -1)
+          ) {
+            return;
+          }
+          return origConsoleError.apply(console, arguments);
+        };
+
+        window.addEventListener('unhandledrejection', function(e) {
+          var reason = e && (e.reason || e);
+          var msg = (reason && reason.message) ? reason.message : String(reason);
+          if (
+            msg.indexOf('WebSocket') !== -1 ||
+            msg.indexOf('websocket') !== -1 ||
+            msg.indexOf('failed to connect') !== -1
+          ) {
+            e.preventDefault();
+            if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+          }
+        }, true);
+
+        window.addEventListener('error', function(e) {
+          var msg = e && (e.message || (e.error && e.error.message)) ? (e.message || e.error.message) : '';
+          if (
+            msg.indexOf('WebSocket') !== -1 ||
+            msg.indexOf('websocket') !== -1 ||
+            msg.indexOf('failed to connect') !== -1
+          ) {
+            e.preventDefault();
+            if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+          }
+        }, true);
+      })();
     </script>
     <title>GWL WebLab | Gwalior WebLab / Global WebLab</title>
     <meta name="description" content="GWL (Gwalior WebLab / Global WebLab) engineers high-performance websites, SEO, Google Ads, social media marketing, branding, and digital growth systems." />

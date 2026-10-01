@@ -5,6 +5,7 @@ import { ContactFormData } from '../types';
 import { Success2D } from './2d/Success2D';
 import { useSectionSequence } from '../context/ScrollSequenceContext';
 import { useLanguage } from '../context/LanguageContext';
+import { openWhatsAppDirect, WHATSAPP_DISPLAY_NAME } from '../utils/whatsapp';
 
 interface ContactProps {
   initialService?: string;
@@ -163,16 +164,15 @@ export const Contact: React.FC<ContactProps> = ({ initialService, initialMessage
                   <MessageSquare className="w-4 h-4" />
                 </div>
                 <div>
-                  <div className="text-xs text-neutral-400">WhatsApp / Direct Call</div>
-                  <a
-                    href="https://wa.me/919755061139?text=Hello%20GWL%20Weblab%2C%20I%20would%20like%20to%20discuss%20a%20project."
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-white hover:text-emerald-400 transition-colors font-medium inline-flex items-center gap-1.5"
+                  <div className="text-xs text-neutral-400">Official WhatsApp Inquiries</div>
+                  <button
+                    type="button"
+                    onClick={() => openWhatsAppDirect('Hello GWL WebLab, I would like to discuss a project.')}
+                    className="text-white hover:text-emerald-400 transition-colors font-medium inline-flex items-center gap-1.5 cursor-pointer text-left"
                   >
-                    <span>+91 97550 61139</span>
+                    <span>{WHATSAPP_DISPLAY_NAME} (Chat Now)</span>
                     <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#25D366]/20 text-[#25D366] font-mono font-semibold">Active</span>
-                  </a>
+                  </button>
                 </div>
               </div>
 

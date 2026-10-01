@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { MessageCircle, Phone, ArrowUp, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
-import { openWhatsAppDirect } from '../utils/whatsapp';
 
 interface FloatingContactBarProps {
   onStartConsultation: () => void;
@@ -29,7 +28,9 @@ export const FloatingContactBar: React.FC<FloatingContactBarProps> = ({ onStartC
   }, []);
 
   const handleWhatsAppClick = () => {
-    openWhatsAppDirect("Hello GWL Weblab, I'm interested in building a website and growing my business online. Could we discuss the right plan for me?");
+    // Direct WhatsApp intent link
+    const message = encodeURIComponent("Hello GWL Weblab, I'm interested in building a website and growing my business online. Could we discuss the right plan for me?");
+    window.open(`https://wa.me/919755061139?text=${message}`, '_blank', 'noopener,noreferrer');
   };
 
   const handleCallClick = () => {

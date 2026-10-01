@@ -17,7 +17,6 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
-import { openWhatsAppDirect } from '../utils/whatsapp';
 
 export interface ContactModalProps {
   isOpen: boolean;
@@ -117,13 +116,14 @@ export const ContactModal: React.FC<ContactModalProps> = ({
   };
 
   const handleWhatsAppSend = () => {
-    const text =
+    const text = encodeURIComponent(
       `*Free SEO Audit Request - GWL Weblab*\n\n` +
       `*Name:* ${formData.name || 'Not provided'}\n` +
       `*Website:* ${formData.websiteUrl || 'To be shared'}\n` +
       `*Email:* ${formData.email || 'Not provided'}\n` +
-      `*Message:* ${formData.message}`;
-    openWhatsAppDirect(text);
+      `*Message:* ${formData.message}`
+    );
+    window.open(`https://wa.me/919755061139?text=${text}`, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -319,7 +319,7 @@ export const ContactModal: React.FC<ContactModalProps> = ({
                       required
                       value={formData.phone}
                       onChange={handleChange}
-                      placeholder="+91 9XXXXXXXXX"
+                      placeholder="+91 97550 61139"
                       className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-white/[0.04] [data-theme=clean-light]:bg-slate-50 border border-white/10 [data-theme=clean-light]:border-slate-200 text-white [data-theme=clean-light]:text-slate-900 text-xs sm:text-sm focus:outline-none focus:border-emerald-500 transition-colors"
                     />
                   </div>

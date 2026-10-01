@@ -4,7 +4,6 @@ import { SERVICES } from '../data/services';
 import { ThemeSwitcher } from './ThemeSwitcher';
 import { GwlLogo } from './GwlLogo';
 import { useLanguage } from '../context/LanguageContext';
-import { openWhatsAppDirect, WHATSAPP_DISPLAY_NAME } from '../utils/whatsapp';
 
 export const Footer: React.FC = () => {
   const { t } = useLanguage();
@@ -46,7 +45,7 @@ export const Footer: React.FC = () => {
                 {t.footer.directContact}: <a href="mailto:hello@gwlweblab.com" className="text-neutral-300 hover:text-emerald-400 transition-colors">hello@gwlweblab.com</a>
               </div>
               <div>
-                WhatsApp: <button type="button" onClick={() => openWhatsAppDirect('Hello GWL WebLab, I would like to inquire about your digital services.')} className="text-neutral-300 hover:text-emerald-400 transition-colors cursor-pointer">{WHATSAPP_DISPLAY_NAME} Support</button>
+                WhatsApp: <a href="https://wa.me/919755061139" target="_blank" rel="noopener noreferrer" className="text-neutral-300 hover:text-emerald-400 transition-colors">+91 97550 61139</a>
               </div>
             </div>
           </div>

@@ -32,6 +32,7 @@ import { PlanOnboardingModal } from './components/PlanOnboardingModal';
 import { DoubtResolverChatbot } from './components/DoubtResolverChatbot';
 import { PricingPlan } from './data/pricing';
 import { trackCtaClick, trackEvent } from './utils/analytics';
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export default function App() {
   const [selectedServiceForInquiry, setSelectedServiceForInquiry] = useState<string>('Website');
@@ -268,6 +269,9 @@ export default function App() {
 
           {/* Footer */}
           <Footer />
+
+          {/* Vercel Speed Insights */}
+          <SpeedInsights />
         </div>
       </ScrollSequenceProvider>
     </LanguageProvider>

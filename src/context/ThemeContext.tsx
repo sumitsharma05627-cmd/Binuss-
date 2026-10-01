@@ -5,7 +5,7 @@ export const THEMES: ThemeConfig[] = [
   {
     id: 'cyber-emerald',
     name: 'Cyber Emerald',
-    subtitle: 'Futuristic Emerald & Obsidian (Default)',
+    subtitle: 'Futuristic Emerald & Obsidian',
     isDark: true,
     primaryColor: '#10b981',
     accentColor: '#2dd4bf',
@@ -77,7 +77,7 @@ export const THEMES: ThemeConfig[] = [
   {
     id: 'clean-light',
     name: 'Clean Light',
-    subtitle: 'Modernist Architectural Light Mode',
+    subtitle: 'Modernist Architectural Light Mode (Default)',
     isDark: false,
     primaryColor: '#059669',
     accentColor: '#0284c7',
@@ -123,10 +123,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     } catch {
       // Fallback
     }
-    return 'cyber-emerald';
+    return 'clean-light';
   });
 
-  const activeConfig = THEMES.find(t => t.id === theme) || THEMES[0];
+  const activeConfig = THEMES.find(t => t.id === theme) || THEMES.find(t => t.id === 'clean-light') || THEMES[0];
 
   useEffect(() => {
     try {

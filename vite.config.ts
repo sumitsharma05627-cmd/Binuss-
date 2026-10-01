@@ -79,6 +79,7 @@ export default defineConfig(() => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
+        '@vercel/speed-insights/next': path.resolve(__dirname, 'node_modules/@vercel/speed-insights/dist/react/index.mjs'),
       },
     },
     server: {

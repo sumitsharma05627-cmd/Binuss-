@@ -16,6 +16,7 @@ import { BeforeAfterSection } from './components/BeforeAfterSection';
 import { WhyKBSR } from './components/WhyKBSR';
 import { TrustSection } from './components/TrustSection';
 import { Portfolio } from './components/Portfolio';
+import { WebsiteTemplates } from './components/WebsiteTemplates';
 import { TestimonialSlider } from './components/TestimonialSlider';
 import { Process } from './components/Process';
 import { DigitalInsights } from './components/DigitalInsights';
@@ -214,7 +215,12 @@ export default function App() {
               onSelectProjectForInquiry={(projectName) => handleStartProject(projectName)}
             />
 
-            {/* 12. Client Testimonials Swiper Slider (Verified Outcomes & Social Proof) */}
+            {/* 12. SiteCraft Live Turnkey Website Templates */}
+            <WebsiteTemplates
+              onSelectTemplateForInquiry={(templateName) => handleStartProject(templateName)}
+            />
+
+            {/* 13. Client Testimonials Swiper Slider (Verified Outcomes & Social Proof) */}
             <TestimonialSlider
               onStartProject={() => handleStartProject()}
               onExploreServices={handleExploreServices}

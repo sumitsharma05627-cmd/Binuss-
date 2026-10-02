@@ -48,6 +48,7 @@ interface SearchOverlayProps {
 }
 
 const QUICK_SUGGESTIONS = [
+  'Website Templates (SiteCraft)',
   'Creator Collaboration',
   'Website Design',
   'SEO & Google Search',

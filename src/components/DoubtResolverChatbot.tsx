@@ -20,6 +20,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { useTheme } from '../context/ThemeContext';
 import { FAQS_DATA, PRICING_PLANS } from '../data/pricing';
+import { openWhatsAppDirect } from '../utils/whatsapp';
 
 export interface ChatMessage {
   id: string;
@@ -264,8 +265,7 @@ export const DoubtResolverChatbot: React.FC = () => {
     if (!action) return;
 
     if (action.actionType === 'whatsapp') {
-      const text = encodeURIComponent('Hi GWL Weblab, I was chatting with your AI assistant and have a project inquiry.');
-      window.open(`https://wa.me/919755061139?text=${text}`, '_blank');
+      openWhatsAppDirect('Hi GWL Weblab, I was chatting with your AI assistant and have a project inquiry.');
     } else if (action.actionType === 'call') {
       window.location.href = 'tel:+919755061139';
     } else if (action.targetId) {
@@ -655,8 +655,7 @@ export const DoubtResolverChatbot: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => {
-                      const text = encodeURIComponent('Hi GWL Weblab team, I want to talk directly to an engineer.');
-                      window.open(`https://wa.me/919755061139?text=${text}`, '_blank');
+                      openWhatsAppDirect('Hi GWL Weblab team, I want to talk directly to an engineer.');
                     }}
                     className="font-semibold inline-flex items-center gap-1 cursor-pointer hover:underline"
                   >

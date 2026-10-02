@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SiteCraft by GWL WebLab — Turnkey Live Website Templates & Demos</title>
+  <meta name="description" content="Explore live turnkey website templates engineered for doctors, coaching institutes, real estate, restaurants, and D2C brands. Launch in 3-5 days with 100% code ownership." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <!-- Top Navigation Switcher -->
+  <nav style="display:flex; justify-content:space-between; align-items:center; padding:0.85rem 1.5rem; background:#0b0f19; border-bottom:1px solid rgba(255,255,255,0.1); position:sticky; top:0; z-index:100;">
+    <div style="display:flex; align-items:center; gap:0.6rem; font-weight:800; font-size:1rem; color:#fff;">
+      <span style="color:#10b981;">⚡ GWL WebLab</span>
+      <span style="color:#64748b; font-weight:400;">•</span>
+      <span style="font-size:0.85rem; color:#94a3b8;">SiteCraft Studio</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:0.75rem;">
+      <a href="/#home" style="display:inline-flex; align-items:center; gap:0.4rem; padding:0.45rem 1rem; border-radius:9999px; background:#10b981; color:#fff; font-size:0.8rem; font-weight:700; text-decoration:none; transition:opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+        ← Switch to Main Website
+      </a>
+      <a href="/#services" style="color:#94a3b8; font-size:0.8rem; text-decoration:none; font-weight:600; padding:0.4rem 0.6rem;">Services</a>
+      <a href="/#plans" style="color:#94a3b8; font-size:0.8rem; text-decoration:none; font-weight:600; padding:0.4rem 0.6rem;">Plans</a>
+      <a href="/#contact" style="color:#94a3b8; font-size:0.8rem; text-decoration:none; font-weight:600; padding:0.4rem 0.6rem;">Contact</a>
+    </div>
+  </nav>
+
+  <!-- Header Banner -->
+  <header class="sitecraft-header">
+    <div class="sitecraft-badge">🎉 Special Launch Promo: 100% Free Templates (₹0 Setup)</div>
+    <h1 class="sitecraft-title">SiteCraft Live Template Studio</h1>
+    <p class="sitecraft-subtitle">
+      Explore production-ready, sub-second web architectures tailored for high-conversion businesses. 
+      Select your industry, test live interactions, and claim your template 100% free for a limited time.
+    </p>
+  </header>
+
+  <!-- Filter Navigation -->
+  <div id="filter-tabs-container" class="filter-tabs"></div>
+
+  <!-- Templates Grid -->
+  <main id="templates-grid" class="templates-grid"></main>
+
+  <!-- Interactive Live Preview Modal -->
+  <div id="preview-modal" class="preview-modal-overlay">
+    <div class="preview-modal-container">
+      <div class="preview-modal-header">
+        <div class="modal-title-group">
+          <h3 id="modal-template-title">Template Preview</h3>
+          <p id="modal-template-badge">Interactive Mode</p>
+        </div>
+
+        <!-- Viewport Switcher Controls -->
+        <div class="device-switcher">
+          <button class="device-btn active" data-device="desktop" onclick="SiteCraftAdvanced.setDevice('desktop')">🖥️ Desktop</button>
+          <button class="device-btn" data-device="tablet" onclick="SiteCraftAdvanced.setDevice('tablet')">📱 Tablet</button>
+          <button class="device-btn" data-device="mobile" onclick="SiteCraftAdvanced.setDevice('mobile')">📱 Mobile</button>
+        </div>
+
+        <button class="close-btn" id="close-preview-modal">&times;</button>
+      </div>
+
+      <!-- Preview Viewport -->
+      <div class="preview-body">
+        <div id="preview-viewport-container" class="device-desktop"></div>
+      </div>
+
+      <!-- Preview Footer Controls -->
+      <div class="preview-modal-footer">
+        <div style="display:flex; align-items:center; gap:0.75rem;">
+          <label style="font-size:0.8rem; color:var(--text-muted);">Preview Business Name:</label>
+          <input 
+            type="text" 
+            id="live-custom-brand-input" 
+            placeholder="Type your company name..." 
+            style="padding:0.4rem 0.8rem; border-radius:0.5rem; background:rgba(255,255,255,0.08); border:1px solid var(--border-color); color:var(--text-main); font-size:0.85rem;"
+          />
+        </div>
+        <div style="display:flex; gap:0.6rem;">
+          <a href="/" style="display:inline-flex; align-items:center; padding:0.55rem 1rem; border-radius:0.6rem; background:rgba(255,255,255,0.1); color:var(--text-main); font-size:0.8rem; text-decoration:none; font-weight:600;">← Back to GWL WebLab</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="./images.js"></script>
+  <script src="./business.js"></script>
+  <script src="./advanced.js"></script>
+  <script src="./export.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

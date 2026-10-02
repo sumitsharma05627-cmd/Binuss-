@@ -213,25 +213,38 @@ export const Contact: React.FC<ContactProps> = ({ initialService, initialMessage
                     <Success2D />
                   </div>
 
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-emerald-300 text-xs font-semibold mb-3">
-                    <CheckCircle2 className="w-4 h-4" />
-                    {t.contact.transmissionReceived}
+                  <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 text-xs font-semibold mb-3 shadow-md shadow-emerald-950/40">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                    <span>VIP Project Transmission Confirmed</span>
                   </div>
 
                   <h3 className="font-display text-2xl sm:text-3xl font-extrabold text-white mb-2">
                     {t.contact.thankYou}, {formData.name}.
                   </h3>
 
-                  <p className="text-neutral-300 text-sm sm:text-base max-w-md mx-auto mb-6 leading-relaxed">
-                    {t.contact.confirmationMsg}
+                  <p className="text-neutral-300 text-sm sm:text-base max-w-lg mx-auto mb-6 leading-relaxed">
+                    Your inquiry for <strong className="text-white">{formData.businessName || 'your business'}</strong> has been received by our senior engineering desk. We review every brief with extreme commercial rigor — no pushy sales pitches, just crystal-clear technical execution and roadmap advice.
                   </p>
 
-                  <button
-                    onClick={handleReset}
-                    className="inline-flex items-center justify-center px-6 py-2.5 rounded-full text-xs font-semibold text-neutral-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-colors cursor-pointer"
-                  >
-                    {t.contact.submitAnother}
-                  </button>
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
+                    <a
+                      href={`https://wa.me/919755061139?text=${encodeURIComponent(
+                        `🌟 *VIP Project Follow-Up*\n\nHi GWL WebLab team, I just submitted the project form for *${formData.businessName || formData.name}* (Service: ${formData.serviceRequired}). Looking forward to connecting!`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-6 py-3 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-lg shadow-emerald-950/50 transition-all active:scale-95"
+                    >
+                      <MessageSquare className="w-4 h-4 fill-current" />
+                      <span>Connect Directly on WhatsApp (+91 97550 61139)</span>
+                    </a>
+                    <button
+                      onClick={handleReset}
+                      className="inline-flex items-center justify-center px-6 py-3 rounded-full text-xs font-semibold text-neutral-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-colors cursor-pointer"
+                    >
+                      {t.contact.submitAnother}
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-5" noValidate>

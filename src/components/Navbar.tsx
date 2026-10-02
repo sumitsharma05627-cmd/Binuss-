@@ -32,6 +32,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenProjectModal, onOpenSearch
     { name: t.nav.home, href: '#home', id: 'home' },
     { name: t.nav.services, href: '#services', id: 'services' },
     { name: t.nav.plans, href: '#plans', id: 'plans' },
+    { name: t.nav.templates || 'Templates', href: '#templates', id: 'templates' },
     { name: t.nav.work, href: '#work', id: 'work' },
     { name: t.nav.process, href: '#process', id: 'process' },
     { name: t.nav.insights, href: '#insights', id: 'insights' },
@@ -41,6 +42,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenProjectModal, onOpenSearch
 
   const handleLinkClick = (href: string) => {
     setMobileMenuOpen(false);
+    window.dispatchEvent(new CustomEvent('close-all-overlays'));
     const element = document.querySelector(href);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });

@@ -1,4 +1,5 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
@@ -166,8 +167,24 @@ async function startServer() {
       },
       appType: 'spa',
     });
+    app.use('/sitecraft', express.static(path.resolve(__dirname, 'public/sitecraft')));
     app.use(vite.middlewares);
+
+    app.get('*', async (req: Request, res: Response, next: NextFunction) => {
+      const url = req.originalUrl;
+      try {
+        let template = fs.readFileSync(path.resolve(__dirname, 'index.html'), 'utf-8');
+        template = await vite.transformIndexHtml(url, template);
+        res.status(200).set({ 'Content-Type': 'text/html' }).end(template);
+      } catch (e) {
+        if (vite) {
+          vite.ssrFixStacktrace(e as Error);
+        }
+        next(e);
+      }
+    });
   } else {
+    app.use('/sitecraft', express.static(path.resolve(__dirname, 'public/sitecraft')));
     app.use(express.static(path.resolve(__dirname, 'dist')));
     app.get('*', (_req: Request, res: Response) => {
       res.sendFile(path.resolve(__dirname, 'dist', 'index.html'));
@@ -175,7 +192,7 @@ async function startServer() {
   }
 
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`KBSR Digital Server running on http://0.0.0.0:${PORT}`);
+    console.log(`GWL WebLab Server running on http://0.0.0.0:${PORT}`);
   });
 }
 

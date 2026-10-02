@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script>
-      // Gracefully prevent unhandled rejection / error popups from sandbox Vite HMR WebSocket disconnects
+      // Execute early to neutralize sandbox WebSocket errors
       (function() {
         if (typeof window === 'undefined') return;
 

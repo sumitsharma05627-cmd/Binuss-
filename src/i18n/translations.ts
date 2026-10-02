@@ -23,6 +23,7 @@ export interface Translations {
     home: string;
     services: string;
     plans: string;
+    templates?: string;
     work: string;
     process: string;
     insights: string;
@@ -359,6 +360,7 @@ export const TRANSLATIONS: Record<Language, Translations> = {
       home: 'Home',
       services: 'Services',
       plans: 'Plans',
+      templates: 'Templates',
       work: 'Work',
       process: 'Process',
       insights: 'Insights',
@@ -723,6 +725,7 @@ export const TRANSLATIONS: Record<Language, Translations> = {
       home: 'होम',
       services: 'सेवाएं',
       plans: 'प्लान्स',
+      templates: 'टेम्प्लेट्स',
       work: 'पोर्टफोलियो',
       process: 'प्रक्रिया',
       insights: 'इनसाइट्स',
@@ -1087,6 +1090,7 @@ export const TRANSLATIONS: Record<Language, Translations> = {
       home: 'Inicio',
       services: 'Servicios',
       plans: 'Planes',
+      templates: 'Plantillas',
       work: 'Portafolio',
       process: 'Proceso',
       insights: 'Perspectivas',

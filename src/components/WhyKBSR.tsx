@@ -3,6 +3,8 @@ import { CheckCircle2, ChevronDown, Layers } from 'lucide-react';
 import { motion } from 'motion/react';
 import { ECOSYSTEM_NODES, WHY_KBSR_POINTS } from '../data/growth';
 import { Ecosystem2D } from './2d/Ecosystem2D';
+import { Ecosystem3D } from './3d/Ecosystem3D';
+import { isWebGLAvailable } from './3d/webglUtils';
 import { useSectionSequence } from '../context/ScrollSequenceContext';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -130,12 +132,20 @@ export const WhyKBSR: React.FC<WhyKBSRProps> = ({ onViewCaseStudies, onScheduleC
                 </span>
               </div>
 
-              {/* 2D Ecosystem Render */}
-              <Ecosystem2D
-                activeNodeIndex={activeNodeIndex}
-                onHoverNode={(idx) => setActiveNodeIndex(idx)}
-                isVisible={isVisible}
-              />
+              {/* 3D WebGL / 2D Ecosystem Render */}
+              {isWebGLAvailable() ? (
+                <Ecosystem3D
+                  activeNodeIndex={activeNodeIndex}
+                  onHoverNode={(idx) => setActiveNodeIndex(idx)}
+                  isVisible={isVisible}
+                />
+              ) : (
+                <Ecosystem2D
+                  activeNodeIndex={activeNodeIndex}
+                  onHoverNode={(idx) => setActiveNodeIndex(idx)}
+                  isVisible={isVisible}
+                />
+              )}
 
               {/* Highlight card for current node */}
               <div className="mt-2 p-3.5 rounded-xl bg-black/60 border border-emerald-500/20 text-center">

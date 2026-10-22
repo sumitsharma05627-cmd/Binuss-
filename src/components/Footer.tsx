@@ -43,10 +43,10 @@ export const Footer: React.FC = () => {
 
             <div className="pt-2 text-xs text-neutral-500 space-y-1">
               <div>
-                {t.footer.directContact}: <a href="mailto:hello@gwlweblab.com" className="text-neutral-300 hover:text-emerald-400 transition-colors">hello@gwlweblab.com</a>
+                {t.footer.directContact}: <a href="mailto:gwaliorweblabs@gmail.com" className="text-neutral-300 hover:text-emerald-400 transition-colors">gwaliorweblabs@gmail.com</a>
               </div>
               <div>
-                WhatsApp: <button type="button" onClick={() => openWhatsAppDirect('Hello GWL WebLab, I would like to inquire about your digital services.')} className="text-neutral-300 hover:text-emerald-400 transition-colors cursor-pointer">{WHATSAPP_DISPLAY_NAME} Support</button>
+                WhatsApp: <button type="button" onClick={() => openWhatsAppDirect('Hello GWL WebLab, I would like to inquire about your digital services.')} className="text-neutral-300 hover:text-emerald-400 transition-colors cursor-pointer font-medium">{WHATSAPP_DISPLAY_NAME} (+91 75879 39722)</button>
               </div>
             </div>
           </div>

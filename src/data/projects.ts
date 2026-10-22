@@ -121,8 +121,8 @@ export const PROJECTS: ProjectItem[] = [
     clientType: 'Spoken English & Personality Institute • Gwalior',
     location: 'Gwalior, Madhya Pradesh',
     contactInfo: {
-      phone: '+91 97550 61139',
-      whatsapp: '+91 97550 61139',
+      phone: '+91 75879 39722',
+      whatsapp: '+91 75879 39722',
       email: 'info@tellwellenglish.com',
       address: 'Gwalior, Madhya Pradesh'
     },

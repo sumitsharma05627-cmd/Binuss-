@@ -20,7 +20,7 @@ export function generateStaticHtml(
 ): string {
   const brand = data.businessName.trim() || template.name;
   const tagline = data.tagline.trim() || template.tagline;
-  const phone = data.phone.trim() || '+91 97550 61139';
+  const phone = data.phone.trim() || '+91 75879 39722';
   const cleanPhone = phone.replace(/[^0-9]/g, '');
   const email = data.email.trim() || 'contact@' + brand.toLowerCase().replace(/[^a-z0-9]/g, '') + '.com';
   const address = data.address.trim() || 'Medical Enclave / Commercial Plaza, Main City Center';
@@ -29,7 +29,7 @@ export function generateStaticHtml(
   const aboutStory = data.aboutStory?.trim() || `${brand} is dedicated to delivering industry-leading excellence, customer-first service, and transparent solutions. Engineered for modern clients who expect speed, reliability, and precision.`;
   const workingHours = data.workingHours?.trim() || 'Mon – Sat: 09:00 AM – 08:00 PM (Emergency: 24/7)';
 
-  const waBase = `https://wa.me/${cleanPhone || '919755061139'}?text=` + encodeURIComponent(`Hello ${brand}, I would like to inquire regarding your services.`);
+  const waBase = `https://wa.me/${cleanPhone || '917587939722'}?text=` + encodeURIComponent(`Hello ${brand}, I would like to inquire regarding your services.`);
 
   const pageTitles: Record<string, string> = {
     index: `${brand} — Official Website`,
@@ -846,7 +846,7 @@ Your website is 100% static, fast, and dependency-free. It can be hosted on ANY 
 
 ## Option 4: Free White-Glove Launch by GWL WebLab
 If you want our engineering team to handle DNS configuration, domain SSL, and CDN setup for you at ₹0 cost under our promotion:
-- WhatsApp us directly at: **+91 97550 61139**
+- WhatsApp us directly at: **+91 75879 39722**
 - Message: *"Hi GWL WebLab, I downloaded my ${brand} template package and would like free white-glove hosting setup on my domain."*
 `;
 }

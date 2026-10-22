@@ -3,12 +3,86 @@ import { AlertCircle, TrendingDown, EyeOff, Search, MessageSquareX, Compass } fr
 import { motion } from 'motion/react';
 import { useSectionSequence } from '../context/ScrollSequenceContext';
 import { useLanguage } from '../context/LanguageContext';
+import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
+import { use3DTilt } from '../hooks/use3DTilt';
 
 interface ProblemSectionProps {
   onExploreSolution: () => void;
 }
 
 const PROBLEM_ICONS = [EyeOff, Search, TrendingDown, MessageSquareX, Compass, AlertCircle];
+
+interface ProblemCardItemProps {
+  prob: {
+    title: string;
+    description: string;
+    impact: string;
+  };
+  idx: number;
+  Icon: React.ElementType;
+}
+
+const ProblemCardItem: React.FC<ProblemCardItemProps> = ({ prob, idx, Icon }) => {
+  const [cardRef, isVisible] = useIntersectionObserver<HTMLDivElement>({
+    threshold: 0.12,
+    rootMargin: '0px 0px -40px 0px',
+    triggerOnce: true
+  });
+
+  const { tiltProps, tiltStyle, glareStyle, isHovered } = use3DTilt({
+    maxTilt: 6.5,
+    perspective: 900,
+    scale: 1.025,
+    glare: true
+  });
+
+  // Staggered slide-up timing per column
+  const staggerDelay = (idx % 3) * 110;
+
+  return (
+    <div
+      ref={cardRef}
+      id={`problem-card-${idx}`}
+      onMouseMove={tiltProps.onMouseMove}
+      onMouseEnter={tiltProps.onMouseEnter}
+      onMouseLeave={tiltProps.onMouseLeave}
+      style={{
+        transitionDelay: isVisible ? (isHovered ? '0ms' : `${staggerDelay}ms`) : '0ms',
+        transitionDuration: isHovered ? '80ms' : '650ms',
+        transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
+        ...(isVisible && isHovered ? tiltStyle : {})
+      }}
+      className={`group relative rounded-2xl p-6 problem-card backdrop-blur-md flex flex-col justify-between transform will-change-transform will-change-opacity transition-all ${
+        isVisible
+          ? 'opacity-100 translate-y-0 scale-100 shadow-md hover:shadow-2xl'
+          : 'opacity-0 translate-y-8 scale-[0.98]'
+      }`}
+    >
+      {/* Dynamic 3D Glare */}
+      <div
+        className="absolute inset-0 rounded-2xl pointer-events-none z-10"
+        style={glareStyle}
+      />
+      <div>
+        <div className="w-11 h-11 rounded-xl problem-icon-box flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+          <Icon className="w-5 h-5" />
+        </div>
+        <h3 className="font-display text-lg font-bold text-[var(--theme-text-main)] mb-2 group-hover:text-rose-400 transition-colors">
+          {prob.title}
+        </h3>
+        <p className="text-[var(--theme-text-muted)] text-sm leading-relaxed">
+          {prob.description}
+        </p>
+      </div>
+      <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-xs">
+        <span className="font-mono text-rose-400 font-semibold tracking-wider">RISK / IMPACT</span>
+        <span className="text-[var(--theme-text-muted)] group-hover:text-[var(--theme-text-main)] transition-colors font-medium">
+          {prob.impact}
+        </span>
+      </div>
+    </div>
+  );
+};
 
 export const ProblemSection: React.FC<ProblemSectionProps> = ({ onExploreSolution }) => {
   const { ref, stage } = useSectionSequence('problem');
@@ -56,42 +130,16 @@ export const ProblemSection: React.FC<ProblemSectionProps> = ({ onExploreSolutio
           </motion.p>
         </div>
 
-        {/* 6 Problem Cards */}
+        {/* 6 Problem Cards with Intersection Observer Scroll Animation */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-          {t.problem.problems.map((prob, idx) => {
-            const Icon = PROBLEM_ICONS[idx % PROBLEM_ICONS.length];
-            return (
-              <motion.div
-                key={prob.title}
-                id={`problem-card-${idx}`}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.1 }}
-                transition={{
-                  duration: 0.55,
-                  delay: idx * 0.06,
-                  ease: [0.16, 1, 0.3, 1]
-                }}
-                className="group relative rounded-2xl p-6 problem-card transition-all duration-300 backdrop-blur-md flex flex-col justify-between"
-              >
-                <div>
-                  <div className="w-11 h-11 rounded-xl problem-icon-box flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
-                    <Icon className="w-5 h-5" />
-                  </div>
-                  <h3 className="font-display text-lg font-bold text-[var(--theme-text-main)] mb-2 group-hover:text-rose-400 transition-colors">
-                    {prob.title}
-                  </h3>
-                  <p className="text-[var(--theme-text-muted)] text-sm leading-relaxed">
-                    {prob.description}
-                  </p>
-                </div>
-                <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-xs">
-                  <span className="font-mono text-rose-400 font-semibold tracking-wider">RISK / IMPACT</span>
-                  <span className="text-[var(--theme-text-muted)] group-hover:text-[var(--theme-text-main)] transition-colors font-medium">{prob.impact}</span>
-                </div>
-              </motion.div>
-            );
-          })}
+          {t.problem.problems.map((prob, idx) => (
+            <ProblemCardItem
+              key={prob.title}
+              prob={prob}
+              idx={idx}
+              Icon={PROBLEM_ICONS[idx % PROBLEM_ICONS.length]}
+            />
+          ))}
         </div>
 
         {/* Transition Bridge: "We Fix That" */}

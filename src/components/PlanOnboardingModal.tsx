@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, CheckCircle2, ArrowRight, ShieldCheck, Clock, MessageSquare, Phone, Mail } from 'lucide-react';
 import { PricingPlan } from '../data/pricing';
 import { useLanguage } from '../context/LanguageContext';
+import { openWhatsAppDirect } from '../utils/whatsapp';
 
 interface PlanOnboardingModalProps {
   plan: PricingPlan | null;
@@ -40,10 +41,40 @@ export const PlanOnboardingModal: React.FC<PlanOnboardingModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.contactName || !formData.phoneOrWhatsApp) {
-      setErrorMsg(t.modal.validationError);
+    if (!formData.contactName.trim()) {
+      setErrorMsg(t.modal.validationError || 'Please enter your name.');
       return;
     }
+    if (!formData.phoneOrWhatsApp.trim() && !formData.email.trim()) {
+      setErrorMsg(t.modal.validationError || 'Please enter your phone or WhatsApp number.');
+      return;
+    }
+
+    const lines = [
+      `🎯 *NEW ONBOARDING RESERVATION — ${plan.name.toUpperCase()}*`,
+      '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+      '👋 *Namaste & Hello GWL WebLab Team,*',
+      '',
+      `I would like to start onboarding with the *${plan.name}* plan (${plan.startingPrice})!`,
+      '',
+      '🏢 *MY BUSINESS CONFIGURATION:*',
+      `• *Client Name:* ${formData.contactName.trim()}`,
+      formData.businessName.trim() ? `• *Business / Brand:* ${formData.businessName.trim()}` : null,
+      formData.phoneOrWhatsApp.trim() ? `• *Phone / WhatsApp:* ${formData.phoneOrWhatsApp.trim()}` : null,
+      formData.email.trim() ? `• *Email Address:* ${formData.email.trim()}` : null,
+      `• *Selected Tier:* ${plan.name} (${plan.startingPrice})`,
+      `• *Expected Delivery:* ${plan.deliveryTime}`,
+      formData.notes.trim() ? `\n💬 *Goals & Special Requirements:*\n"${formData.notes.trim()}"` : null,
+      '',
+      '⚡ *NEXT STEPS:*',
+      'Please confirm onboarding schedule and project kickoff roadmap.',
+      '',
+      'Thank you! 🚀',
+      '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+    ].filter(Boolean);
+
+    // Direct inquiry straight to WhatsApp
+    openWhatsAppDirect(lines.join('\n'));
 
     onSubmitOnboarding({
       planName: plan.name,
@@ -244,7 +275,8 @@ export const PlanOnboardingModal: React.FC<PlanOnboardingModalProps> = ({
                 type="submit"
                 className="flex-1 py-3 px-6 rounded-full font-bold text-sm tracking-wide theme-btn-primary shadow-[0_0_25px_rgba(16,185,129,0.35)] transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
-                <span>{t.modal.submitInquiryBtn} {plan.name}</span>
+                <MessageSquare className="w-4 h-4 fill-current" />
+                <span>Book on WhatsApp: {plan.name}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>

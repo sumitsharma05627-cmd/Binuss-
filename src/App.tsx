@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ScrollSequenceProvider } from './context/ScrollSequenceContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { LanguageProvider } from './context/LanguageContext';
-import { BackgroundParticles2D } from './components/2d/BackgroundParticles2D';
+import { BackgroundParticles3D } from './components/3d/BackgroundParticles3D';
 import { Navbar } from './components/Navbar';
 import { SearchOverlay } from './components/SearchOverlay';
 import { Hero } from './components/Hero';
@@ -31,6 +31,7 @@ import { FloatingContactBar } from './components/FloatingContactBar';
 import { FloatingThemeButton } from './components/FloatingThemeButton';
 import { PlanOnboardingModal } from './components/PlanOnboardingModal';
 import { DoubtResolverChatbot } from './components/DoubtResolverChatbot';
+import { DigitalGrowthLeadModal } from './components/DigitalGrowthLeadModal';
 import { PricingPlan } from './data/pricing';
 import { trackCtaClick, trackEvent } from './utils/analytics';
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -153,8 +154,8 @@ export default function App() {
       <LanguageProvider>
         <ScrollSequenceProvider>
         <div className="relative min-h-screen text-slate-900 dark:text-white selection:bg-emerald-500/30 selection:text-emerald-200 transition-colors duration-300">
-          {/* Ambient 2D Particle Constellation in Background */}
-          <BackgroundParticles2D />
+          {/* Ambient 3D Particle Constellation in Background */}
+          <BackgroundParticles3D />
 
           {/* Floating Navigation with Search */}
           <Navbar
@@ -272,6 +273,9 @@ export default function App() {
             onClose={() => setActiveOnboardingPlan(null)}
             onSubmitOnboarding={handleOnboardingSubmit}
           />
+
+          {/* 15-Second Timed Free Digital Growth Blueprint PDF Lead Popup Modal */}
+          <DigitalGrowthLeadModal />
 
           {/* Footer */}
           <Footer />

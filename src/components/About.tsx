@@ -2,6 +2,8 @@ import React from 'react';
 import { Globe2, Terminal, Code2, LineChart, Cpu, ArrowRight } from 'lucide-react';
 import { motion } from 'motion/react';
 import { NetworkGlobe2D } from './2d/NetworkGlobe2D';
+import { NetworkGlobe3D } from './3d/NetworkGlobe3D';
+import { isWebGLAvailable } from './3d/webglUtils';
 import { useSectionSequence } from '../context/ScrollSequenceContext';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -125,7 +127,11 @@ export const About: React.FC = () => {
                 </span>
               </div>
 
-              <NetworkGlobe2D isVisible={isVisible} />
+              {isWebGLAvailable() ? (
+                <NetworkGlobe3D isVisible={isVisible} />
+              ) : (
+                <NetworkGlobe2D isVisible={isVisible} />
+              )}
 
               <div className="w-full flex flex-col sm:flex-row items-center justify-between text-xs text-neutral-400 mt-3 pt-3 border-t border-white/10 gap-2">
                 <span>Deployments across India & International Nodes</span>

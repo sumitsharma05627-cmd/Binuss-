@@ -4,7 +4,7 @@
     currentDevice: 'desktop',
     currentColor: 'emerald',
     customBrand: '',
-    customPhone: '+91 97550 61139',
+    customPhone: '+91 75879 39722',
 
     setDevice: function(device) {
       this.currentDevice = device;
@@ -50,7 +50,7 @@
     },
 
     updateLivePhone: function(phone) {
-      this.customPhone = phone.trim() || '+91 97550 61139';
+      this.customPhone = phone.trim() || '+91 75879 39722';
       var phoneDoms = document.querySelectorAll('.live-phone-text');
       phoneDoms.forEach(function(el) {
         el.textContent = window.SiteCraftAdvanced.customPhone;

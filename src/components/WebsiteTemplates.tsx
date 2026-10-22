@@ -50,6 +50,7 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { downloadMultipageZip, CustomizationData } from '../utils/templateZipGenerator';
+import { openWhatsAppDirect } from '../utils/whatsapp';
 
 export interface TemplateFeature {
   title: string;
@@ -509,7 +510,7 @@ export const WebsiteTemplates: React.FC<WebsiteTemplatesProps> = ({ onSelectTemp
   // Live in-template customization state
   const [liveBrand, setLiveBrand] = useState<string>('');
   const [liveHeadline, setLiveHeadline] = useState<string>('');
-  const [livePhone, setLivePhone] = useState<string>('+91 97550 61139');
+  const [livePhone, setLivePhone] = useState<string>('+91 75879 39722');
   const [liveEmail, setLiveEmail] = useState<string>('contact@business.com');
   const [liveAddress, setLiveAddress] = useState<string>('Medical Plaza / Commercial Towers, Central Avenue');
   const [liveHours, setLiveHours] = useState<string>('Mon – Sat: 09:00 AM – 08:00 PM (Emergency 24/7)');
@@ -554,7 +555,7 @@ export const WebsiteTemplates: React.FC<WebsiteTemplatesProps> = ({ onSelectTemp
     setLiveBrand(template.name);
     setLiveHeadline(template.tagline);
     setLiveColor(template.primaryColor);
-    setLivePhone('+91 97550 61139');
+    setLivePhone('+91 75879 39722');
     setLiveEmail(`contact@${template.id}.com`);
     setLiveAddress('Central Commercial Complex, MG Road');
     setLiveHours('Mon – Sat: 09:00 AM – 08:00 PM');
@@ -571,7 +572,7 @@ export const WebsiteTemplates: React.FC<WebsiteTemplatesProps> = ({ onSelectTemp
     setLiveBrand(selectedTemplate.name);
     setLiveHeadline(selectedTemplate.tagline);
     setLiveColor(selectedTemplate.primaryColor);
-    setLivePhone('+91 97550 61139');
+    setLivePhone('+91 75879 39722');
     setLiveEmail(`contact@${selectedTemplate.id}.com`);
     setLiveAddress('Central Commercial Complex, MG Road');
     setLiveHours('Mon – Sat: 09:00 AM – 08:00 PM');
@@ -626,7 +627,7 @@ export const WebsiteTemplates: React.FC<WebsiteTemplatesProps> = ({ onSelectTemp
       setLiveBrand(template.name);
       setLiveHeadline(template.tagline);
       setLiveColor(template.primaryColor);
-      setLivePhone('+91 97550 61139');
+      setLivePhone('+91 75879 39722');
       setLiveCta(template.defaultCta);
     }
     setBookingConfirmationTemplate(template);
@@ -636,7 +637,7 @@ export const WebsiteTemplates: React.FC<WebsiteTemplatesProps> = ({ onSelectTemp
   const handleWhatsAppOrder = (template: WebsiteTemplate) => {
     const brand = liveBrand.trim() || template.name;
     const headline = liveHeadline.trim() || template.tagline;
-    const phone = livePhone.trim() || '+91 97550 61139';
+    const phone = livePhone.trim() || '+91 75879 39722';
     const color = liveColor || template.primaryColor;
     const cta = liveCta.trim() || template.defaultCta;
 
@@ -672,8 +673,7 @@ export const WebsiteTemplates: React.FC<WebsiteTemplatesProps> = ({ onSelectTemp
       'Please review my brief and connect with me to launch our digital system. Looking forward to our launch! 🚀',
       '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
     ];
-    const text = encodeURIComponent(lines.join('\n'));
-    window.open(`https://wa.me/919755061139?text=${text}`, '_blank', 'noopener,noreferrer');
+    openWhatsAppDirect(lines.join('\n'));
   };
 
   // Download complete multipage ZIP package for their hosting
@@ -1236,7 +1236,7 @@ export const WebsiteTemplates: React.FC<WebsiteTemplatesProps> = ({ onSelectTemp
                           type="text"
                           value={livePhone}
                           onChange={(e) => setLivePhone(e.target.value)}
-                          placeholder="+91 97550 61139"
+                          placeholder="+91 75879 39722"
                           className="w-full px-3 py-2 rounded-lg bg-neutral-950 border border-white/15 text-white text-xs placeholder:text-neutral-600 focus:outline-none focus:border-emerald-500"
                         />
                       </div>
@@ -1959,7 +1959,7 @@ export const WebsiteTemplates: React.FC<WebsiteTemplatesProps> = ({ onSelectTemp
                     className="flex-1 py-3.5 px-6 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/50 transition-all active:scale-95 cursor-pointer"
                   >
                     <MessageSquare className="w-4 h-4 fill-current" />
-                    <span>Dispatch VIP WhatsApp Handshake (+91 97550 61139)</span>
+                    <span>Dispatch VIP WhatsApp Handshake (+91 75879 39722)</span>
                   </button>
                   <button
                     type="button"

@@ -1,7 +1,8 @@
 import React from 'react';
-import { ArrowRight, Sparkles, ShieldCheck, Zap } from 'lucide-react';
+import { ArrowRight, Sparkles, ShieldCheck, Zap, Palette, Box, Layers } from 'lucide-react';
 import { motion } from 'motion/react';
 import { HeroCore2D } from './2d/HeroCore2D';
+import { HeroCore3D } from './3d/HeroCore3D';
 import { useSectionSequence } from '../context/ScrollSequenceContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
@@ -16,6 +17,7 @@ export const Hero: React.FC<HeroProps> = ({ onStartProject, onViewPlans }) => {
   const { t } = useLanguage();
   const { theme, themeConfig } = useTheme();
   const isLight = theme === 'clean-light' || !themeConfig.isDark;
+  const [visualMode, setVisualMode] = React.useState<'3d' | '2d'>('3d');
 
   return (
     <section
@@ -157,15 +159,50 @@ export const Hero: React.FC<HeroProps> = ({ onStartProject, onViewPlans }) => {
             initial={{ opacity: 0, scale: 0.92 }}
             animate={isVisible ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.92 }}
             transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
-            className="lg:col-span-5 relative h-[380px] sm:h-[480px] lg:h-[600px] w-full flex items-center justify-center"
+            className="lg:col-span-5 relative h-[420px] sm:h-[500px] lg:h-[620px] w-full flex flex-col items-center justify-center"
           >
-            {/* Ambient ring accent behind 3D core */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="w-[280px] h-[280px] sm:w-[380px] sm:h-[380px] rounded-full border border-emerald-500/15 animate-spin-slow"></div>
+            {/* Visualizer Mode Toggle */}
+            <div className="absolute top-2 z-20 flex items-center gap-1.5 p-1 rounded-full bg-slate-950/70 border border-white/10 backdrop-blur-xl shadow-lg">
+              <button
+                type="button"
+                onClick={() => setVisualMode('3d')}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                  visualMode === '3d'
+                    ? 'bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 font-bold shadow-sm'
+                    : 'text-neutral-400 hover:text-white'
+                }`}
+              >
+                <Box className="w-3.5 h-3.5" />
+                <span>3D Hologram Nexus</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setVisualMode('2d')}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                  visualMode === '2d'
+                    ? 'bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 font-bold shadow-sm'
+                    : 'text-neutral-400 hover:text-white'
+                }`}
+              >
+                <Layers className="w-3.5 h-3.5" />
+                <span>Growth Cards</span>
+              </button>
             </div>
 
-            {/* Central 2D Interactive Digital Growth Nexus */}
-            <HeroCore2D isVisible={isVisible} className="w-full h-full" />
+            {/* Ambient ring accent behind 3D core */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] rounded-full border border-emerald-500/15 animate-spin-slow"></div>
+              <div className="w-[200px] h-[200px] sm:w-[280px] sm:h-[280px] rounded-full border border-amber-400/10 animate-spin-slow" style={{ animationDirection: 'reverse', animationDuration: '35s' }}></div>
+            </div>
+
+            {/* Render 3D WebGL Core or 2D Blueprint Cards */}
+            <div className="w-full h-full pt-10">
+              {visualMode === '3d' ? (
+                <HeroCore3D isVisible={isVisible} className="w-full h-full" />
+              ) : (
+                <HeroCore2D isVisible={isVisible} className="w-full h-full" />
+              )}
+            </div>
           </motion.div>
         </div>
       </div>

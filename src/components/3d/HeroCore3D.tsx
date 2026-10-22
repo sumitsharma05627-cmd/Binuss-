@@ -79,6 +79,35 @@ export const HeroCore3D: React.FC<HeroCore3DProps> = ({
     const innerCore = new THREE.Mesh(innerGeo, innerMat);
     masterGroup.add(innerCore);
 
+    // Central Floating 3D GWL Shield Crest
+    const textureLoader = new THREE.TextureLoader();
+    const crestTexture = textureLoader.load('/assets/aistudio/Gemini_Generated_Image_b1kwab1kwab1kwab_83d54e8a.png');
+    crestTexture.colorSpace = THREE.SRGBColorSpace;
+
+    const crestGeo = new THREE.PlaneGeometry(isCompact ? 1.5 : 1.9, isCompact ? 1.5 : 1.9);
+    const crestMat = new THREE.MeshPhysicalMaterial({
+      map: crestTexture,
+      transparent: true,
+      metalness: 0.65,
+      roughness: 0.25,
+      clearcoat: 0.9,
+      clearcoatRoughness: 0.1,
+      side: THREE.DoubleSide
+    });
+    const crestMesh = new THREE.Mesh(crestGeo, crestMat);
+    crestMesh.position.z = 0.08;
+    masterGroup.add(crestMesh);
+
+    // Golden halo bevel orbit ring around the crest
+    const frameGeo = new THREE.TorusGeometry(isCompact ? 1.15 : 1.45, 0.028, 16, isMobile ? 48 : 80);
+    const frameMat = new THREE.MeshStandardMaterial({
+      color: 0xf59e0b, // royal gold
+      metalness: 0.85,
+      roughness: 0.2
+    });
+    const frameMesh = new THREE.Mesh(frameGeo, frameMat);
+    masterGroup.add(frameMesh);
+
     // Wireframe outer cage
     const cageGeo = new THREE.IcosahedronGeometry(isCompact ? 1.25 : 1.6, 1);
     const cageMat = new THREE.MeshBasicMaterial({
@@ -261,6 +290,11 @@ export const HeroCore3D: React.FC<HeroCore3DProps> = ({
     backRimLight.position.set(-4, -3, -3);
     scene.add(backRimLight);
 
+    // Warm specular light for the gold shield crest
+    const crestSpot = new THREE.PointLight(0xf59e0b, 2.8, 12);
+    crestSpot.position.set(0, 0, 4);
+    scene.add(crestSpot);
+
     // Mouse Tracking with smooth lerp
     let mouseX = 0;
     let mouseY = 0;
@@ -308,6 +342,12 @@ export const HeroCore3D: React.FC<HeroCore3DProps> = ({
          masterGroup.rotation.y += delta * 0.25;
          masterGroup.rotation.x = Math.sin(elapsedTime * 0.3) * 0.15 + mouseY * 0.6;
          masterGroup.rotation.z = mouseX * 0.4;
+
+         // Animate 3D Crest & Golden Frame
+         crestMesh.rotation.y = Math.sin(elapsedTime * 0.7) * 0.18 + mouseX * 0.25;
+         crestMesh.position.y = Math.sin(elapsedTime * 1.4) * 0.07;
+         frameMesh.rotation.z += delta * 0.22;
+         frameMesh.rotation.x = Math.sin(elapsedTime * 0.5) * 0.1;
 
          // Counter-rotation of inner core
          innerCore.rotation.x -= delta * 0.4;

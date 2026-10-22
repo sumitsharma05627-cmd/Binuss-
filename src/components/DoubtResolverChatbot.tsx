@@ -265,9 +265,21 @@ export const DoubtResolverChatbot: React.FC = () => {
     if (!action) return;
 
     if (action.actionType === 'whatsapp') {
-      openWhatsAppDirect('Hi GWL Weblab, I was chatting with your AI assistant and have a project inquiry.');
+      const lastUserMsg = messages.filter(m => m.role === 'user').pop()?.content || '';
+      const lines = [
+        '👋 *Namaste & Hello GWL WebLab Team,*',
+        '',
+        'I was exploring your digital services on your website and would like to connect directly on WhatsApp.',
+        '',
+        lastUserMsg ? `💬 *My Project Inquiry:*\n"${lastUserMsg}"\n` : null,
+        '⚡ *REQUEST:*',
+        'Could you share your recommended plan, turnaround timeline, and quote for this?',
+        '',
+        'Looking forward to connecting! 🚀'
+      ].filter(Boolean);
+      openWhatsAppDirect(lines.join('\n'));
     } else if (action.actionType === 'call') {
-      window.location.href = 'tel:+919755061139';
+      window.location.href = 'tel:+917587939722';
     } else if (action.targetId) {
       const el = document.getElementById(action.targetId);
       if (el) {
@@ -655,7 +667,17 @@ export const DoubtResolverChatbot: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => {
-                      openWhatsAppDirect('Hi GWL Weblab team, I want to talk directly to an engineer.');
+                      const lines = [
+                        '👋 *Namaste & Hello GWL WebLab Team,*',
+                        '',
+                        'I was reviewing your website and would like to speak directly with an engineer regarding a new digital project.',
+                        '',
+                        '⚡ *CONSULTATION REQUEST:*',
+                        'Could we discuss technical requirements, project timeline, and quotation on WhatsApp?',
+                        '',
+                        'Looking forward to our chat! 🚀'
+                      ];
+                      openWhatsAppDirect(lines.join('\n'));
                     }}
                     className="font-semibold inline-flex items-center gap-1 cursor-pointer hover:underline"
                   >

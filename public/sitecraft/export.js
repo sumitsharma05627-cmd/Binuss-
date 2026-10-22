@@ -1,7 +1,7 @@
 // SiteCraft Direct Inquiry & Specification Export Engine
 (function() {
   window.SiteCraftExport = {
-    whatsappNumber: '919755061139',
+    whatsappNumber: '917587939722',
 
     generateWhatsAppUrl: function(templateId, customNotes) {
       var template = (window.SITECRAFT_TEMPLATES || []).find(function(t) { return t.id === templateId; }) || (window.SITECRAFT_TEMPLATES && window.SITECRAFT_TEMPLATES[0]);
@@ -62,7 +62,7 @@
         '',
         '## 2. Business Specifics',
         '- Client Brand Name: ' + brand,
-        '- Official Inquiry / WhatsApp: +91 97550 61139',
+        '- Official Inquiry / WhatsApp: +91 75879 39722',
         '- Guaranteed Speed SLA: 98+ Core Web Vitals Score',
         '',
         '## 3. Key High-Performance Deliverables',

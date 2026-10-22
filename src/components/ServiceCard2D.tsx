@@ -20,8 +20,9 @@ import {
   Play,
   Users
 } from 'lucide-react';
-import { motion } from 'motion/react';
 import { ServiceItem } from '../types';
+import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
+import { use3DTilt } from '../hooks/use3DTilt';
 
 interface ServiceCard2DProps {
   service: ServiceItem;
@@ -43,6 +44,21 @@ export const ServiceCard2D: React.FC<ServiceCard2DProps> = ({
   isVisible = true
 }) => {
   const accentColor = service.accentColor || '#10b981';
+
+  const [cardRef, isIntersected] = useIntersectionObserver<HTMLDivElement>({
+    threshold: 0.1,
+    rootMargin: '0px 0px -40px 0px',
+    triggerOnce: true
+  });
+
+  const { tiltProps, tiltStyle, glareStyle, isHovered: isCardTilted } = use3DTilt({
+    maxTilt: 6.5,
+    perspective: 900,
+    scale: 1.02,
+    glare: true
+  });
+
+  const staggerDelay = (index % 4) * 80;
 
   // Render high-quality, tailored 2D micro-illustration
   const renderMicroIllustration = () => {
@@ -443,18 +459,18 @@ export const ServiceCard2D: React.FC<ServiceCard2DProps> = ({
   };
 
   return (
-    <motion.div
+    <div
+      ref={cardRef}
       id={`service-card-${service.id}`}
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.08 }}
-      transition={{
-        duration: 0.55,
-        delay: (index % 4) * 0.06,
-        ease: [0.16, 1, 0.3, 1]
+      onMouseEnter={() => {
+        onHover(service.id);
+        tiltProps.onMouseEnter();
       }}
-      onMouseEnter={() => onHover(service.id)}
-      onMouseLeave={() => onHover(null)}
+      onMouseLeave={() => {
+        onHover(null);
+        tiltProps.onMouseLeave();
+      }}
+      onMouseMove={tiltProps.onMouseMove}
       onClick={onClick}
       role="button"
       tabIndex={0}
@@ -464,15 +480,27 @@ export const ServiceCard2D: React.FC<ServiceCard2DProps> = ({
           onClick();
         }
       }}
-      className={`group relative rounded-2xl p-6 transition-all duration-400 cursor-pointer flex flex-col justify-between overflow-hidden select-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 ${
-        isHovered
-          ? "bg-slate-900/85 [data-theme='clean-light']:bg-white -translate-y-2 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.4)] [data-theme='clean-light']:shadow-[0_16px_32px_rgba(0,0,0,0.08)]"
-          : "bg-[#090e1a]/60 [data-theme='clean-light']:bg-white hover:bg-[#0c1222]/80 [data-theme='clean-light']:hover:bg-slate-50 shadow-[0_8px_20px_-6px_rgba(0,0,0,0.3)] [data-theme='clean-light']:shadow-[0_4px_16px_rgba(0,0,0,0.04)] [data-theme='clean-light']:border-slate-200"
-      } border backdrop-blur-xl`}
+      className={`group relative rounded-2xl p-6 cursor-pointer flex flex-col justify-between overflow-hidden select-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 border backdrop-blur-xl transform will-change-transform will-change-opacity transition-all ${
+        isIntersected
+          ? isHovered || isCardTilted
+            ? "bg-slate-900/85 [data-theme='clean-light']:bg-white opacity-100 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] [data-theme='clean-light']:shadow-[0_20px_40px_rgba(0,0,0,0.12)]"
+            : "bg-[#090e1a]/60 [data-theme='clean-light']:bg-white hover:bg-[#0c1222]/80 [data-theme='clean-light']:hover:bg-slate-50 translate-y-0 opacity-100 scale-100 shadow-[0_8px_20px_-6px_rgba(0,0,0,0.3)] [data-theme='clean-light']:shadow-[0_4px_16px_rgba(0,0,0,0.04)] [data-theme='clean-light']:border-slate-200"
+          : "opacity-0 translate-y-8 scale-[0.98] pointer-events-none"
+      }`}
       style={{
-        borderColor: isHovered ? `${accentColor}55` : 'rgba(255, 255, 255, 0.08)'
+        borderColor: isHovered || isCardTilted ? `${accentColor}66` : 'rgba(255, 255, 255, 0.08)',
+        transitionDelay: isIntersected ? (isHovered || isCardTilted ? '0ms' : `${staggerDelay}ms`) : '0ms',
+        transitionDuration: isHovered || isCardTilted ? '80ms' : '650ms',
+        transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
+        ...(isIntersected && (isHovered || isCardTilted) ? tiltStyle : {})
       }}
     >
+      {/* Dynamic 3D Specular Sheen Glare */}
+      <div
+        className="absolute inset-0 pointer-events-none rounded-2xl z-20"
+        style={glareStyle}
+      />
+
       {/* Specular Inner Hairline Highlight */}
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent pointer-events-none" />
 
@@ -590,6 +618,6 @@ export const ServiceCard2D: React.FC<ServiceCard2DProps> = ({
           Inquire
         </button>
       </div>
-    </motion.div>
+    </div>
   );
 };

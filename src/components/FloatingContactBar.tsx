@@ -29,11 +29,21 @@ export const FloatingContactBar: React.FC<FloatingContactBarProps> = ({ onStartC
   }, []);
 
   const handleWhatsAppClick = () => {
-    openWhatsAppDirect("Hello GWL Weblab, I'm interested in building a website and growing my business online. Could we discuss the right plan for me?");
+    const lines = [
+      '👋 *Namaste & Hello GWL WebLab Team,*',
+      '',
+      'I am visiting your website and would like to consult with you about building a high-performance website and growing our business online.',
+      '',
+      '⚡ *CONSULTATION REQUEST:*',
+      'Could we schedule a quick discussion to review our requirements, pricing plans, and project timeline?',
+      '',
+      'Looking forward to your guidance! 🚀'
+    ];
+    openWhatsAppDirect(lines.join('\n'));
   };
 
   const handleCallClick = () => {
-    window.location.href = 'tel:+919755061139';
+    window.location.href = 'tel:+917587939722';
   };
 
   return (

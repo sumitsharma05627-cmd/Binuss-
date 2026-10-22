@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Send, CheckCircle2, MessageSquare, Phone, Mail, Clock } from 'lucide-react';
+import { Send, CheckCircle2, MessageSquare, Phone, Mail, Clock, ArrowRight } from 'lucide-react';
 import { motion } from 'motion/react';
 import { ContactFormData } from '../types';
 import { Success2D } from './2d/Success2D';
 import { useSectionSequence } from '../context/ScrollSequenceContext';
 import { useLanguage } from '../context/LanguageContext';
+import { openWhatsAppDirect, getWhatsAppUrl } from '../utils/whatsapp';
 
 interface ContactProps {
   initialService?: string;
@@ -49,6 +50,7 @@ export const Contact: React.FC<ContactProps> = ({ initialService, initialMessage
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [submittedWhatsAppMessage, setSubmittedWhatsAppMessage] = useState('');
   const { ref, stage } = useSectionSequence('contact');
   const { t } = useLanguage();
 
@@ -73,22 +75,60 @@ export const Contact: React.FC<ContactProps> = ({ initialService, initialMessage
     e.preventDefault();
     setErrorMessage('');
 
-    if (!formData.name.trim() || !formData.email.trim() || !formData.businessName.trim()) {
-      setErrorMessage(t.contact.validationError);
+    // Flexible, user-friendly validation:
+    // Requires name, and at least some contact information or message
+    if (!formData.name.trim()) {
+      setErrorMessage(t.contact.validationError || 'Please provide your full name.');
+      return;
+    }
+
+    if (!formData.phone.trim() && !formData.email.trim() && !formData.message.trim()) {
+      setErrorMessage(t.contact.validationError || 'Please provide your phone/WhatsApp number, email, or a short message so we can reach you.');
       return;
     }
 
     setIsSubmitting(true);
 
-    // Simulate reliable project dispatch
+    // Build comprehensive, professional WhatsApp message
+    const lines = [
+      '🚀 *NEW PROJECT INQUIRY — GWL WEBLAB*',
+      '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+      '👋 *Namaste & Hello GWL WebLab Team,*',
+      '',
+      `I would like to discuss a digital project for *${formData.businessName.trim() || formData.name.trim() || 'my business'}*.`,
+      '',
+      '📋 *CLIENT & PROJECT OVERVIEW:*',
+      `• *Client Name:* ${formData.name.trim()}`,
+      formData.businessName.trim() ? `• *Business / Brand:* ${formData.businessName.trim()}` : null,
+      formData.phone.trim() ? `• *Phone / WhatsApp:* ${formData.phone.trim()}` : null,
+      formData.email.trim() ? `• *Email Address:* ${formData.email.trim()}` : null,
+      `• *Service Required:* ${formData.serviceRequired || 'High-Performance Website'}`,
+      `• *Budget Range:* ${formData.budgetRange || 'Flexible'}`,
+      formData.message.trim() ? `\n💬 *Project Scope & Requirements:*\n"${formData.message.trim()}"` : null,
+      '',
+      '⚡ *NEXT STEPS:*',
+      'Please review my brief and let me know the recommended architecture, turnaround timeline, and quote.',
+      '',
+      'Looking forward to connecting! 🚀',
+      '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+    ].filter(Boolean);
+
+    const formattedMessage = lines.join('\n');
+    setSubmittedWhatsAppMessage(formattedMessage);
+
+    // Direct user to WhatsApp with the beautifully formatted message
+    openWhatsAppDirect(formattedMessage);
+
+    // Complete UI state smoothly
     setTimeout(() => {
       setIsSubmitting(false);
       setIsSubmitted(true);
-    }, 900);
+    }, 600);
   };
 
   const handleReset = () => {
     setIsSubmitted(false);
+    setSubmittedWhatsAppMessage('');
     setFormData({
       name: '',
       businessName: '',
@@ -152,8 +192,8 @@ export const Contact: React.FC<ContactProps> = ({ initialService, initialMessage
                 </div>
                 <div>
                   <div className="text-xs text-neutral-400">Direct Inquiries</div>
-                  <a href="mailto:hello@gwlweblab.com" className="text-white hover:text-emerald-400 transition-colors font-medium">
-                    hello@gwlweblab.com
+                  <a href="mailto:gwaliorweblabs@gmail.com" className="text-white hover:text-emerald-400 transition-colors font-medium">
+                    gwaliorweblabs@gmail.com
                   </a>
                 </div>
               </div>
@@ -165,12 +205,12 @@ export const Contact: React.FC<ContactProps> = ({ initialService, initialMessage
                 <div>
                   <div className="text-xs text-neutral-400">WhatsApp / Direct Call</div>
                   <a
-                    href="https://wa.me/919755061139?text=Hello%20GWL%20Weblab%2C%20I%20would%20like%20to%20discuss%20a%20project."
+                    href="https://wa.me/917587939722?text=Hello%20GWL%20Weblab%2C%20I%20would%20like%20to%20discuss%20a%20project."
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-white hover:text-emerald-400 transition-colors font-medium inline-flex items-center gap-1.5"
                   >
-                    <span>+91 97550 61139</span>
+                    <span>+91 75879 39722</span>
                     <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#25D366]/20 text-[#25D366] font-mono font-semibold">Active</span>
                   </a>
                 </div>
@@ -207,7 +247,7 @@ export const Contact: React.FC<ContactProps> = ({ initialService, initialMessage
           >
             <div className="glass-card rounded-2xl p-6 sm:p-10 border border-white/10 relative overflow-hidden">
               {isSubmitted ? (
-                <div className="text-center py-8 animate-in fade-in zoom-in-95 duration-300">
+                <div className="text-center py-6 sm:py-8 animate-in fade-in zoom-in-95 duration-300">
                   {/* Polished 2D Confirmation Animation */}
                   <div className="mb-4">
                     <Success2D />
@@ -215,32 +255,43 @@ export const Contact: React.FC<ContactProps> = ({ initialService, initialMessage
 
                   <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 text-xs font-semibold mb-3 shadow-md shadow-emerald-950/40">
                     <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    <span>VIP Project Transmission Confirmed</span>
+                    <span>Inquiry Directed to WhatsApp</span>
                   </div>
 
                   <h3 className="font-display text-2xl sm:text-3xl font-extrabold text-white mb-2">
-                    {t.contact.thankYou}, {formData.name}.
+                    {t.contact.thankYou}, {formData.name || 'there'}!
                   </h3>
 
-                  <p className="text-neutral-300 text-sm sm:text-base max-w-lg mx-auto mb-6 leading-relaxed">
-                    Your inquiry for <strong className="text-white">{formData.businessName || 'your business'}</strong> has been received by our senior engineering desk. We review every brief with extreme commercial rigor — no pushy sales pitches, just crystal-clear technical execution and roadmap advice.
+                  <p className="text-neutral-300 text-sm sm:text-base max-w-lg mx-auto mb-4 leading-relaxed">
+                    Your project brief has been formatted and directed straight to our WhatsApp line (<strong className="text-emerald-400">+91 75879 39722</strong>). If WhatsApp did not open automatically, click the button below to connect instantly.
                   </p>
 
-                  <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
+                  {/* Formatted WhatsApp message preview */}
+                  {submittedWhatsAppMessage && (
+                    <div className="mb-6 p-4 rounded-2xl bg-black/60 border border-emerald-500/25 text-left max-w-lg mx-auto shadow-inner">
+                      <div className="text-[11px] font-mono uppercase text-emerald-400 font-bold mb-2 flex items-center gap-2">
+                        <MessageSquare className="w-3.5 h-3.5" />
+                        <span>Prepared WhatsApp Transmission</span>
+                      </div>
+                      <pre className="text-xs text-neutral-200 font-sans whitespace-pre-wrap leading-relaxed max-h-48 overflow-y-auto bg-black/40 p-3 rounded-xl border border-white/5">
+                        {submittedWhatsAppMessage}
+                      </pre>
+                    </div>
+                  )}
+
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-4">
                     <a
-                      href={`https://wa.me/919755061139?text=${encodeURIComponent(
-                        `🌟 *VIP Project Follow-Up*\n\nHi GWL WebLab team, I just submitted the project form for *${formData.businessName || formData.name}* (Service: ${formData.serviceRequired}). Looking forward to connecting!`
-                      )}`}
+                      href={getWhatsAppUrl(submittedWhatsAppMessage)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-6 py-3 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-lg shadow-emerald-950/50 transition-all active:scale-95"
+                      className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-black font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2.5 shadow-lg shadow-emerald-950/60 transition-all active:scale-95 cursor-pointer"
                     >
-                      <MessageSquare className="w-4 h-4 fill-current" />
-                      <span>Connect Directly on WhatsApp (+91 97550 61139)</span>
+                      <MessageSquare className="w-4 h-4 fill-black" />
+                      <span>Chat on WhatsApp (+91 75879 39722)</span>
                     </a>
                     <button
                       onClick={handleReset}
-                      className="inline-flex items-center justify-center px-6 py-3 rounded-full text-xs font-semibold text-neutral-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-colors cursor-pointer"
+                      className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 rounded-full text-xs font-semibold text-neutral-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-colors cursor-pointer"
                     >
                       {t.contact.submitAnother}
                     </button>
@@ -249,8 +300,8 @@ export const Contact: React.FC<ContactProps> = ({ initialService, initialMessage
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-5" noValidate>
                   {errorMessage && (
-                    <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-red-300">
-                      {errorMessage}
+                    <div className="p-3.5 rounded-xl bg-red-500/15 border border-red-500/30 text-xs text-red-200 font-medium">
+                      ⚠️ {errorMessage}
                     </div>
                   )}
 
@@ -272,16 +323,16 @@ export const Contact: React.FC<ContactProps> = ({ initialService, initialMessage
                       />
                     </div>
 
-                    {/* Business Name */}
+                    {/* Business Name (Optional) */}
                     <div>
-                      <label htmlFor="contact-business" className="block text-xs font-semibold text-neutral-300 mb-1.5">
-                        {t.contact.businessLabel} <span className="text-emerald-400">*</span>
+                      <label htmlFor="contact-business" className="block text-xs font-semibold text-neutral-300 mb-1.5 flex items-center justify-between">
+                        <span>{t.contact.businessLabel}</span>
+                        <span className="text-[11px] text-neutral-500 font-normal">Optional</span>
                       </label>
                       <input
                         type="text"
                         id="contact-business"
                         name="businessName"
-                        required
                         value={formData.businessName}
                         onChange={handleChange}
                         placeholder={t.contact.businessPlaceholder}
@@ -291,27 +342,11 @@ export const Contact: React.FC<ContactProps> = ({ initialService, initialMessage
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    {/* Email */}
+                    {/* Phone / WhatsApp */}
                     <div>
-                      <label htmlFor="contact-email" className="block text-xs font-semibold text-neutral-300 mb-1.5">
-                        {t.contact.emailLabel} <span className="text-emerald-400">*</span>
-                      </label>
-                      <input
-                        type="email"
-                        id="contact-email"
-                        name="email"
-                        required
-                        value={formData.email}
-                        onChange={handleChange}
-                        placeholder={t.contact.emailPlaceholder}
-                        className="w-full px-4 py-3 rounded-xl bg-black/40 border border-white/10 text-white placeholder-neutral-500 text-sm focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 transition-all"
-                      />
-                    </div>
-
-                    {/* Phone */}
-                    <div>
-                      <label htmlFor="contact-phone" className="block text-xs font-semibold text-neutral-300 mb-1.5">
-                        {t.contact.phoneLabel}
+                      <label htmlFor="contact-phone" className="block text-xs font-semibold text-neutral-300 mb-1.5 flex items-center justify-between">
+                        <span>{t.contact.phoneLabel}</span>
+                        <span className="text-[11px] text-emerald-400 font-mono font-medium">WhatsApp Line</span>
                       </label>
                       <input
                         type="tel"
@@ -320,6 +355,23 @@ export const Contact: React.FC<ContactProps> = ({ initialService, initialMessage
                         value={formData.phone}
                         onChange={handleChange}
                         placeholder={t.contact.phonePlaceholder}
+                        className="w-full px-4 py-3 rounded-xl bg-black/40 border border-white/10 text-white placeholder-neutral-500 text-sm focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 transition-all"
+                      />
+                    </div>
+
+                    {/* Email */}
+                    <div>
+                      <label htmlFor="contact-email" className="block text-xs font-semibold text-neutral-300 mb-1.5 flex items-center justify-between">
+                        <span>{t.contact.emailLabel}</span>
+                        <span className="text-[11px] text-neutral-500 font-normal">Optional</span>
+                      </label>
+                      <input
+                        type="email"
+                        id="contact-email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        placeholder={t.contact.emailPlaceholder}
                         className="w-full px-4 py-3 rounded-xl bg-black/40 border border-white/10 text-white placeholder-neutral-500 text-sm focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 transition-all"
                       />
                     </div>
@@ -388,7 +440,7 @@ export const Contact: React.FC<ContactProps> = ({ initialService, initialMessage
                     type="submit"
                     id="contact-submit-btn"
                     disabled={isSubmitting}
-                    className="w-full flex items-center justify-center gap-2 px-8 py-4 rounded-full text-base font-bold theme-btn-primary transition-all disabled:opacity-50 cursor-pointer"
+                    className="w-full flex items-center justify-center gap-2.5 px-8 py-4 rounded-full text-sm sm:text-base font-bold theme-btn-primary transition-all disabled:opacity-50 cursor-pointer shadow-lg shadow-emerald-950/40 hover:scale-[1.01] active:scale-[0.99]"
                   >
                     {isSubmitting ? (
                       <span className="flex items-center gap-2">
@@ -397,6 +449,7 @@ export const Contact: React.FC<ContactProps> = ({ initialService, initialMessage
                       </span>
                     ) : (
                       <>
+                        <MessageSquare className="w-4 h-4 fill-current" />
                         <span>{t.contact.submitBtn}</span>
                         <Send className="w-4 h-4" />
                       </>

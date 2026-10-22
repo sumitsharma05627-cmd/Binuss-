@@ -7,7 +7,7 @@
   <meta name="description" content="Explore live turnkey website templates engineered for doctors, coaching institutes, real estate, restaurants, and D2C brands. Launch in 3-5 days with 100% code ownership." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@400;600;700;800&family=Outfit:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,600&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@400;500;600;700;800&family=Roboto:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
@@ -60,27 +60,88 @@
           <button class="device-btn" data-device="mobile" onclick="SiteCraftAdvanced.setDevice('mobile')">📱 Mobile</button>
         </div>
 
-        <button class="close-btn" id="close-preview-modal">&times;</button>
+        <button class="close-btn" id="close-preview-modal" onclick="SiteCraftApp.closePreview()" title="Close Preview">✕ Close</button>
       </div>
 
-      <!-- Preview Viewport -->
+      <!-- Live Configuration Panel (Brand Color & Font Family) -->
+      <div id="sitecraft-config-panel" class="sitecraft-config-panel">
+        <div class="config-item">
+          <label class="config-label">🎨 Primary Brand Color:</label>
+          <div class="color-presets" id="color-presets-container">
+            <button type="button" class="color-pill active-ring" data-color="#059669" style="background:#059669;" title="Emerald" onclick="SiteCraftAdvanced.setColorTheme('emerald', '#059669')"></button>
+            <button type="button" class="color-pill" data-color="#2563eb" style="background:#2563eb;" title="Royal Blue" onclick="SiteCraftAdvanced.setColorTheme('blue', '#2563eb')"></button>
+            <button type="button" class="color-pill" data-color="#d97706" style="background:#d97706;" title="Golden Amber" onclick="SiteCraftAdvanced.setColorTheme('amber', '#d97706')"></button>
+            <button type="button" class="color-pill" data-color="#e11d48" style="background:#e11d48;" title="Rose Crimson" onclick="SiteCraftAdvanced.setColorTheme('rose', '#e11d48')"></button>
+            <button type="button" class="color-pill" data-color="#6366f1" style="background:#6366f1;" title="Indigo" onclick="SiteCraftAdvanced.setColorTheme('indigo', '#6366f1')"></button>
+            <button type="button" class="color-pill" data-color="#0f766e" style="background:#0f766e;" title="Teal" onclick="SiteCraftAdvanced.setColorTheme('teal', '#0f766e')"></button>
+            <button type="button" class="color-pill" data-color="#7c3aed" style="background:#7c3aed;" title="Violet" onclick="SiteCraftAdvanced.setColorTheme('violet', '#7c3aed')"></button>
+          </div>
+          <input type="color" id="config-color-picker" value="#059669" class="config-color-input" title="Custom color picker" onchange="SiteCraftAdvanced.setColorTheme('custom', this.value)" />
+          <span id="config-color-val" class="config-val-text">#059669</span>
+        </div>
+
+        <div class="config-divider"></div>
+
+        <div class="config-item">
+          <label for="config-font-family" class="config-label">🔤 Font Family:</label>
+          <select id="config-font-family" class="config-font-select" onchange="SiteCraftAdvanced.setFontFamily(this.value)">
+            <option value="Plus Jakarta Sans">Plus Jakarta Sans (Modern Clean)</option>
+            <option value="Inter">Inter (Tech Minimalist)</option>
+            <option value="Playfair Display">Playfair Display (Luxury Editorial Serif)</option>
+            <option value="Poppins">Poppins (Bold Geometric Sans)</option>
+            <option value="Outfit">Outfit (Contemporary Sleek)</option>
+            <option value="Roboto">Roboto (Universal Standard)</option>
+            <option value="Cinzel">Cinzel (Classical Elegant Serif)</option>
+            <option value="Montserrat">Montserrat (Corporate Bold)</option>
+          </select>
+        </div>
+
+        <div class="config-divider"></div>
+
+        <div class="config-item">
+          <label class="config-label">🏢 Brand Name:</label>
+          <input 
+            type="text" 
+            id="live-custom-brand-input" 
+            placeholder="Type company name..." 
+            class="config-brand-input"
+            oninput="SiteCraftAdvanced.updateLiveBrandName(this.value)"
+          />
+        </div>
+
+        <div class="config-divider"></div>
+
+        <!-- Reset to Defaults Button -->
+        <button 
+          type="button" 
+          id="btn-reset-defaults" 
+          class="btn-reset-defaults" 
+          onclick="SiteCraftAdvanced.resetToDefaults()" 
+          title="Restore original brand color and font family for the currently selected template"
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:4px;">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+            <path d="M3 3v5h5"/>
+          </svg>
+          Reset to Defaults
+        </button>
+      </div>
+
+      <!-- Preview Viewport Container with Iframe -->
       <div class="preview-body">
-        <div id="preview-viewport-container" class="device-desktop"></div>
+        <div id="preview-viewport-container" class="device-desktop">
+          <iframe id="preview-iframe" class="preview-iframe" title="Template Preview Iframe"></iframe>
+        </div>
       </div>
 
       <!-- Preview Footer Controls -->
       <div class="preview-modal-footer">
-        <div style="display:flex; align-items:center; gap:0.75rem;">
-          <label style="font-size:0.8rem; color:var(--text-muted);">Preview Business Name:</label>
-          <input 
-            type="text" 
-            id="live-custom-brand-input" 
-            placeholder="Type your company name..." 
-            style="padding:0.4rem 0.8rem; border-radius:0.5rem; background:rgba(255,255,255,0.08); border:1px solid var(--border-color); color:var(--text-main); font-size:0.85rem;"
-          />
+        <div style="display:flex; align-items:center; gap:0.5rem; font-size:0.8rem; color:var(--text-muted);">
+          <span>💡 Changes in Brand Color & Font dynamically update the preview iframe in real time.</span>
         </div>
         <div style="display:flex; gap:0.6rem;">
-          <a href="/" style="display:inline-flex; align-items:center; padding:0.55rem 1rem; border-radius:0.6rem; background:rgba(255,255,255,0.1); color:var(--text-main); font-size:0.8rem; text-decoration:none; font-weight:600;">← Back to GWL WebLab</a>
+          <button type="button" class="btn-preview" onclick="SiteCraftApp.closePreview()">Close</button>
+          <button type="button" class="btn-whatsapp" id="footer-claim-btn" onclick="SiteCraftApp.orderCurrentTemplate()">Claim Free on WhatsApp</button>
         </div>
       </div>
     </div>

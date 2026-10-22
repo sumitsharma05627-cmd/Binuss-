@@ -21,7 +21,8 @@ import {
   SlidersHorizontal,
   ArrowUpDown,
   Filter,
-  Palette
+  Palette,
+  Mail
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
@@ -337,6 +338,24 @@ export const DigitalInsights: React.FC<DigitalInsightsProps> = ({
               <span>SEO Performance Panel</span>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 [data-theme='clean-light']:text-emerald-800 font-bold uppercase tracking-wider">
                 Recharts Live
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setActiveViewTab('articles');
+                setTimeout(() => {
+                  const el = document.getElementById('growth-newsletter');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }, 50);
+              }}
+              className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer text-neutral-400 [data-theme='clean-light']:text-slate-600 hover:text-white [data-theme='clean-light']:hover:text-slate-900"
+            >
+              <Mail className="w-4 h-4 text-emerald-400" />
+              <span className="hidden sm:inline">Tactical</span> Blueprints
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold uppercase tracking-wider">
+                Free
               </span>
             </button>
           </div>

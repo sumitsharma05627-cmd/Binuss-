@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { PROJECTS } from '../data/projects';
 import { ProjectItem } from '../types';
 import { PortfolioScreen2D } from './2d/PortfolioScreen2D';
+import { PortfolioScreen3D } from './3d/PortfolioScreen3D';
+import { isWebGLAvailable } from './3d/webglUtils';
 import { ProjectModal } from './ProjectModal';
 import { useSectionSequence } from '../context/ScrollSequenceContext';
 import { useLanguage } from '../context/LanguageContext';

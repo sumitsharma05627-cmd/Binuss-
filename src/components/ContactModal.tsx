@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
-import { openWhatsAppDirect } from '../utils/whatsapp';
+import { openWhatsAppDirect, getWhatsAppUrl } from '../utils/whatsapp';
 
 export interface ContactModalProps {
   isOpen: boolean;
@@ -99,31 +99,59 @@ export const ContactModal: React.FC<ContactModalProps> = ({
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const buildAuditMessage = () => {
+    const lines = [
+      '🔍 *FREE SEO AUDIT & TECHNICAL DIAGNOSTIC REQUEST*',
+      '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+      '👋 *Namaste & Hello GWL WebLab Team,*',
+      '',
+      `I would like to request a Free Technical SEO & Performance Audit for *${formData.websiteUrl.trim() || formData.name.trim() || 'my business'}*.`,
+      '',
+      '📋 *AUDIT SPECIFICATIONS:*',
+      `• *Client Name:* ${formData.name.trim() || 'Client'}`,
+      formData.websiteUrl.trim() ? `• *Target Website / Domain:* ${formData.websiteUrl.trim()}` : null,
+      formData.phone.trim() ? `• *Phone / WhatsApp:* ${formData.phone.trim()}` : null,
+      formData.email.trim() ? `• *Email Address:* ${formData.email.trim()}` : null,
+      `• *Service:* ${formData.serviceRequired || 'SEO & Google Search Domination'}`,
+      formData.message.trim() ? `\n💬 *Goals & Current Bottlenecks:*\n"${formData.message.trim()}"` : null,
+      '',
+      '⚡ *REQUEST:*',
+      'Please analyze Core Web Vitals, crawl errors, and local Google Maps keyword visibility, and share the PDF report with me on WhatsApp.',
+      '',
+      'Thank you! 🚀',
+      '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+    ].filter(Boolean);
+    return lines.join('\n');
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
 
-    if (!formData.name.trim() || !formData.email.trim() || !formData.phone.trim()) {
-      setErrorMessage('Please fill in your name, email, and phone/WhatsApp number.');
+    if (!formData.name.trim()) {
+      setErrorMessage('Please enter your name.');
+      return;
+    }
+
+    if (!formData.phone.trim() && !formData.email.trim()) {
+      setErrorMessage('Please provide either your phone/WhatsApp number or email.');
       return;
     }
 
     setIsSubmitting(true);
 
+    const message = buildAuditMessage();
+    // Direct inquiry straight to WhatsApp
+    openWhatsAppDirect(message);
+
     setTimeout(() => {
       setIsSubmitting(false);
       setIsSubmitted(true);
-    }, 800);
+    }, 600);
   };
 
   const handleWhatsAppSend = () => {
-    const text =
-      `*Free SEO Audit Request - GWL Weblab*\n\n` +
-      `*Name:* ${formData.name || 'Not provided'}\n` +
-      `*Website:* ${formData.websiteUrl || 'To be shared'}\n` +
-      `*Email:* ${formData.email || 'Not provided'}\n` +
-      `*Message:* ${formData.message}`;
-    openWhatsAppDirect(text);
+    openWhatsAppDirect(buildAuditMessage());
   };
 
   return (
@@ -287,39 +315,39 @@ export const ContactModal: React.FC<ContactModalProps> = ({
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Phone / WhatsApp */}
+                <div>
+                  <label className="block text-xs font-bold text-neutral-200 [data-theme=clean-light]:text-slate-800 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+                    <span>Phone / WhatsApp *</span>
+                    <span className="text-[10px] text-emerald-400 font-normal">Fastest</span>
+                  </label>
+                  <div className="relative">
+                    <Phone className="w-4 h-4 text-emerald-400 [data-theme=clean-light]:text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="+91 75879 39722"
+                      className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-white/[0.04] [data-theme=clean-light]:bg-slate-50 border border-emerald-500/30 [data-theme=clean-light]:border-slate-200 text-white [data-theme=clean-light]:text-slate-900 text-xs sm:text-sm focus:outline-none focus:border-emerald-500 transition-colors"
+                    />
+                  </div>
+                </div>
+
                 {/* Work Email */}
                 <div>
-                  <label className="block text-xs font-bold text-neutral-200 [data-theme=clean-light]:text-slate-800 uppercase tracking-wider mb-1.5">
-                    Work Email (For Audit Report) *
+                  <label className="block text-xs font-bold text-neutral-200 [data-theme=clean-light]:text-slate-800 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+                    <span>Work Email</span>
+                    <span className="text-[10px] text-neutral-400 font-normal">Optional</span>
                   </label>
                   <div className="relative">
                     <Mail className="w-4 h-4 text-neutral-400 [data-theme=clean-light]:text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                     <input
                       type="email"
                       name="email"
-                      required
                       value={formData.email}
                       onChange={handleChange}
                       placeholder="rahul@company.com"
-                      className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-white/[0.04] [data-theme=clean-light]:bg-slate-50 border border-white/10 [data-theme=clean-light]:border-slate-200 text-white [data-theme=clean-light]:text-slate-900 text-xs sm:text-sm focus:outline-none focus:border-emerald-500 transition-colors"
-                    />
-                  </div>
-                </div>
-
-                {/* Phone / WhatsApp */}
-                <div>
-                  <label className="block text-xs font-bold text-neutral-200 [data-theme=clean-light]:text-slate-800 uppercase tracking-wider mb-1.5">
-                    Phone / WhatsApp *
-                  </label>
-                  <div className="relative">
-                    <Phone className="w-4 h-4 text-neutral-400 [data-theme=clean-light]:text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                    <input
-                      type="tel"
-                      name="phone"
-                      required
-                      value={formData.phone}
-                      onChange={handleChange}
-                      placeholder="+91 9XXXXXXXXX"
                       className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-white/[0.04] [data-theme=clean-light]:bg-slate-50 border border-white/10 [data-theme=clean-light]:border-slate-200 text-white [data-theme=clean-light]:text-slate-900 text-xs sm:text-sm focus:outline-none focus:border-emerald-500 transition-colors"
                     />
                   </div>

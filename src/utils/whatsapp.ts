@@ -4,34 +4,24 @@
  */
 
 export const WHATSAPP_DISPLAY_NAME = 'GWL WebLab';
-export const WHATSAPP_PHONE_NUMBER = '919755061139';
+export const WHATSAPP_PHONE_NUMBER = '917587939722';
+
+export function getWhatsAppUrl(message: string = "Hello GWL WebLab, I would like to discuss a project."): string {
+  const encodedText = encodeURIComponent(message);
+  return `https://wa.me/${WHATSAPP_PHONE_NUMBER}?text=${encodedText}`;
+}
 
 export function openWhatsAppDirect(message: string = "Hello GWL WebLab, I would like to discuss a project."): void {
-  const encodedText = encodeURIComponent(message);
+  const url = getWhatsAppUrl(message);
   const isMobile =
     typeof navigator !== 'undefined' &&
     /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
   if (isMobile) {
-    // Deep-link into native WhatsApp application.
-    // This directly opens the conversation inside WhatsApp without displaying
-    // the intermediate wa.me web screen that displays raw phone numbers.
-    window.location.href = `whatsapp://send?phone=${WHATSAPP_PHONE_NUMBER}&text=${encodedText}`;
-
-    // Graceful fallback if native app is not detected
-    setTimeout(() => {
-      window.open(
-        `https://api.whatsapp.com/send?phone=${WHATSAPP_PHONE_NUMBER}&text=${encodedText}`,
-        '_blank',
-        'noopener,noreferrer'
-      );
-    }, 1200);
+    // Native mobile browser redirection to WhatsApp
+    window.location.href = url;
   } else {
-    // On desktop, launch WhatsApp Web directly into the chat session
-    window.open(
-      `https://web.whatsapp.com/send?phone=${WHATSAPP_PHONE_NUMBER}&text=${encodedText}`,
-      '_blank',
-      'noopener,noreferrer'
-    );
+    // Desktop: opens WhatsApp Web / App directly in a clean tab
+    window.open(url, '_blank', 'noopener,noreferrer');
   }
 }

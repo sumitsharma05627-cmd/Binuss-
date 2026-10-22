@@ -59,7 +59,8 @@ Key Knowledge Base:
 
 5. Contact & Actions:
    - Office: Gwalior, Madhya Pradesh, India
-   - WhatsApp / Phone: Instant consultation via WhatsApp (+91 97550 61139)
+   - WhatsApp / Phone: Instant consultation via WhatsApp (+91 75879 39722)
+   - Email: gwaliorweblabs@gmail.com
    - Inquiries: Free technical audit and custom quotation within 2 to 4 hours.
 
 If a user asks for a direct quote, call, or project start, kindly encourage them to click the "Chat on WhatsApp" button or use the Contact form on the site.`;
@@ -147,7 +148,7 @@ app.post('/api/chat', async (req: Request, res: Response) => {
   } catch (error: any) {
     console.error('Error in chat route:', error);
     res.json({
-      reply: 'At GWL WebLab, we engineer high-performance web systems and local SEO. Let\'s connect directly via WhatsApp (+91 97550 61139) to review your project!'
+      reply: 'At GWL WebLab, we engineer high-performance web systems and local SEO. Let\'s connect directly via WhatsApp (+91 75879 39722) to review your project!'
     });
   }
 });

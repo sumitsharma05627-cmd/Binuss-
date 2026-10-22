@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTheme } from '../context/ThemeContext';
 
+export const GWL_LOGO_IMAGE_PATH = '/assets/aistudio/Gemini_Generated_Image_b1kwab1kwab1kwab_83d54e8a.png';
+
 interface GwlLogoProps {
-  variant?: 'icon' | 'full' | 'stacked';
+  variant?: 'icon' | 'full' | 'stacked' | 'badge';
   size?: 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
   showSubtitle?: boolean;
@@ -16,116 +18,92 @@ export const GwlLogo: React.FC<GwlLogoProps> = ({
 }) => {
   const { themeConfig } = useTheme();
   const isLight = themeConfig?.id === 'clean-light' || !themeConfig?.isDark;
-  const primaryColor = themeConfig?.primaryColor || '#10b981';
-  const accentColor = themeConfig?.accentColor || '#2dd4bf';
+  const [imageError, setImageError] = useState(false);
 
-  // Dimension scaling for the emblem mark
-  const emblemSizes = {
-    sm: { width: 28, height: 28, viewBox: '0 0 48 48' },
-    md: { width: 36, height: 36, viewBox: '0 0 48 48' },
-    lg: { width: 44, height: 44, viewBox: '0 0 48 48' },
-    xl: { width: 60, height: 60, viewBox: '0 0 48 48' }
-  };
+  // Scaled dimensions tailored for the crest logo
+  const sizeConfig = {
+    sm: {
+      container: 'w-7 h-7 sm:w-8 sm:h-8',
+      textMain: 'text-base sm:text-lg',
+      tagText: 'text-[9px]',
+      subText: 'text-[9px]'
+    },
+    md: {
+      container: 'w-9 h-9 sm:w-10 sm:h-10',
+      textMain: 'text-lg sm:text-xl',
+      tagText: 'text-[10px]',
+      subText: 'text-[9px] sm:text-[10px]'
+    },
+    lg: {
+      container: 'w-12 h-12 sm:w-14 sm:h-14',
+      textMain: 'text-xl sm:text-2xl',
+      tagText: 'text-xs',
+      subText: 'text-xs'
+    },
+    xl: {
+      container: 'w-16 h-16 sm:w-20 sm:h-20',
+      textMain: 'text-2xl sm:text-3xl',
+      tagText: 'text-sm',
+      subText: 'text-sm'
+    }
+  }[size];
 
-  const currentSize = emblemSizes[size];
-
+  // The Crest Emblem with royal sapphire & gold specular aura
   const Emblem = (
-    <div className="relative flex items-center justify-center shrink-0 group">
-      {/* Ambient Pulsating Glow */}
-      <div
-        className="absolute inset-0 rounded-xl blur-md opacity-40 group-hover:opacity-75 transition-opacity duration-300"
-        style={{ background: `radial-gradient(circle, ${primaryColor} 0%, ${accentColor} 100%)` }}
-      />
+    <div
+      className={`relative shrink-0 flex items-center justify-center rounded-xl overflow-hidden group select-none ${sizeConfig.container}`}
+    >
+      {/* Royal sapphire & gold ambient glow */}
+      <div className="absolute inset-0 rounded-xl bg-gradient-to-tr from-blue-600/30 via-amber-400/20 to-sky-400/30 blur-sm opacity-60 group-hover:opacity-95 transition-opacity duration-300 pointer-events-none" />
 
-      <svg
-        width={currentSize.width}
-        height={currentSize.height}
-        viewBox="0 0 48 48"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        className="relative z-10 transition-transform duration-300 group-hover:scale-105"
-      >
-        <defs>
-          <linearGradient id="gwlGradientPrimary" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor={primaryColor} />
-            <stop offset="100%" stopColor={accentColor} />
-          </linearGradient>
-
-          <linearGradient id="gwlGradientShield" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#1e293b" stopOpacity="0.9" />
-            <stop offset="100%" stopColor="#090d16" stopOpacity="0.95" />
-          </linearGradient>
-
-          <linearGradient id="gwlBorderGlow" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor={primaryColor} stopOpacity="0.8" />
-            <stop offset="50%" stopColor={accentColor} stopOpacity="0.4" />
-            <stop offset="100%" stopColor={primaryColor} stopOpacity="0.8" />
-          </linearGradient>
-        </defs>
-
-        {/* Outer Shield / Hexagonal Precision Lab Frame */}
-        <polygon
-          points="24,3 43,12 43,36 24,45 5,36 5,12"
-          fill="url(#gwlGradientShield)"
-          stroke="url(#gwlBorderGlow)"
-          strokeWidth="1.8"
-          strokeLinejoin="round"
-          className="drop-shadow-md"
+      {/* Crest Logo Image */}
+      {!imageError ? (
+        <img
+          src={GWL_LOGO_IMAGE_PATH}
+          alt="GWL (Gwalior Web Labs) Logo"
+          onError={() => setImageError(true)}
+          className="relative z-10 w-full h-full object-cover object-center rounded-xl shadow-md border border-amber-400/40 group-hover:border-amber-300/80 transition-all duration-300 transform group-hover:scale-105"
+          loading="eager"
         />
+      ) : (
+        // Elegant SVG fallback in case network blocked the PNG
+        <div className="relative z-10 w-full h-full bg-[#0a1226] border border-amber-400/50 rounded-xl flex items-center justify-center text-amber-300 font-bold font-serif text-xs">
+          GWL
+        </div>
+      )}
 
-        {/* Global Meridian / Orbital Ring */}
-        <ellipse
-          cx="24"
-          cy="24"
-          rx="17"
-          ry="7"
-          transform="rotate(-20 24 24)"
-          stroke="url(#gwlGradientPrimary)"
-          strokeWidth="1.2"
-          strokeDasharray="3 2"
-          opacity="0.75"
-        />
-
-        {/* Interconnected WebLab Monogram Path (G - W - L) */}
-        {/* 'G' outer crescent flow */}
-        <path
-          d="M20,13 C14,14 10,18 10,24 C10,30 14,34 20,35 C23,35 25,33.5 26,31"
-          stroke="url(#gwlGradientPrimary)"
-          strokeWidth="2.4"
-          strokeLinecap="round"
-          opacity="0.85"
-        />
-
-        {/* 'W' central lab circuit waveform */}
-        <path
-          d="M17,20 L21,30 L24,22 L27,30 L31,20"
-          stroke="#ffffff"
-          strokeWidth="2.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-
-        {/* 'L' forward velocity shelf */}
-        <path
-          d="M33,16 L33,32 L39,32"
-          stroke="url(#gwlGradientPrimary)"
-          strokeWidth="2.4"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-
-        {/* Telemetry Node Points (representing Gwalior hub + Global network) */}
-        <circle cx="24" cy="22" r="2" fill={accentColor} />
-        <circle cx="21" cy="30" r="1.5" fill="#ffffff" />
-        <circle cx="27" cy="30" r="1.5" fill="#ffffff" />
-        <circle cx="39" cy="32" r="2" fill={primaryColor} />
-        <circle cx="10" cy="24" r="1.5" fill={primaryColor} />
-      </svg>
+      {/* Specular Edge Highlight */}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none z-20" />
     </div>
   );
 
   if (variant === 'icon') {
-    return Emblem;
+    return (
+      <div className={`inline-flex items-center justify-center ${className}`} title="GWL WebLab (Gwalior Web Labs)">
+        {Emblem}
+      </div>
+    );
+  }
+
+  // Full showcase badge with framed crest
+  if (variant === 'badge') {
+    return (
+      <div className={`flex flex-col items-center p-3 rounded-2xl bg-gradient-to-b from-[#0a1226]/80 to-[#060a14]/90 border border-amber-400/30 shadow-2xl backdrop-blur-xl text-center ${className}`}>
+        <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden shadow-xl border-2 border-amber-400/60 mb-2.5 relative group">
+          <img
+            src={GWL_LOGO_IMAGE_PATH}
+            alt="GWL Crest"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        </div>
+        <span className="font-display font-extrabold text-sm sm:text-base text-white tracking-wider uppercase">
+          GWALIOR WEB LABS
+        </span>
+        <span className="text-[10px] font-mono text-amber-300/90 tracking-widest uppercase mt-0.5">
+          Digital Innovation • Global Solutions
+        </span>
+      </div>
+    );
   }
 
   if (variant === 'stacked') {
@@ -135,30 +113,23 @@ export const GwlLogo: React.FC<GwlLogoProps> = ({
         <div className="flex flex-col items-center">
           <div className="flex items-center gap-1.5">
             <span
-              className={`font-display text-2xl font-black tracking-widest ${
+              className={`font-display ${sizeConfig.textMain} font-black tracking-widest ${
                 isLight ? 'text-slate-950' : 'text-white'
               }`}
             >
               GWL
             </span>
-            <span
-              className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold tracking-widest uppercase"
-              style={{
-                backgroundColor: `${primaryColor}20`,
-                color: primaryColor,
-                border: `1px solid ${primaryColor}40`
-              }}
-            >
-              WEBLAB
+            <span className={`px-1.5 py-0.5 rounded ${sizeConfig.tagText} font-mono font-bold tracking-widest uppercase bg-amber-400/15 border border-amber-400/30 text-amber-500 [data-theme='clean-light']:text-amber-700`}>
+              WEB LABS
             </span>
           </div>
           {showSubtitle && (
             <span
-              className={`text-[10px] font-mono tracking-wider mt-0.5 ${
+              className={`font-mono tracking-wider mt-0.5 ${sizeConfig.subText} ${
                 isLight ? 'text-slate-600' : 'text-neutral-400'
               }`}
             >
-              Gwalior WebLab • Global WebLab
+              Digital Innovation • Global Solutions
             </span>
           )}
         </div>
@@ -168,36 +139,37 @@ export const GwlLogo: React.FC<GwlLogoProps> = ({
 
   // Default 'full' horizontal variant
   return (
-    <div className={`flex items-center gap-3 ${className}`}>
+    <div className={`flex items-center gap-2.5 sm:gap-3 ${className}`}>
       {Emblem}
       <div className="flex flex-col justify-center text-left">
         <div className="flex items-center gap-1.5 leading-none">
           <span
-            className={`font-display text-lg sm:text-xl font-black tracking-wider uppercase ${
+            className={`font-display ${sizeConfig.textMain} font-black tracking-wider uppercase ${
               isLight ? 'text-slate-950' : 'text-white'
             }`}
           >
             GWL
           </span>
           <span
-            className="text-xs sm:text-sm font-semibold tracking-widest uppercase font-mono"
-            style={{ color: primaryColor }}
+            className={`font-bold tracking-wider uppercase font-mono px-1.5 py-0.5 rounded bg-amber-400/15 border border-amber-400/30 text-amber-500 [data-theme='clean-light']:text-amber-700 ${sizeConfig.tagText}`}
           >
-            WEBLAB
+            WEB LABS
           </span>
         </div>
 
         {showSubtitle && (
           <span
-            className={`text-[9px] sm:text-[10px] font-mono tracking-wider uppercase leading-tight mt-1 flex items-center gap-1 ${
+            className={`font-mono tracking-wider uppercase leading-tight mt-1 flex items-center gap-1 ${sizeConfig.subText} ${
               isLight ? 'text-slate-600' : 'text-neutral-400'
             }`}
           >
-            <span className={isLight ? 'text-slate-900 font-semibold' : 'text-white/80'}>
-              Gwalior WebLab
+            <span className={isLight ? 'text-slate-900 font-semibold' : 'text-white/90'}>
+              Gwalior Web Labs
             </span>
-            <span className={isLight ? 'text-slate-400' : 'text-neutral-500'}>•</span>
-            <span style={{ color: accentColor }}>Global WebLab</span>
+            <span className="text-amber-400/70">•</span>
+            <span className="text-sky-400 [data-theme='clean-light']:text-sky-700 font-medium">
+              Global Solutions
+            </span>
           </span>
         )}
       </div>

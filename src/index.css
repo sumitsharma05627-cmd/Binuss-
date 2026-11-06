@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
@@ -2377,6 +2378,267 @@ canvas {
 [data-theme="clean-light"] .recharts-text {
   fill: #475569 !important;
 }
+
+/* ==========================================================================
+   Multi-Theme Adaptation for Social Command Center Platform
+   ========================================================================== */
+.social-command-root {
+  background-color: var(--theme-bg, #05070c);
+  color: var(--theme-text-main, #f3f4f6);
+}
+
+html.light .social-command-root,
+[data-theme="clean-light"] .social-command-root,
+[data-theme="nordic-frost"] .social-command-root {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+/* 1. Header Banners and Gradient Containers */
+html.light .social-command-root [class*="from-[#0"],
+html.light .social-command-root [class*="from-[#1"],
+html.light .social-command-root [class*="from-blue-950"],
+html.light .social-command-root [class*="from-slate-950"],
+[data-theme="clean-light"] .social-command-root [class*="from-[#0"],
+[data-theme="clean-light"] .social-command-root [class*="from-[#1"],
+[data-theme="clean-light"] .social-command-root [class*="from-blue-950"],
+[data-theme="clean-light"] .social-command-root [class*="from-slate-950"],
+[data-theme="nordic-frost"] .social-command-root [class*="from-[#0"],
+[data-theme="nordic-frost"] .social-command-root [class*="from-[#1"],
+[data-theme="nordic-frost"] .social-command-root [class*="from-blue-950"],
+[data-theme="nordic-frost"] .social-command-root [class*="from-slate-950"] {
+  background-image: none !important;
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05) !important;
+}
+
+/* 2. All Dark Hex Containers & Box Panels */
+html.light .social-command-root [class*="bg-[#0"],
+html.light .social-command-root [class*="bg-[#10"],
+html.light .social-command-root [class*="bg-[#1b"],
+html.light .social-command-root [class*="bg-[#1c"],
+html.light .social-command-root [class*="bg-[#24"],
+[data-theme="clean-light"] .social-command-root [class*="bg-[#0"],
+[data-theme="clean-light"] .social-command-root [class*="bg-[#10"],
+[data-theme="clean-light"] .social-command-root [class*="bg-[#1b"],
+[data-theme="clean-light"] .social-command-root [class*="bg-[#1c"],
+[data-theme="clean-light"] .social-command-root [class*="bg-[#24"],
+[data-theme="nordic-frost"] .social-command-root [class*="bg-[#0"],
+[data-theme="nordic-frost"] .social-command-root [class*="bg-[#10"],
+[data-theme="nordic-frost"] .social-command-root [class*="bg-[#1b"],
+[data-theme="nordic-frost"] .social-command-root [class*="bg-[#1c"],
+[data-theme="nordic-frost"] .social-command-root [class*="bg-[#24"] {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 2px 8px -1px rgba(15, 23, 42, 0.04) !important;
+}
+
+/* 3. Slate Surfaces: Cards, Sub-Cards & Toolbars */
+html.light .social-command-root .bg-slate-950,
+[data-theme="clean-light"] .social-command-root .bg-slate-950,
+[data-theme="nordic-frost"] .social-command-root .bg-slate-950 {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+html.light .social-command-root .bg-slate-950\/80,
+html.light .social-command-root .bg-slate-950\/70,
+html.light .social-command-root .bg-slate-950\/60,
+html.light .social-command-root .bg-slate-950\/50,
+html.light .social-command-root .bg-slate-950\/40,
+html.light .social-command-root .bg-slate-950\/30,
+[data-theme="clean-light"] .social-command-root [class*="bg-slate-950/"],
+[data-theme="nordic-frost"] .social-command-root [class*="bg-slate-950/"] {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+html.light .social-command-root .bg-slate-900,
+[data-theme="clean-light"] .social-command-root .bg-slate-900,
+[data-theme="nordic-frost"] .social-command-root .bg-slate-900 {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+}
+
+html.light .social-command-root .bg-slate-900\/90,
+html.light .social-command-root .bg-slate-900\/80,
+html.light .social-command-root .bg-slate-900\/70,
+html.light .social-command-root .bg-slate-900\/60,
+html.light .social-command-root .bg-slate-900\/50,
+html.light .social-command-root .bg-slate-900\/40,
+[data-theme="clean-light"] .social-command-root [class*="bg-slate-900/"],
+[data-theme="nordic-frost"] .social-command-root [class*="bg-slate-900/"] {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+html.light .social-command-root .bg-slate-800,
+html.light .social-command-root [class*="bg-slate-800/"],
+[data-theme="clean-light"] .social-command-root .bg-slate-800,
+[data-theme="clean-light"] .social-command-root [class*="bg-slate-800/"],
+[data-theme="nordic-frost"] .social-command-root .bg-slate-800,
+[data-theme="nordic-frost"] .social-command-root [class*="bg-slate-800/"] {
+  background-color: #f1f5f9 !important;
+  color: #1e293b !important;
+}
+
+/* 4. Borders & Dividers */
+html.light .social-command-root [class*="border-slate-800"],
+html.light .social-command-root [class*="border-slate-700"],
+html.light .social-command-root [class*="border-slate-900"],
+[data-theme="clean-light"] .social-command-root [class*="border-slate-800"],
+[data-theme="clean-light"] .social-command-root [class*="border-slate-700"],
+[data-theme="clean-light"] .social-command-root [class*="border-slate-900"],
+[data-theme="nordic-frost"] .social-command-root [class*="border-slate-800"],
+[data-theme="nordic-frost"] .social-command-root [class*="border-slate-700"],
+[data-theme="nordic-frost"] .social-command-root [class*="border-slate-900"] {
+  border-color: #e2e8f0 !important;
+}
+
+/* 5. Typography Hierarchy & Contrast */
+html.light .social-command-root .text-white,
+html.light .social-command-root h1,
+html.light .social-command-root h2,
+html.light .social-command-root h3,
+html.light .social-command-root h4,
+[data-theme="clean-light"] .social-command-root .text-white,
+[data-theme="clean-light"] .social-command-root h1,
+[data-theme="clean-light"] .social-command-root h2,
+[data-theme="clean-light"] .social-command-root h3,
+[data-theme="clean-light"] .social-command-root h4,
+[data-theme="nordic-frost"] .social-command-root .text-white,
+[data-theme="nordic-frost"] .social-command-root h1,
+[data-theme="nordic-frost"] .social-command-root h2,
+[data-theme="nordic-frost"] .social-command-root h3,
+[data-theme="nordic-frost"] .social-command-root h4 {
+  color: #0f172a !important;
+}
+
+html.light .social-command-root strong,
+[data-theme="clean-light"] .social-command-root strong,
+[data-theme="nordic-frost"] .social-command-root strong {
+  color: #0f172a !important;
+}
+
+html.light .social-command-root .text-slate-100,
+html.light .social-command-root .text-slate-200,
+[data-theme="clean-light"] .social-command-root .text-slate-100,
+[data-theme="clean-light"] .social-command-root .text-slate-200,
+[data-theme="nordic-frost"] .social-command-root .text-slate-100,
+[data-theme="nordic-frost"] .social-command-root .text-slate-200 {
+  color: #1e293b !important;
+}
+
+html.light .social-command-root .text-slate-300,
+html.light .social-command-root .text-slate-400,
+[data-theme="clean-light"] .social-command-root .text-slate-300,
+[data-theme="clean-light"] .social-command-root .text-slate-400,
+[data-theme="nordic-frost"] .social-command-root .text-slate-300,
+[data-theme="nordic-frost"] .social-command-root .text-slate-400 {
+  color: #475569 !important;
+}
+
+html.light .social-command-root .text-slate-500,
+[data-theme="clean-light"] .social-command-root .text-slate-500,
+[data-theme="nordic-frost"] .social-command-root .text-slate-500 {
+  color: #64748b !important;
+}
+
+/* 6. Form Inputs & Interactive Controls */
+html.light .social-command-root input,
+html.light .social-command-root select,
+html.light .social-command-root textarea,
+[data-theme="clean-light"] .social-command-root input,
+[data-theme="clean-light"] .social-command-root select,
+[data-theme="clean-light"] .social-command-root textarea,
+[data-theme="nordic-frost"] .social-command-root input,
+[data-theme="nordic-frost"] .social-command-root select,
+[data-theme="nordic-frost"] .social-command-root textarea {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+html.light .social-command-root input::placeholder,
+html.light .social-command-root textarea::placeholder,
+[data-theme="clean-light"] .social-command-root input::placeholder,
+[data-theme="clean-light"] .social-command-root textarea::placeholder,
+[data-theme="nordic-frost"] .social-command-root input::placeholder,
+[data-theme="nordic-frost"] .social-command-root textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* 7. Action Buttons Protection (Emerald, Teal, Blue & Danger CTAs) */
+html.light .social-command-root button[class*="from-emerald"],
+html.light .social-command-root button[class*="bg-emerald"],
+html.light .social-command-root [class*="from-emerald-500"],
+[data-theme="clean-light"] .social-command-root button[class*="from-emerald"],
+[data-theme="clean-light"] .social-command-root button[class*="bg-emerald"],
+[data-theme="clean-light"] .social-command-root [class*="from-emerald-500"],
+[data-theme="nordic-frost"] .social-command-root button[class*="from-emerald"],
+[data-theme="nordic-frost"] .social-command-root button[class*="bg-emerald"],
+[data-theme="nordic-frost"] .social-command-root [class*="from-emerald-500"] {
+  background-image: linear-gradient(to right, #10b981, #14b8a6) !important;
+  color: #021a11 !important;
+}
+
+html.light .social-command-root button[class*="from-emerald"] *,
+html.light .social-command-root button[class*="bg-emerald"] *,
+[data-theme="clean-light"] .social-command-root button[class*="from-emerald"] *,
+[data-theme="clean-light"] .social-command-root button[class*="bg-emerald"] *,
+[data-theme="nordic-frost"] .social-command-root button[class*="from-emerald"] *,
+[data-theme="nordic-frost"] .social-command-root button[class*="bg-emerald"] * {
+  color: #021a11 !important;
+}
+
+html.light .social-command-root button.bg-blue-600,
+html.light .social-command-root button.bg-blue-600 *,
+[data-theme="clean-light"] .social-command-root button.bg-blue-600,
+[data-theme="clean-light"] .social-command-root button.bg-blue-600 *,
+[data-theme="nordic-frost"] .social-command-root button.bg-blue-600,
+[data-theme="nordic-frost"] .social-command-root button.bg-blue-600 * {
+  color: #ffffff !important;
+}
+
+/* 8. Recharts High-Contrast Adaptations */
+html.light .social-command-root line.recharts-cartesian-grid-horizontal,
+html.light .social-command-root line.recharts-cartesian-grid-vertical,
+[data-theme="clean-light"] .social-command-root line.recharts-cartesian-grid-horizontal,
+[data-theme="clean-light"] .social-command-root line.recharts-cartesian-grid-vertical,
+[data-theme="nordic-frost"] .social-command-root line.recharts-cartesian-grid-horizontal,
+[data-theme="nordic-frost"] .social-command-root line.recharts-cartesian-grid-vertical {
+  stroke: #e2e8f0 !important;
+}
+
+html.light .social-command-root .recharts-text,
+html.light .social-command-root .recharts-cartesian-axis-tick-value,
+[data-theme="clean-light"] .social-command-root .recharts-text,
+[data-theme="clean-light"] .social-command-root .recharts-cartesian-axis-tick-value,
+[data-theme="nordic-frost"] .social-command-root .recharts-text,
+[data-theme="nordic-frost"] .social-command-root .recharts-cartesian-axis-tick-value {
+  fill: #64748b !important;
+}
+
+html.light .social-command-root .recharts-default-tooltip,
+[data-theme="clean-light"] .social-command-root .recharts-default-tooltip,
+[data-theme="nordic-frost"] .social-command-root .recharts-default-tooltip {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.1) !important;
+}
+
+html.light .social-command-root .recharts-tooltip-item,
+html.light .social-command-root .recharts-tooltip-label,
+[data-theme="clean-light"] .social-command-root .recharts-tooltip-item,
+[data-theme="clean-light"] .social-command-root .recharts-tooltip-label,
+[data-theme="nordic-frost"] .social-command-root .recharts-tooltip-item,
+[data-theme="nordic-frost"] .social-command-root .recharts-tooltip-label {
+  color: #0f172a !important;
+}
+
 
 
 

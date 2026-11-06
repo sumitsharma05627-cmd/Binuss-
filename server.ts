@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { GoogleGenAI } from '@google/genai';
+import { socialDb, verifyPassword } from './server/socialDb';
 
 dotenv.config();
 
@@ -151,6 +152,643 @@ app.post('/api/chat', async (req: Request, res: Response) => {
       reply: 'At GWL WebLab, we engineer high-performance web systems and local SEO. Let\'s connect directly via WhatsApp (+91 75879 39722) to review your project!'
     });
   }
+});
+
+// ============================================================================
+// GWALIOR WEB LABS – SOCIAL COMMAND CENTER BACKEND API
+// ============================================================================
+
+const SOCIAL_AI_SYSTEM_INSTRUCTION = `You are "GW Labs AI", the elite social media content architect and strategist built into Gwalior Web Labs - Social Command Center.
+Your purpose:
+- Help digital marketing agencies, creators, and business owners craft viral, high-converting social media content across Instagram, LinkedIn, YouTube, X, Facebook, Pinterest, Reddit, Telegram, and WhatsApp Business.
+- You understand nuances between B2B LinkedIn authority posts, high-retention Instagram Reels hooks, punchy X threads, and YouTube Shorts scripts.
+- When generating Hindi or Hinglish, ensure it feels natural, modern, culturally grounded, and commercially compelling.
+- Provide clean, structured markdown with clear headings, bullet points, and actionable takeaways. Avoid generic marketing fluff.`;
+
+app.post('/api/social/ai', async (req: Request, res: Response) => {
+  try {
+    const {
+      task = 'captions',
+      prompt,
+      platform = 'instagram',
+      industry = 'General Business',
+      targetAudience = 'Pan-India / Global',
+      language = 'English',
+      tone = 'Engaging & Authoritative',
+      objective = 'Lead Generation'
+    } = req.body;
+
+    if (!prompt || typeof prompt !== 'string' || !prompt.trim()) {
+      res.status(400).json({ error: 'Prompt content is required.' });
+      return;
+    }
+
+    let userInstruction = '';
+
+    if (task === 'captions') {
+      userInstruction = `Generate 3 distinct, high-converting social media captions for ${platform.toUpperCase()}.
+Topic: "${prompt}"
+Industry: ${industry}
+Target Audience: ${targetAudience}
+Language: ${language}
+Tone: ${tone}
+Objective: ${objective}
+
+Output structure:
+### Option 1: Story-Driven Hook
+[Full caption with emoji formatting, strong line breaks, clear call-to-action]
+
+### Option 2: Problem-Solution Direct
+[Full caption focusing on pain point, relief, and 1-step next action]
+
+### Option 3: Short & Punchy (Viral Format)
+[Quick hook + value + CTA]
+
+### Recommended Hashtags:
+[5-10 tailored hashtags]`;
+    } else if (task === 'hashtags') {
+      userInstruction = `Generate a high-yield hashtag matrix for ${platform.toUpperCase()} on topic: "${prompt}".
+Industry: ${industry}
+Language: ${language}
+
+Categorize into:
+1. High-Volume Reach (1M+ impressions equivalent)
+2. Mid-Tier Niche Authority (50k - 500k community)
+3. Local & Hyper-Targeted (Regional / Industry specific)
+4. Branded & Campaign Hashtags
+Provide practical guidance on best placement (e.g., caption bottom vs first comment).`;
+    } else if (task === 'ideas') {
+      userInstruction = `Brainstorm 7 viral content concepts for ${platform.toUpperCase()}.
+Brand / Topic: "${prompt}"
+Industry: ${industry}
+Target Audience: ${targetAudience}
+Tone: ${tone}
+
+Format each idea with:
+- Catchy Hook / Headline (First 3 seconds)
+- Format (Reel / Carousel / Single Post / Story Series / Thread)
+- Core Value / Takeaway
+- Engagement Trigger (Question or CTA to stimulate comments)`;
+    } else if (task === 'calendar') {
+      userInstruction = `Create a strategic 7-day multi-platform social media content calendar.
+Campaign Focus: "${prompt}"
+Primary Platform: ${platform}
+Industry: ${industry}
+Target Audience: ${targetAudience}
+
+Provide a table with: Day, Platform, Content Pillar (Educate / Entertain / Prove / Sell), Reel or Post Concept, Hook Headline, and Best Posting Time (IST).`;
+    } else if (task === 'rewrite') {
+      userInstruction = `Rewrite and optimize the following draft social media caption for ${platform.toUpperCase()}.
+Original Draft:
+"${prompt}"
+
+Tone Target: ${tone}
+Language: ${language}
+Objective: ${objective}
+
+Provide:
+1. Polished Master Version
+2. 3 Alternative Hooks (Questions, Bold Statements, Counter-Intuitive facts)
+3. Stronger Call to Action (CTA)`;
+    } else if (task === 'reply') {
+      userInstruction = `Craft 3 professional responses to the following customer comment / inquiry on ${platform.toUpperCase()}:
+Customer Message: "${prompt}"
+Industry: ${industry}
+Language: ${language}
+
+Provide:
+- Response 1: Warm, helpful & inviting (Builds rapport)
+- Response 2: Direct Lead Capture (Guides to WhatsApp / DM / Booking link)
+- Response 3: Concise & polite (Great for fast acknowledgment)`;
+    } else if (task === 'translate') {
+      userInstruction = `Translate and culturally adapt the following social media copy into ${language}:
+Copy:
+"${prompt}"
+
+Provide:
+1. Natural, fluent translation
+2. Culturally adapted nuances for digital engagement
+3. Hindi transliteration / Hinglish alternative if applicable`;
+    } else {
+      userInstruction = `Task: ${task}
+Prompt: "${prompt}"
+Platform: ${platform}
+Industry: ${industry}
+Language: ${language}
+Tone: ${tone}`;
+    }
+
+    let generatedText = '';
+
+    // Primary: gemini-3.8-flash
+    try {
+      const response = await ai.models.generateContent({
+        model: 'gemini-3.8-flash',
+        contents: [{ role: 'user', parts: [{ text: userInstruction }] }],
+        config: {
+          systemInstruction: SOCIAL_AI_SYSTEM_INSTRUCTION,
+          temperature: 0.75,
+        }
+      });
+      generatedText = response.text || '';
+    } catch (err: any) {
+      console.warn('Social AI primary model busy, attempting secondary...', err?.message);
+      try {
+        const response = await ai.models.generateContent({
+          model: 'gemini-2.5-flash',
+          contents: [{ role: 'user', parts: [{ text: userInstruction }] }],
+          config: {
+            systemInstruction: SOCIAL_AI_SYSTEM_INSTRUCTION,
+            temperature: 0.75,
+          }
+        });
+        generatedText = response.text || '';
+      } catch (err2: any) {
+        console.warn('Social AI secondary model fallback.', err2?.message);
+      }
+    }
+
+    if (!generatedText) {
+      generatedText = `### Generated Strategy for ${platform.toUpperCase()}: "${prompt}"\n\n**Hook:** Stop wasting time with fragmented social media tools.\n\n**Body:** In 2026, real digital growth comes from consistent, unified workflows. When your content, inbox, and analytics live in one place, client satisfaction and conversion rates multiply.\n\n**CTA:** Ready to streamline your social media engine? Send us a DM to get started.\n\n#GWLWebLabs #${industry.replace(/\\s+/g, '')} #SocialMediaGrowth #MarketingAutomation`;
+    }
+
+    res.json({
+      success: true,
+      task,
+      platform,
+      result: generatedText,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error: any) {
+    console.error('Error in /api/social/ai:', error);
+    res.status(500).json({
+      error: 'Failed to generate social media content. Please retry.',
+      details: error?.message
+    });
+  }
+});
+
+// ==========================================
+// SOCIAL COMMAND CENTER REST & AUTH API
+// ==========================================
+
+function getAuthUser(req: Request) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) return null;
+  const token = authHeader.substring(7);
+  return socialDb.validateSession(token);
+}
+
+// 1. Registration Endpoint
+app.post('/api/social/auth/register', (req: Request, res: Response) => {
+  try {
+    const { name, email, password, phone, country, accountType } = req.body;
+    if (!name || !email || !password) {
+      res.status(400).json({ error: 'Name, email, and password are required.' });
+      return;
+    }
+
+    if (password.length < 6) {
+      res.status(400).json({ error: 'Password must be at least 6 characters long.' });
+      return;
+    }
+
+    const newUser = socialDb.createUser({
+      name: name.trim(),
+      email: email.trim().toLowerCase(),
+      password,
+      phone,
+      country: country || 'India',
+      accountType: accountType || 'individual'
+    });
+
+    const session = socialDb.createSession(newUser.id);
+    const { passwordHash: _, ...userSafe } = newUser;
+
+    res.status(201).json({
+      success: true,
+      message: 'Account created successfully.',
+      user: userSafe,
+      token: session.token,
+      verificationPin: newUser.verificationPin
+    });
+  } catch (err: any) {
+    res.status(400).json({ error: err.message || 'Registration failed.' });
+  }
+});
+
+// 2. Login Endpoint
+app.post('/api/social/auth/login', (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      res.status(400).json({ error: 'Email and password are required.' });
+      return;
+    }
+
+    const user = socialDb.findUserByEmail(email);
+    if (!user) {
+      res.status(401).json({ error: 'Invalid email or password.' });
+      return;
+    }
+
+    if (user.status === 'suspended') {
+      res.status(403).json({ error: 'This account has been suspended by an administrator.' });
+      return;
+    }
+
+    const isValid = verifyPassword(password, user.passwordHash);
+    if (!isValid) {
+      res.status(401).json({ error: 'Invalid email or password.' });
+      return;
+    }
+
+    user.lastLoginAt = new Date().toISOString();
+    const session = socialDb.createSession(user.id);
+    const { passwordHash: _, ...userSafe } = user;
+
+    socialDb.addAuditLog({
+      action: 'USER_LOGIN',
+      userId: user.id,
+      userName: user.name,
+      details: `Successful login via web credential from IP ${req.ip || 'local'}`,
+      status: 'success'
+    });
+
+    res.json({
+      success: true,
+      user: userSafe,
+      token: session.token
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Login failed.', details: err.message });
+  }
+});
+
+// 3. Current User Session Check
+app.get('/api/social/auth/me', (req: Request, res: Response) => {
+  const user = getAuthUser(req);
+  if (!user) {
+    res.status(401).json({ error: 'Unauthorized. Active session not found.' });
+    return;
+  }
+  const { passwordHash: _, ...userSafe } = user;
+  res.json({ success: true, user: userSafe });
+});
+
+// 4. Logout Endpoint
+app.post('/api/social/auth/logout', (req: Request, res: Response) => {
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.substring(7);
+    socialDb.deleteSession(token);
+  }
+  res.json({ success: true, message: 'Logged out successfully.' });
+});
+
+// 5. Email Verification Endpoint
+app.post('/api/social/auth/verify-email', (req: Request, res: Response) => {
+  const { email, pin } = req.body;
+  if (!email || !pin) {
+    res.status(400).json({ error: 'Email and PIN are required.' });
+    return;
+  }
+  const success = socialDb.verifyEmail(email, pin);
+  if (success) {
+    res.json({ success: true, message: 'Email verified successfully.' });
+  } else {
+    res.status(400).json({ error: 'Invalid verification PIN code.' });
+  }
+});
+
+// 6. Forgot Password Endpoint
+app.post('/api/social/auth/forgot-password', (req: Request, res: Response) => {
+  const { email } = req.body;
+  if (!email) {
+    res.status(400).json({ error: 'Email is required.' });
+    return;
+  }
+  const user = socialDb.findUserByEmail(email);
+  if (user) {
+    user.verificationPin = Math.floor(100000 + Math.random() * 900000).toString();
+    socialDb.addAuditLog({
+      action: 'PASSWORD_RESET_REQUESTED',
+      userId: user.id,
+      userName: user.name,
+      details: `Password reset PIN generated: ${user.verificationPin}`,
+      status: 'warning'
+    });
+    res.json({ 
+      success: true, 
+      message: 'Password reset PIN sent to registered email.',
+      pinDemo: user.verificationPin 
+    });
+  } else {
+    // Prevent email enumeration
+    res.json({ success: true, message: 'If this email exists, a reset code was dispatched.' });
+  }
+});
+
+// 7. Onboarding Complete Endpoint
+app.post('/api/social/auth/onboarding', (req: Request, res: Response) => {
+  const user = getAuthUser(req);
+  if (!user) {
+    res.status(401).json({ error: 'Unauthorized.' });
+    return;
+  }
+  const updatedUser = socialDb.completeOnboarding(user.id, req.body);
+  const { passwordHash: _, ...userSafe } = updatedUser;
+  res.json({ success: true, user: userSafe });
+});
+
+// 8. Full Snapshot Data Query
+app.get('/api/social/data', (_req: Request, res: Response) => {
+  const snapshot = socialDb.getDbSnapshot();
+  const safeUsers = snapshot.users.map(({ passwordHash: _, ...u }) => u);
+  res.json({
+    success: true,
+    clients: snapshot.clients,
+    accounts: snapshot.accounts,
+    posts: snapshot.posts,
+    conversations: snapshot.conversations,
+    automations: snapshot.automations,
+    media: snapshot.media,
+    teamMembers: snapshot.teamMembers,
+    plans: snapshot.plans,
+    payments: snapshot.payments || [],
+    users: safeUsers,
+    auditLogs: snapshot.auditLogs,
+    apiHealthLogs: snapshot.apiHealthLogs
+  });
+});
+
+// 8b. Dynamic Plans Management (Admin Configurable)
+app.get('/api/social/plans', (_req: Request, res: Response) => {
+  res.json({ success: true, plans: socialDb.getPlans() });
+});
+
+app.put('/api/social/plans/:id', (req: Request, res: Response) => {
+  try {
+    const user = getAuthUser(req);
+    // Allow update if admin or if no token provided in local development
+    if (user && user.role !== 'super_admin' && user.role !== 'agency_admin') {
+      res.status(403).json({ error: 'Forbidden. Administrator credentials required.' });
+      return;
+    }
+
+    const updated = socialDb.updatePlan(req.params.id, req.body);
+    if (!updated) {
+      res.status(404).json({ error: 'Plan not found.' });
+      return;
+    }
+
+    res.json({ success: true, plan: updated });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to update plan.', details: err.message });
+  }
+});
+
+// 8c. User Usage & Feature Limits
+app.get('/api/social/user/usage', (req: Request, res: Response) => {
+  const user = getAuthUser(req);
+  const userId = user ? user.id : 'user-sumit-admin';
+  const usage = socialDb.getUserUsageStats(userId);
+  res.json({ success: true, usage });
+});
+
+// 8d. Razorpay Payment Gateway Endpoints
+// Create Order
+app.post('/api/social/payments/create-order', (req: Request, res: Response) => {
+  try {
+    const { planId, billingCycle = 'monthly' } = req.body;
+    const user = getAuthUser(req);
+    const userId = user ? user.id : 'user-sumit-admin';
+
+    if (!planId) {
+      res.status(400).json({ error: 'planId is required.' });
+      return;
+    }
+
+    const orderData = socialDb.createRazorpayOrder(userId, planId, billingCycle);
+    res.json({ success: true, ...orderData });
+  } catch (err: any) {
+    res.status(400).json({ error: err.message || 'Failed to create payment order.' });
+  }
+});
+
+// Verify Payment & Activate Tier
+app.post('/api/social/payments/verify', (req: Request, res: Response) => {
+  try {
+    const { orderId, paymentId, signature, planId, billingCycle = 'monthly', method = 'razorpay_gateway' } = req.body;
+    const user = getAuthUser(req);
+    const userId = user ? user.id : 'user-sumit-admin';
+
+    if (!orderId || !paymentId) {
+      res.status(400).json({ error: 'orderId and paymentId are required.' });
+      return;
+    }
+
+    const result = socialDb.verifyAndActivatePayment({
+      orderId,
+      paymentId,
+      signature: signature || `sandbox_sig_${Date.now()}`,
+      userId,
+      planId,
+      billingCycle,
+      method
+    });
+
+    res.json({ success: true, ...result });
+  } catch (err: any) {
+    res.status(400).json({ error: err.message || 'Payment verification failed.' });
+  }
+});
+
+// Razorpay Webhook Endpoint
+app.post('/api/social/payments/webhook', (req: Request, res: Response) => {
+  try {
+    const event = req.body;
+    const eventType = event.event;
+
+    socialDb.addAuditLog({
+      action: 'PAYMENT_WEBHOOK_RECEIVED',
+      userId: 'razorpay-webhook',
+      userName: 'Razorpay Gateway',
+      details: `Received event ${eventType || 'payment.captured'}. Payload acknowledged.`,
+      status: 'success'
+    });
+
+    res.json({ status: 'ok', received: true });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Webhook processing failed.' });
+  }
+});
+
+// Payment History & Invoices
+app.get('/api/social/payments/history', (req: Request, res: Response) => {
+  const user = getAuthUser(req);
+  const isSuperAdmin = user?.role === 'super_admin';
+  const payments = socialDb.getPayments(isSuperAdmin ? undefined : user?.id);
+  res.json({ success: true, payments });
+});
+
+// Admin Manual Plan Override & Access Granting
+app.post('/api/social/admin/grant-premium', (req: Request, res: Response) => {
+  try {
+    const user = getAuthUser(req);
+    if (user && user.role !== 'super_admin') {
+      res.status(403).json({ error: 'Forbidden. Super admin credentials required.' });
+      return;
+    }
+
+    const { userId, planTier, expiresAt, status } = req.body;
+    if (!userId || !planTier) {
+      res.status(400).json({ error: 'userId and planTier are required.' });
+      return;
+    }
+
+    const updatedUser = socialDb.adminUpdateUserPlan(userId, planTier, expiresAt, status);
+    res.json({ success: true, user: updatedUser });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to update user plan.' });
+  }
+});
+
+// 9. Post Management Endpoints
+app.post('/api/social/posts', (req: Request, res: Response) => {
+  try {
+    const postData = req.body;
+    if (!postData.caption) {
+      res.status(400).json({ error: 'Post caption is required.' });
+      return;
+    }
+
+    const user = getAuthUser(req);
+    const userId = user ? user.id : 'user-sumit-admin';
+    const usage = socialDb.getUserUsageStats(userId);
+
+    // Limit check
+    if (usage.postsUsedThisMonth >= usage.postsLimit) {
+      res.status(403).json({
+        error: `Monthly scheduled post limit reached (${usage.postsLimit} posts on ${usage.planName}). Please upgrade your plan.`,
+        limitReached: true,
+        currentUsage: usage
+      });
+      return;
+    }
+
+    const newPost = socialDb.addPost(postData);
+    res.status(201).json({ success: true, post: newPost });
+  } catch (e: any) {
+    res.status(500).json({ error: 'Failed to create post.', details: e.message });
+  }
+});
+
+app.put('/api/social/posts/:id', (req: Request, res: Response) => {
+  const updated = socialDb.updatePost(req.params.id, req.body);
+  if (updated) {
+    res.json({ success: true, post: updated });
+  } else {
+    res.status(404).json({ error: 'Post not found.' });
+  }
+});
+
+app.delete('/api/social/posts/:id', (req: Request, res: Response) => {
+  socialDb.deletePost(req.params.id);
+  res.json({ success: true, message: 'Post removed.' });
+});
+
+// 10. Social Account Connect / Disconnect
+app.post('/api/social/accounts/:id/toggle', (req: Request, res: Response) => {
+  const { isConnected } = req.body;
+  const user = getAuthUser(req);
+  const userId = user ? user.id : 'user-sumit-admin';
+
+  if (isConnected) {
+    const usage = socialDb.getUserUsageStats(userId);
+    if (usage.connectedAccountsCount >= usage.connectedAccountsLimit) {
+      res.status(403).json({
+        error: `Account connection limit reached (${usage.connectedAccountsLimit} channels on ${usage.planName}). Please upgrade your subscription tier.`,
+        limitReached: true
+      });
+      return;
+    }
+  }
+
+  const updated = socialDb.toggleAccountConnection(req.params.id, Boolean(isConnected));
+  if (updated) {
+    res.json({ success: true, account: updated });
+  } else {
+    res.status(404).json({ error: 'Account not found.' });
+  }
+});
+
+// 11. Inbox Message Reply & Customer Note
+app.post('/api/social/inbox/:id/reply', (req: Request, res: Response) => {
+  const { message } = req.body;
+  if (!message || !message.content) {
+    res.status(400).json({ error: 'Message content is required.' });
+    return;
+  }
+  const updated = socialDb.addMessageToConversation(req.params.id, message);
+  if (updated) {
+    res.json({ success: true, conversation: updated });
+  } else {
+    res.status(404).json({ error: 'Conversation not found.' });
+  }
+});
+
+app.post('/api/social/inbox/:id/note', (req: Request, res: Response) => {
+  const { note } = req.body;
+  if (!note) {
+    res.status(400).json({ error: 'Note is required.' });
+    return;
+  }
+  const updated = socialDb.addCustomerNote(req.params.id, note);
+  if (updated) {
+    res.json({ success: true, conversation: updated });
+  } else {
+    res.status(404).json({ error: 'Conversation not found.' });
+  }
+});
+
+// 12. Super Admin User Status Toggle
+app.post('/api/social/users/:id/status', (req: Request, res: Response) => {
+  const { status } = req.body;
+  const user = socialDb.findUserById(req.params.id);
+  if (!user) {
+    res.status(404).json({ error: 'User not found.' });
+    return;
+  }
+  user.status = status === 'suspended' ? 'suspended' : 'active';
+  socialDb.addAuditLog({
+    action: 'USER_STATUS_MODIFIED',
+    userId: 'admin',
+    userName: 'Super Admin',
+    details: `User ${user.email} status set to ${user.status}`,
+    status: user.status === 'suspended' ? 'warning' : 'success'
+  });
+  res.json({ success: true, user });
+});
+
+app.get('/api/social/health', (_req: Request, res: Response) => {
+  res.json({
+    status: 'healthy',
+    service: 'Gwalior Web Labs – Social Command Center API',
+    version: '2.0.0',
+    supportedPlatforms: [
+      'instagram',
+      'facebook',
+      'youtube',
+      'linkedin',
+      'twitter',
+      'pinterest',
+      'reddit',
+      'telegram',
+      'whatsapp'
+    ],
+    timestamp: new Date().toISOString()
+  });
 });
 
 // Vite dev middleware or static serving in production

@@ -10,9 +10,10 @@ import { useLanguage } from '../context/LanguageContext';
 interface NavbarProps {
   onOpenProjectModal: () => void;
   onOpenSearch: () => void;
+  onOpenSocialCommandCenter?: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onOpenProjectModal, onOpenSearch }) => {
+export const Navbar: React.FC<NavbarProps> = ({ onOpenProjectModal, onOpenSearch, onOpenSocialCommandCenter }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { theme, setTheme, themes } = useTheme();
@@ -153,6 +154,20 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenProjectModal, onOpenSearch
 
             {/* Global Theme Toggle Button: switches between Cyber Emerald and Clean Light modes dynamically */}
             <ThemeToggle id="global-theme-toggle-btn" />
+
+            {/* Social Command Center Platform Navigation Trigger */}
+            <button
+              id="nav-social-command-btn"
+              onClick={onOpenSocialCommandCenter}
+              className="group relative inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold rounded-full bg-gradient-to-r from-cyan-500/15 via-blue-500/15 to-indigo-500/15 hover:from-cyan-500/30 hover:to-indigo-500/30 text-cyan-300 hover:text-white border border-cyan-500/40 hover:border-cyan-300 transition-all transform hover:-translate-y-0.5 shadow-sm cursor-pointer"
+              title="Gwalior Web Labs – All-in-One Social Media Command Center"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+              <span>Social Command</span>
+              <span className="px-1.5 py-0.5 rounded text-[9px] bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-black uppercase tracking-wider">
+                SUITE
+              </span>
+            </button>
 
             <button
               id="nav-start-project-btn"
@@ -380,10 +395,28 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenProjectModal, onOpenSearch
               ))}
             </div>
             <div
-              className={`pt-2 border-t ${
+              className={`pt-2 border-t space-y-2 ${
                 isLight ? 'border-slate-200' : 'border-white/10'
               }`}
             >
+              {/* Mobile Social Command Center CTA */}
+              <button
+                id="mobile-nav-social-command-btn"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  if (onOpenSocialCommandCenter) onOpenSocialCommandCenter();
+                }}
+                className="w-full flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-cyan-950/70 to-blue-950/70 border border-cyan-500/40 text-cyan-300 font-bold text-xs cursor-pointer shadow-md"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+                  <span>Social Command Center</span>
+                </div>
+                <span className="px-2 py-0.5 rounded text-[10px] bg-cyan-400 text-slate-950 font-black uppercase tracking-wider">
+                  Open Portal
+                </span>
+              </button>
+
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);

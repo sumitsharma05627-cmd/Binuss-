@@ -36,6 +36,33 @@ export interface ChatMessage {
 
 export const COMMON_DOUBTS = [
   {
+    id: 'social-command-doubt',
+    question: 'What is Gwalior Web Labs Social Command Center?',
+    shortLabel: '🚀 Social Command Center',
+    answer:
+      'The **Social Command Center** is Gwalior Web Labs flagship all-in-one social media management platform:\n\n' +
+      '• **9 Global Networks**: Manage Instagram, WhatsApp Business, YouTube, LinkedIn, X, Facebook Pages, Pinterest, Reddit & Telegram.\n' +
+      '• **Unified Customer Inbox**: Respond to WhatsApp chats, DMs, comments, and inquiries in a single unified customer CRM.\n' +
+      '• **GW Labs AI Assistant**: Powered by Gemini 3.8 Flash for multi-lingual captions (Hindi & English), viral hooks, and auto-replies.\n' +
+      '• **Visual Multi-Device Publishing**: Schedule reels, pins, and posts with live mobile & desktop previews.\n' +
+      '• **Agency Multi-Tenancy**: Separate client workspaces with role-based access control (Super Admin, Manager, Creator, Client).\n' +
+      '• **Visual Automation**: Auto-welcome protocols, keyword triggers, and CRM lead capture.',
+    action: { label: 'Connect on WhatsApp', actionType: 'whatsapp' as const }
+  },
+  {
+    id: 'social-pricing-doubt',
+    question: 'What are the subscription plans for Social Command Center?',
+    shortLabel: '📊 Platform Subscription Plans',
+    answer:
+      'We offer flexible tiered subscription plans configured directly in the command center:\n\n' +
+      '• **Free**: 1 client workspace, 3 connected channels, 10 scheduled posts, 50 AI queries.\n' +
+      '• **Starter (₹2,499/mo)**: 3 client workspaces, 10 social channels, 100 scheduled posts, 200 AI queries.\n' +
+      '• **Professional (₹6,999/mo)**: 8 client workspaces, 25 social channels, 500 scheduled posts, 1,000 AI queries.\n' +
+      '• **Agency (₹14,999/mo)**: Unlimited client workspaces, 75 social channels, unlimited scheduled posts, PDF & CSV exports, full Razorpay recurring billing.\n' +
+      '• **Enterprise (₹29,999/mo)**: Dedicated infrastructure, custom API limits, and white-label branding.',
+    action: { label: 'Inquire on WhatsApp', actionType: 'whatsapp' as const }
+  },
+  {
     id: 'pricing-doubt',
     question: 'How much does a website or digital system cost?',
     shortLabel: '💰 Pricing & Packages',
@@ -433,8 +460,8 @@ export const DoubtResolverChatbot: React.FC = () => {
 
   return (
     <>
-      {/* Floating Trigger Button (Bottom Left, safely elevated on mobile above sticky action bars) */}
-      <div className="fixed bottom-20 sm:bottom-6 left-4 sm:left-6 z-40 flex items-center pointer-events-auto">
+      {/* Floating Trigger Button (Bottom Right, safely elevated on mobile above sticky action bars) */}
+      <div className="fixed bottom-20 sm:bottom-6 right-4 sm:right-6 z-40 flex items-center pointer-events-auto">
         <button
           type="button"
           onClick={() => {
@@ -483,7 +510,7 @@ export const DoubtResolverChatbot: React.FC = () => {
             }}
             exit={{ opacity: 0, y: 25, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-20 sm:bottom-20 left-3 sm:left-6 z-50 w-[calc(100vw-1.5rem)] sm:w-[420px] max-h-[calc(100vh-6rem)] rounded-3xl chatbot-modal-window flex flex-col overflow-hidden backdrop-blur-2xl"
+            className="fixed bottom-20 sm:bottom-20 right-3 sm:right-6 z-50 w-[calc(100vw-1.5rem)] sm:w-[420px] max-h-[calc(100vh-6rem)] rounded-3xl chatbot-modal-window flex flex-col overflow-hidden backdrop-blur-2xl"
           >
             {/* Window Header */}
             <div className="px-4 py-3 chatbot-window-header flex items-center justify-between shrink-0">

@@ -35,12 +35,38 @@ import { DigitalGrowthLeadModal } from './components/DigitalGrowthLeadModal';
 import { PricingPlan } from './data/pricing';
 import { trackCtaClick, trackEvent } from './utils/analytics';
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { SocialCommandProvider } from './social-command-center/context/SocialCommandContext';
+import { SocialCommandCenterLayout } from './social-command-center/components/SocialCommandCenterLayout';
+import { SocialCommandCenterFeatureSection } from './components/SocialCommandCenterFeatureSection';
+import { AppModeSwitcherDock } from './components/AppModeSwitcherDock';
 
 export default function App() {
   const [selectedServiceForInquiry, setSelectedServiceForInquiry] = useState<string>('Website');
   const [selectedMessageForInquiry, setSelectedMessageForInquiry] = useState<string>('');
   const [activeOnboardingPlan, setActiveOnboardingPlan] = useState<PricingPlan | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<'website' | 'social-command-center'>(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      // Check if traditional agency site is explicitly requested
+      if (urlParams.get('app') === 'agency' || urlParams.get('mode') === 'agency' || urlParams.get('view') === 'agency') {
+        return 'website';
+      }
+      if (window.location.hash === '#agency' || window.location.hash === '#agency-services' || window.location.hash === '#website') {
+        return 'website';
+      }
+      try {
+        const savedMode = localStorage.getItem('gwl_active_app_view');
+        if (savedMode === 'website') {
+          return 'website';
+        }
+      } catch {
+        // ignore
+      }
+    }
+    // Main website default is now Social Command Center
+    return 'social-command-center';
+  });
 
   // Initial page view tracking
   useEffect(() => {
@@ -62,6 +88,38 @@ export default function App() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
+
+  // Synchronize hash with viewMode
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      if (hash === '#agency' || hash === '#agency-services' || hash === '#website' || hash === '#home') {
+        setViewMode('website');
+      } else if (hash === '#social-command-center' || hash === '#command-center' || hash === '#saas') {
+        setViewMode('social-command-center');
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  const handleSwitchMode = (mode: 'website' | 'social-command-center') => {
+    setViewMode(mode);
+    try {
+      localStorage.setItem('gwl_active_app_view', mode);
+    } catch {
+      // ignore
+    }
+    if (mode === 'social-command-center') {
+      window.location.hash = '#social-command-center';
+    } else {
+      window.location.hash = '#agency';
+    }
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  };
+
+  const handleOpenSocialCommandCenter = () => handleSwitchMode('social-command-center');
+  const handleBackToWebsite = () => handleSwitchMode('website');
 
   const handleStartProject = (serviceName?: string, message?: string) => {
     trackCtaClick('Start Project', {
@@ -153,14 +211,22 @@ export default function App() {
     <ThemeProvider>
       <LanguageProvider>
         <ScrollSequenceProvider>
-        <div className="relative min-h-screen text-slate-900 dark:text-white selection:bg-emerald-500/30 selection:text-emerald-200 transition-colors duration-300">
-          {/* Ambient 3D Particle Constellation in Background */}
-          <BackgroundParticles3D />
+          {viewMode === 'social-command-center' ? (
+            <SocialCommandProvider>
+              <SocialCommandCenterLayout onBackToWebsite={() => handleSwitchMode('website')} />
+              <AppModeSwitcherDock currentMode="social-command-center" onSwitchMode={handleSwitchMode} />
+              <DoubtResolverChatbot />
+            </SocialCommandProvider>
+          ) : (
+            <div className="relative min-h-screen text-slate-900 dark:text-white selection:bg-emerald-500/30 selection:text-emerald-200 transition-colors duration-300">
+              {/* Ambient 3D Particle Constellation in Background */}
+              <BackgroundParticles3D />
 
-          {/* Floating Navigation with Search */}
+          {/* Floating Navigation with Search & Social Command Suite Button */}
           <Navbar
             onOpenProjectModal={() => handleStartProject()}
             onOpenSearch={() => setIsSearchOpen(true)}
+            onOpenSocialCommandCenter={handleOpenSocialCommandCenter}
           />
 
           {/* Quick Search Sliding Overlay */}
@@ -184,6 +250,11 @@ export default function App() {
             {/* 3. Solution / Services Section (8 Interactive 3D Service Cards) */}
             <Services
               onSelectServiceForInquiry={(serviceTitle) => handleStartProject(serviceTitle)}
+            />
+
+            {/* Standalone Platform Feature Showcase & Launchpad */}
+            <SocialCommandCenterFeatureSection
+              onLaunchCommandCenter={() => handleSwitchMode('social-command-center')}
             />
 
             {/* 4. Customer Journey & Growth System Pipeline ("From Attention to Growth") */}
@@ -277,12 +348,16 @@ export default function App() {
           {/* 15-Second Timed Free Digital Growth Blueprint PDF Lead Popup Modal */}
           <DigitalGrowthLeadModal />
 
+          {/* Floating App Mode Switcher Dock */}
+          <AppModeSwitcherDock currentMode="website" onSwitchMode={handleSwitchMode} />
+
           {/* Footer */}
           <Footer />
 
           {/* Vercel Speed Insights */}
           <SpeedInsights />
         </div>
+      )}
       </ScrollSequenceProvider>
     </LanguageProvider>
   </ThemeProvider>

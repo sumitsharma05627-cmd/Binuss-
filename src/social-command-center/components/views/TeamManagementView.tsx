@@ -1,0 +1,366 @@
+import React, { useState } from 'react';
+import { useSocialCommand } from '../../context/SocialCommandContext';
+import { UserRole, TeamMember } from '../../types';
+import { 
+  Users, 
+  ShieldCheck, 
+  UserPlus, 
+  Mail, 
+  CheckCircle, 
+  XCircle, 
+  MoreVertical,
+  Building,
+  Key,
+  Lock,
+  Edit2
+} from 'lucide-react';
+
+export const TeamManagementView: React.FC = () => {
+  const { currentClient, clients } = useSocialCommand();
+
+  // Mock team members
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([
+    {
+      id: 'tm-1',
+      name: 'Aditya Sharma',
+      email: 'aditya@gwaliorweblabs.com',
+      avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+      role: 'super_admin',
+      assignedClientIds: ['c-gwl', 'c-georgians', 'c-yanshi', 'c-brightedge'],
+      status: 'active'
+    },
+    {
+      id: 'tm-2',
+      name: 'Pooja Verma',
+      email: 'pooja.verma@gwaliorweblabs.com',
+      avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80',
+      role: 'agency_admin',
+      assignedClientIds: ['c-georgians', 'c-brightedge'],
+      status: 'active'
+    },
+    {
+      id: 'tm-3',
+      name: 'Rohit Verma',
+      email: 'rohit@gwaliorweblabs.com',
+      avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
+      role: 'manager',
+      assignedClientIds: ['c-yanshi'],
+      status: 'active'
+    },
+    {
+      id: 'tm-4',
+      name: 'Simran Rathore',
+      email: 'simran.r@gwaliorweblabs.com',
+      avatarUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=200&q=80',
+      role: 'content_creator',
+      assignedClientIds: ['c-georgians', 'c-yanshi'],
+      status: 'active'
+    },
+    {
+      id: 'tm-5',
+      name: 'Ankit Dubey',
+      email: 'ankit.support@gwaliorweblabs.com',
+      avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80',
+      role: 'customer_support',
+      assignedClientIds: ['c-georgians'],
+      status: 'active'
+    },
+    {
+      id: 'tm-6',
+      name: 'Dr. Yanshi Sharma',
+      email: 'director@yanshiphysio.com',
+      avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80',
+      role: 'client',
+      assignedClientIds: ['c-yanshi'],
+      status: 'active'
+    }
+  ]);
+
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [inviteName, setInviteName] = useState('');
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteRole, setInviteRole] = useState<UserRole>('content_creator');
+  const [inviteClientId, setInviteClientId] = useState<string>(currentClient?.id || 'c-georgians');
+
+  const roleDefinitions: Record<UserRole, { label: string; color: string; desc: string }> = {
+    super_admin: {
+      label: 'Super Admin',
+      color: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+      desc: 'Unrestricted access to all agency clients, billing, API credentials, and developer settings.'
+    },
+    agency_admin: {
+      label: 'Agency Admin',
+      color: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+      desc: 'Manages multiple assigned client accounts, oversees teams, and approves social campaigns.'
+    },
+    manager: {
+      label: 'Campaign Manager',
+      color: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+      desc: 'Schedules posts, reviews drafts, delegates inbox threads, and exports analytical reports.'
+    },
+    content_creator: {
+      label: 'Content Creator',
+      color: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+      desc: 'Creates drafts in Publishing Studio, uploads assets, and requests manager/client approval.'
+    },
+    customer_support: {
+      label: 'Customer Support',
+      color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+      desc: 'Replies to Unified Inbox inquiries across WhatsApp, Instagram, and Messenger.'
+    },
+    client: {
+      label: 'Client Portal View',
+      color: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
+      desc: 'Strictly restricted to their own single client workspace. Can view metrics and approve posts.'
+    }
+  };
+
+  const handleInviteSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inviteName.trim() || !inviteEmail.trim()) return;
+
+    const newMember: TeamMember = {
+      id: `tm-${Date.now()}`,
+      name: inviteName.trim(),
+      email: inviteEmail.trim(),
+      avatarUrl: `https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80`,
+      role: inviteRole,
+      assignedClientIds: [inviteClientId],
+      status: 'invited'
+    };
+
+    setTeamMembers(prev => [...prev, newMember]);
+    setInviteName('');
+    setInviteEmail('');
+    setShowInviteModal(false);
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Top Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-slate-900/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md backdrop-blur-xl">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="p-2 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+              <Users className="w-5 h-5" />
+            </span>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Team &amp; Role-Based Access Control</h1>
+          </div>
+          <p className="text-slate-600 dark:text-slate-400 text-sm mt-1">
+            Manage agency personnel, client reviewers, and granular permissions across workspaces.
+          </p>
+        </div>
+
+        <button
+          onClick={() => setShowInviteModal(true)}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold text-sm hover:from-purple-500 hover:to-indigo-500 transition-all shadow-lg shadow-purple-600/20"
+        >
+          <UserPlus className="w-4 h-4" />
+          <span>Invite Team Member</span>
+        </button>
+      </div>
+
+      {/* Permissions Matrix Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {['super_admin', 'agency_admin', 'content_creator'].map((roleKey) => {
+          const role = roleDefinitions[roleKey as UserRole];
+          return (
+            <div key={roleKey} className="bg-slate-900/70 border border-slate-800 p-4 rounded-xl">
+              <div className="flex items-center justify-between mb-2">
+                <span className={`px-2.5 py-0.5 rounded text-xs font-semibold border ${role.color}`}>
+                  {role.label}
+                </span>
+                <ShieldCheck className="w-4 h-4 text-slate-500" />
+              </div>
+              <p className="text-xs text-slate-400 leading-relaxed">{role.desc}</p>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Team Roster */}
+      <div className="bg-slate-900/70 border border-slate-800 rounded-2xl overflow-hidden">
+        <div className="p-5 border-b border-slate-800 flex items-center justify-between">
+          <div>
+            <h3 className="font-semibold text-white text-base">Active Agency &amp; Client Users</h3>
+            <p className="text-xs text-slate-400 mt-0.5">Showing {teamMembers.length} users with assigned workspace permissions</p>
+          </div>
+          <div className="flex items-center gap-2 text-xs text-slate-400">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" /> Active
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-400 ml-2" /> Invited
+          </div>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs">
+            <thead className="bg-slate-950/60 text-slate-400 font-semibold border-b border-slate-800 uppercase tracking-wider">
+              <tr>
+                <th className="py-3 px-4">User</th>
+                <th className="py-3 px-4">Role</th>
+                <th className="py-3 px-4">Accessible Workspaces</th>
+                <th className="py-3 px-4">Status</th>
+                <th className="py-3 px-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-800/60 text-slate-300">
+              {teamMembers.map((member) => {
+                const role = roleDefinitions[member.role];
+                return (
+                  <tr key={member.id} className="hover:bg-slate-800/30 transition-all">
+                    <td className="py-3.5 px-4">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={member.avatarUrl}
+                          alt={member.name}
+                          className="w-9 h-9 rounded-full object-cover border border-slate-700"
+                        />
+                        <div>
+                          <p className="font-semibold text-white text-sm">{member.name}</p>
+                          <p className="text-slate-400 text-xs">{member.email}</p>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td className="py-3.5 px-4">
+                      <span className={`px-2.5 py-1 rounded text-[11px] font-semibold border ${role.color}`}>
+                        {role.label}
+                      </span>
+                    </td>
+
+                    <td className="py-3.5 px-4">
+                      <div className="flex flex-wrap gap-1 max-w-xs">
+                        {member.assignedClientIds.map((cId) => {
+                          const client = clients.find(c => c.id === cId);
+                          return (
+                            <span
+                              key={cId}
+                              className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 text-[10px]"
+                            >
+                              {client?.name || cId}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </td>
+
+                    <td className="py-3.5 px-4">
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase ${
+                        member.status === 'active'
+                          ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                          : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                      }`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${member.status === 'active' ? 'bg-emerald-400' : 'bg-amber-400'}`} />
+                        {member.status}
+                      </span>
+                    </td>
+
+                    <td className="py-3.5 px-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all"
+                          title="Edit Permissions"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* INVITE MODAL */}
+      {showInviteModal && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
+            <div className="p-6 border-b border-slate-800 flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-bold text-white">Invite Team Member</h3>
+                <p className="text-xs text-slate-400 mt-0.5">Assign agency role and workspace permissions</p>
+              </div>
+              <button
+                onClick={() => setShowInviteModal(false)}
+                className="text-slate-400 hover:text-white text-lg font-bold"
+              >
+                &times;
+              </button>
+            </div>
+
+            <form onSubmit={handleInviteSubmit} className="p-6 space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Full Name</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g., Rohit V."
+                  value={inviteName}
+                  onChange={(e) => setInviteName(e.target.value)}
+                  className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Work Email</label>
+                <input
+                  type="email"
+                  required
+                  placeholder="name@gwaliorweblabs.com"
+                  value={inviteEmail}
+                  onChange={(e) => setInviteEmail(e.target.value)}
+                  className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Role Assignment</label>
+                <select
+                  value={inviteRole}
+                  onChange={(e) => setInviteRole(e.target.value as UserRole)}
+                  className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-purple-500"
+                >
+                  <option value="content_creator">Content Creator (Drafts &amp; Media)</option>
+                  <option value="customer_support">Customer Support (Inbox &amp; Replies)</option>
+                  <option value="manager">Campaign Manager (Publishing &amp; Analytics)</option>
+                  <option value="agency_admin">Agency Admin (Multi-Client Supervisor)</option>
+                  <option value="client">Client Portal Reviewer (Restricted View)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Primary Workspace</label>
+                <select
+                  value={inviteClientId}
+                  onChange={(e) => setInviteClientId(e.target.value)}
+                  className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-purple-500"
+                >
+                  {clients.map(c => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="pt-3 flex items-center justify-end gap-3 border-t border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setShowInviteModal(false)}
+                  className="px-4 py-2 rounded-xl text-slate-400 hover:text-white text-sm font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-sm transition-all shadow-md shadow-purple-600/20"
+                >
+                  Send Invitation
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};

@@ -66,23 +66,37 @@ export const AnalyticsReportingView: React.FC = () => {
   const totalSaves = filteredPosts.reduce((acc, p) => acc + (p.metrics?.saves || 0), 0);
   const totalClicks = filteredPosts.reduce((acc, p) => acc + (p.metrics?.clicks || 0), 0);
 
-  // Time Series Chart Data
-  const engagementTrendData = [
-    { period: 'Week 1', reach: 24500, impressions: 38200, engagement: 2450, clicks: 310 },
-    { period: 'Week 2', reach: 31200, impressions: 49400, engagement: 3190, clicks: 420 },
-    { period: 'Week 3', reach: 42800, impressions: 68100, engagement: 4800, clicks: 640 },
-    { period: 'Week 4', reach: 58400, impressions: 94200, engagement: 6950, clicks: 920 }
-  ];
+  // Time Series Chart Data - strictly from real post records
+  const engagementTrendData = filteredPosts.length > 0
+    ? [
+        {
+          period: 'Current Period',
+          reach: totalReach,
+          impressions: totalImpressions,
+          engagement: totalLikes + totalComments + totalShares,
+          clicks: totalClicks
+        }
+      ]
+    : [];
 
-  // Channel Distribution
-  const channelBreakdownData = [
-    { platform: 'Instagram', reach: 48200, interactions: 4920 },
-    { platform: 'YouTube', reach: 64800, interactions: 7410 },
-    { platform: 'LinkedIn', reach: 21400, interactions: 1840 },
-    { platform: 'WhatsApp', reach: 12400, interactions: 3100 },
-    { platform: 'X', reach: 28900, interactions: 1420 },
-    { platform: 'Facebook', reach: 34100, interactions: 2150 }
-  ];
+  // Channel Distribution - strictly from real user channels and posts
+  const channelBreakdownData = filteredAccounts.map((acc) => ({
+    platform: acc.platform.charAt(0).toUpperCase() + acc.platform.slice(1),
+    reach: acc.followersCount || 0,
+    interactions: filteredPosts
+      .filter((p) => (p.platforms || []).includes(acc.platform))
+      .reduce((sum, p) => sum + (p.metrics?.likes || 0) + (p.metrics?.comments || 0), 0)
+  }));
+
+  const calculatedAvgEngagement = totalImpressions > 0 
+    ? (((totalLikes + totalComments + totalShares) / totalImpressions) * 100).toFixed(1) + '%'
+    : totalReach > 0
+      ? (((totalLikes + totalComments + totalShares) / totalReach) * 100).toFixed(1) + '%'
+      : '0.0%';
+
+  const calculatedCtr = totalImpressions > 0 
+    ? ((totalClicks / totalImpressions) * 100).toFixed(1) + '%' 
+    : '0.0%';
 
   // Export PDF Report using jsPDF
   const handleExportPdfReport = () => {
@@ -253,7 +267,9 @@ export const AnalyticsReportingView: React.FC = () => {
           <div className="text-xl sm:text-2xl font-bold font-display text-slate-900 dark:text-white mt-1">
             {totalImpressions.toLocaleString()}
           </div>
-          <div className="text-[10px] text-emerald-600 dark:text-emerald-400 mt-0.5">+24.2% vs last month</div>
+          <div className="text-[10px] text-emerald-600 dark:text-emerald-400 mt-0.5">
+            {filteredPosts.length > 0 ? `${filteredPosts.length} published broadcasts` : 'No broadcasts yet'}
+          </div>
         </div>
 
         <div className="p-4 rounded-2xl bg-white dark:bg-[#090f1e] border border-slate-200 dark:border-slate-800 shadow-sm">
@@ -261,7 +277,9 @@ export const AnalyticsReportingView: React.FC = () => {
           <div className="text-xl sm:text-2xl font-bold font-display text-slate-900 dark:text-white mt-1">
             {totalReach.toLocaleString()}
           </div>
-          <div className="text-[10px] text-emerald-600 dark:text-emerald-400 mt-0.5">+19.8% organic</div>
+          <div className="text-[10px] text-emerald-600 dark:text-emerald-400 mt-0.5">
+            {filteredAccounts.length > 0 ? `${filteredAccounts.length} connected channel${filteredAccounts.length === 1 ? '' : 's'}` : '0 channels connected'}
+          </div>
         </div>
 
         <div className="p-4 rounded-2xl bg-white dark:bg-[#090f1e] border border-slate-200 dark:border-slate-800 shadow-sm">
@@ -269,7 +287,9 @@ export const AnalyticsReportingView: React.FC = () => {
           <div className="text-xl sm:text-2xl font-bold font-display text-slate-900 dark:text-white mt-1">
             {totalClicks.toLocaleString()}
           </div>
-          <div className="text-[10px] text-sky-600 dark:text-sky-400 mt-0.5">3.8% Click-Through</div>
+          <div className="text-[10px] text-sky-600 dark:text-sky-400 mt-0.5">
+            {calculatedCtr} CTR
+          </div>
         </div>
 
         <div className="p-4 rounded-2xl bg-white dark:bg-[#090f1e] border border-slate-200 dark:border-slate-800 shadow-sm">
@@ -277,15 +297,19 @@ export const AnalyticsReportingView: React.FC = () => {
           <div className="text-xl sm:text-2xl font-bold font-display text-slate-900 dark:text-white mt-1">
             {totalSaves.toLocaleString()}
           </div>
-          <div className="text-[10px] text-purple-600 dark:text-purple-400 mt-0.5">High Intent Signal</div>
+          <div className="text-[10px] text-purple-600 dark:text-purple-400 mt-0.5">
+            Verified saves
+          </div>
         </div>
 
         <div className="p-4 rounded-2xl bg-white dark:bg-[#090f1e] border border-slate-200 dark:border-slate-800 shadow-sm">
           <div className="text-slate-500 dark:text-slate-400 text-[10px] font-mono uppercase">Avg Engagement</div>
           <div className="text-xl sm:text-2xl font-bold font-display text-slate-900 dark:text-white mt-1">
-            5.4%
+            {calculatedAvgEngagement}
           </div>
-          <div className="text-[10px] text-amber-600 dark:text-amber-400 mt-0.5">Top 10% Industry Tier</div>
+          <div className="text-[10px] text-amber-600 dark:text-amber-400 mt-0.5">
+            Live reaction rate
+          </div>
         </div>
       </div>
 
@@ -296,40 +320,52 @@ export const AnalyticsReportingView: React.FC = () => {
           <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-200 dark:border-slate-800">
             <div>
               <h3 className="font-display text-sm font-bold text-slate-900 dark:text-white">Reach & Impression Trends</h3>
-              <div className="text-xs text-slate-500 dark:text-slate-400">Weekly progression across all official channels</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400">Progression across official channels</div>
             </div>
-            <span className="font-mono text-xs text-emerald-600 dark:text-emerald-400 font-bold">+28.5% Growth</span>
+            {totalReach > 0 && (
+              <span className="font-mono text-xs text-emerald-600 dark:text-emerald-400 font-bold">
+                {totalReach.toLocaleString()} total reach
+              </span>
+            )}
           </div>
 
           <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={engagementTrendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="reachGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.0} />
-                  </linearGradient>
-                  <linearGradient id="impGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0.0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" className="dark:stroke-slate-800" />
-                <XAxis dataKey="period" stroke="#64748b" tick={{ fontSize: 11 }} />
-                <YAxis stroke="#64748b" tick={{ fontSize: 11 }} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: 'var(--theme-surface, #ffffff)',
-                    borderColor: '#cbd5e1',
-                    borderRadius: '12px',
-                    fontSize: '12px',
-                    color: '#0f172a'
-                  }}
-                />
-                <Area type="monotone" dataKey="impressions" name="Impressions" stroke="#10b981" fillOpacity={1} fill="url(#impGradient)" strokeWidth={2} />
-                <Area type="monotone" dataKey="reach" name="Reach" stroke="#3b82f6" fillOpacity={1} fill="url(#reachGradient)" strokeWidth={2} />
-              </AreaChart>
-            </ResponsiveContainer>
+            {engagementTrendData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={engagementTrendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="reachGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4} />
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.0} />
+                    </linearGradient>
+                    <linearGradient id="impGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#10b981" stopOpacity={0.0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" className="dark:stroke-slate-800" />
+                  <XAxis dataKey="period" stroke="#64748b" tick={{ fontSize: 11 }} />
+                  <YAxis stroke="#64748b" tick={{ fontSize: 11 }} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'var(--theme-surface, #ffffff)',
+                      borderColor: '#cbd5e1',
+                      borderRadius: '12px',
+                      fontSize: '12px',
+                      color: '#0f172a'
+                    }}
+                  />
+                  <Area type="monotone" dataKey="impressions" name="Impressions" stroke="#10b981" fillOpacity={1} fill="url(#impGradient)" strokeWidth={2} />
+                  <Area type="monotone" dataKey="reach" name="Reach" stroke="#3b82f6" fillOpacity={1} fill="url(#reachGradient)" strokeWidth={2} />
+                </AreaChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full flex flex-col items-center justify-center text-center p-6 border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl">
+                <TrendingUp className="w-8 h-8 text-slate-400 mb-2 opacity-50" />
+                <div className="text-sm font-semibold text-slate-700 dark:text-slate-300">No performance data available yet</div>
+                <p className="text-xs text-slate-500 max-w-sm mt-1">Connect your social accounts and publish content to start tracking live reach and impression curves.</p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -343,23 +379,31 @@ export const AnalyticsReportingView: React.FC = () => {
           </div>
 
           <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={channelBreakdownData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" className="dark:stroke-slate-800" />
-                <XAxis dataKey="platform" stroke="#64748b" tick={{ fontSize: 10 }} />
-                <YAxis stroke="#64748b" tick={{ fontSize: 10 }} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: 'var(--theme-surface, #ffffff)',
-                    borderColor: '#cbd5e1',
-                    borderRadius: '12px',
-                    fontSize: '12px',
-                    color: '#0f172a'
-                  }}
-                />
-                <Bar dataKey="interactions" name="Interactions" fill="#10b981" radius={[6, 6, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            {channelBreakdownData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={channelBreakdownData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" className="dark:stroke-slate-800" />
+                  <XAxis dataKey="platform" stroke="#64748b" tick={{ fontSize: 10 }} />
+                  <YAxis stroke="#64748b" tick={{ fontSize: 10 }} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'var(--theme-surface, #ffffff)',
+                      borderColor: '#cbd5e1',
+                      borderRadius: '12px',
+                      fontSize: '12px',
+                      color: '#0f172a'
+                    }}
+                  />
+                  <Bar dataKey="interactions" name="Interactions" fill="#10b981" radius={[6, 6, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full flex flex-col items-center justify-center text-center p-6 border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl">
+                <Share2 className="w-8 h-8 text-slate-400 mb-2 opacity-50" />
+                <div className="text-sm font-semibold text-slate-700 dark:text-slate-300">No channels connected yet</div>
+                <p className="text-xs text-slate-500 max-w-xs mt-1">Connect Instagram, LinkedIn, YouTube, or other channels to compare platform performance.</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -391,41 +435,55 @@ export const AnalyticsReportingView: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/60">
-              {filteredPosts.map((post) => (
-                <tr key={post.id} className="hover:bg-slate-900/40 transition-colors">
-                  <td className="py-3 pr-4 max-w-xs truncate">
-                    <div className="font-bold text-white truncate">{post.title || post.caption.slice(0, 35)}</div>
-                    <div className="text-[10px] text-slate-400 font-mono truncate">{new Date(post.createdAt).toLocaleDateString()}</div>
-                  </td>
-                  <td className="py-3 pr-4">
-                    <div className="flex items-center gap-1">
-                      {post.platforms.map((p) => (
-                        <span key={p} className="text-slate-400">
-                          {getPlatformIcon(p, 'w-3 h-3')}
-                        </span>
-                      ))}
+              {filteredPosts.length > 0 ? (
+                filteredPosts.map((post) => (
+                  <tr key={post.id} className="hover:bg-slate-900/40 transition-colors">
+                    <td className="py-3 pr-4 max-w-xs truncate">
+                      <div className="font-bold text-white truncate">{post.title || post.caption.slice(0, 35)}</div>
+                      <div className="text-[10px] text-slate-400 font-mono truncate">{new Date(post.createdAt).toLocaleDateString()}</div>
+                    </td>
+                    <td className="py-3 pr-4">
+                      <div className="flex items-center gap-1">
+                        {post.platforms.map((p) => (
+                          <span key={p} className="text-slate-400">
+                            {getPlatformIcon(p, 'w-3 h-3')}
+                          </span>
+                        ))}
+                      </div>
+                    </td>
+                    <td className="py-3 pr-4 font-mono text-emerald-400 uppercase text-[10px]">
+                      {post.mediaType}
+                    </td>
+                    <td className="py-3 pr-4 font-mono text-slate-200">
+                      {post.metrics?.impressions ? post.metrics.impressions.toLocaleString() : '0'}
+                    </td>
+                    <td className="py-3 pr-4 font-mono text-slate-200">
+                      {post.metrics?.likes || 0}
+                    </td>
+                    <td className="py-3 pr-4 font-mono text-slate-200">
+                      {post.metrics?.comments || 0}
+                    </td>
+                    <td className="py-3 pr-4 font-mono text-slate-200">
+                      {post.metrics?.saves || 0}
+                    </td>
+                    <td className="py-3 pr-4 font-mono text-emerald-400 font-bold">
+                      {post.metrics?.clicks || 0}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={8} className="py-12 text-center text-slate-500 dark:text-slate-400">
+                    <div className="flex flex-col items-center justify-center">
+                      <FileSpreadsheet className="w-8 h-8 text-slate-400 mb-2 opacity-40" />
+                      <span className="font-medium text-sm text-slate-700 dark:text-slate-300">No data available yet</span>
+                      <span className="text-xs text-slate-500 mt-1 max-w-sm">
+                        Posts published through Social Command Center will appear here with live engagement metrics.
+                      </span>
                     </div>
                   </td>
-                  <td className="py-3 pr-4 font-mono text-emerald-400 uppercase text-[10px]">
-                    {post.mediaType}
-                  </td>
-                  <td className="py-3 pr-4 font-mono text-slate-200">
-                    {post.metrics?.impressions ? post.metrics.impressions.toLocaleString() : '—'}
-                  </td>
-                  <td className="py-3 pr-4 font-mono text-slate-200">
-                    {post.metrics?.likes || '—'}
-                  </td>
-                  <td className="py-3 pr-4 font-mono text-slate-200">
-                    {post.metrics?.comments || '—'}
-                  </td>
-                  <td className="py-3 pr-4 font-mono text-slate-200">
-                    {post.metrics?.saves || '—'}
-                  </td>
-                  <td className="py-3 pr-4 font-mono text-emerald-400 font-bold">
-                    {post.metrics?.clicks || '—'}
-                  </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

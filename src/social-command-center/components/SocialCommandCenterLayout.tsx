@@ -26,7 +26,8 @@ import {
   ExternalLink,
   ChevronDown,
   Layers,
-  Globe
+  Globe,
+  HelpCircle
 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { ThemeSwitcher } from '../../components/ThemeSwitcher';
@@ -50,6 +51,10 @@ import { CreatePostModal } from './common/CreatePostModal';
 import { AuthModal } from './auth/AuthModal';
 import { OnboardingWizard } from './onboarding/OnboardingWizard';
 import { UserProfileModal } from './auth/UserProfileModal';
+import { TermsOfServiceModal } from './legal/TermsOfServiceModal';
+import { PrivacyPolicyModal } from './legal/PrivacyPolicyModal';
+import { HelpSupportModal } from './support/HelpSupportModal';
+import { PublicLandingView } from './public/PublicLandingView';
 
 interface SocialCommandCenterLayoutProps {
   onBackToWebsite: () => void;
@@ -72,7 +77,9 @@ export const SocialCommandCenterLayout: React.FC<SocialCommandCenterLayoutProps>
     openOnboarding,
     openProfileModal,
     currentPlanId,
-    userUsage
+    userUsage,
+    isAuthenticated,
+    logout
   } = useSocialCommand();
 
   const { theme, themeConfig } = useTheme();
@@ -83,6 +90,9 @@ export const SocialCommandCenterLayout: React.FC<SocialCommandCenterLayoutProps>
   const [showNotifications, setShowNotifications] = useState(false);
   const [showWorkspaceMenu, setShowWorkspaceMenu] = useState(false);
   const [globalSearchQuery, setGlobalSearchQuery] = useState('');
+  const [isTermsOpen, setIsTermsOpen] = useState(false);
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
 
   // Unread inbox count for current client
   const unreadInboxCount = conversations.filter(c => 
@@ -105,6 +115,10 @@ export const SocialCommandCenterLayout: React.FC<SocialCommandCenterLayoutProps>
     { id: 'super_admin', label: 'Super Admin', icon: ShieldAlert, adminOnly: true },
   ];
 
+  const visibleNavItems = navigationItems.filter(
+    item => !item.adminOnly || currentUser?.role === 'super_admin'
+  );
+
   const renderActiveView = () => {
     switch (currentTab) {
       case 'overview': return <OverviewDashboard />;
@@ -124,6 +138,23 @@ export const SocialCommandCenterLayout: React.FC<SocialCommandCenterLayoutProps>
     }
   };
 
+  if (!isAuthenticated) {
+    return (
+      <div className="relative">
+        <PublicLandingView 
+          onBackToWebsite={onBackToWebsite}
+          onOpenTerms={() => setIsTermsOpen(true)}
+          onOpenPrivacy={() => setIsPrivacyOpen(true)}
+          onOpenHelp={() => setIsHelpOpen(true)}
+        />
+        <AuthModal />
+        <TermsOfServiceModal isOpen={isTermsOpen} onClose={() => setIsTermsOpen(false)} />
+        <PrivacyPolicyModal isOpen={isPrivacyOpen} onClose={() => setIsPrivacyOpen(false)} />
+        <HelpSupportModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
+      </div>
+    );
+  }
+
   return (
     <div className={`social-command-root min-h-screen flex flex-col font-sans transition-colors duration-300 selection:bg-cyan-500 selection:text-black ${
       isLight ? 'bg-slate-50 text-slate-900' : 'bg-[#05070c] text-slate-100'
@@ -140,7 +171,20 @@ export const SocialCommandCenterLayout: React.FC<SocialCommandCenterLayoutProps>
           <span className="hidden sm:inline text-slate-400">| Flagship Social Media Management Suite</span>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setIsHelpOpen(true)}
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all border cursor-pointer ${
+              isLight
+                ? 'bg-slate-100 hover:bg-slate-200 border-slate-300 text-slate-800'
+                : 'bg-slate-800/80 hover:bg-slate-700 border-slate-700 text-slate-200'
+            }`}
+            title="Open Documentation & Help Desk"
+          >
+            <HelpCircle className="w-3.5 h-3.5 text-cyan-400" />
+            <span className="hidden sm:inline">Help & Docs</span>
+          </button>
+
           <button
             onClick={onBackToWebsite}
             className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all border cursor-pointer ${
@@ -226,7 +270,7 @@ export const SocialCommandCenterLayout: React.FC<SocialCommandCenterLayoutProps>
 
           {/* Navigation Links */}
           <div className="flex-1 overflow-y-auto px-3 py-2 space-y-1 custom-scrollbar">
-            {navigationItems.map((item) => {
+            {visibleNavItems.map((item) => {
               const Icon = item.icon;
               const isActive = currentTab === item.id;
 
@@ -297,22 +341,46 @@ export const SocialCommandCenterLayout: React.FC<SocialCommandCenterLayoutProps>
             </button>
 
             {!isSidebarCollapsed && (
-              <div className="grid grid-cols-2 gap-1.5 pt-1">
-                <button
-                  onClick={openOnboarding}
-                  className="px-2 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700/80 text-[10px] font-semibold text-slate-300 hover:text-white flex items-center justify-center gap-1 transition-all"
-                  title="Launch Step-by-Step Onboarding Setup"
-                >
-                  <Sparkles className="w-3 h-3 text-cyan-400" />
-                  <span>Setup Guide</span>
-                </button>
-                <button
-                  onClick={() => openAuthModal('login')}
-                  className="px-2 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700/80 text-[10px] font-semibold text-slate-300 hover:text-white flex items-center justify-center gap-1 transition-all"
-                  title="Switch User or Authenticate"
-                >
-                  <span>Sign In</span>
-                </button>
+              <div className="space-y-1.5 pt-1">
+                <div className="grid grid-cols-2 gap-1.5">
+                  <button
+                    onClick={openOnboarding}
+                    className="px-2 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700/80 text-[10px] font-semibold text-slate-300 hover:text-white flex items-center justify-center gap-1 transition-all"
+                    title="Launch Step-by-Step Onboarding Setup"
+                  >
+                    <Sparkles className="w-3 h-3 text-cyan-400" />
+                    <span>Setup Guide</span>
+                  </button>
+                  <button
+                    onClick={logout}
+                    className="px-2 py-1.5 rounded-lg bg-slate-800/80 hover:bg-rose-500/20 text-[10px] font-semibold text-slate-300 hover:text-rose-300 flex items-center justify-center gap-1 transition-all cursor-pointer"
+                    title="Sign Out of Social Command Center"
+                  >
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+                <div className="flex items-center justify-between text-[10px] text-slate-500 pt-1 px-1">
+                  <button
+                    onClick={() => setIsHelpOpen(true)}
+                    className="hover:text-cyan-400 transition-colors cursor-pointer"
+                  >
+                    Help
+                  </button>
+                  <span>•</span>
+                  <button
+                    onClick={() => setIsTermsOpen(true)}
+                    className="hover:text-cyan-400 transition-colors cursor-pointer"
+                  >
+                    Terms
+                  </button>
+                  <span>•</span>
+                  <button
+                    onClick={() => setIsPrivacyOpen(true)}
+                    className="hover:text-cyan-400 transition-colors cursor-pointer"
+                  >
+                    Privacy
+                  </button>
+                </div>
               </div>
             )}
           </div>
@@ -352,7 +420,7 @@ export const SocialCommandCenterLayout: React.FC<SocialCommandCenterLayoutProps>
               </div>
 
               <div className="flex-1 overflow-y-auto space-y-1">
-                {navigationItems.map((item) => {
+                {visibleNavItems.map((item) => {
                   const Icon = item.icon;
                   return (
                     <button
@@ -379,12 +447,23 @@ export const SocialCommandCenterLayout: React.FC<SocialCommandCenterLayoutProps>
                 })}
               </div>
 
-              <button
-                onClick={onBackToWebsite}
-                className="mt-auto py-2.5 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold flex items-center justify-center gap-2"
-              >
-                <ArrowLeft className="w-4 h-4" /> Return to Website
-              </button>
+              <div className="mt-auto space-y-2 pt-2 border-t border-slate-800">
+                <button
+                  onClick={() => {
+                    setIsMobileSidebarOpen(false);
+                    logout();
+                  }}
+                  className="w-full py-2.5 rounded-xl bg-rose-500/10 text-rose-300 text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <span>Sign Out</span>
+                </button>
+                <button
+                  onClick={onBackToWebsite}
+                  className="w-full py-2.5 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <ArrowLeft className="w-4 h-4" /> Return to Website
+                </button>
+              </div>
             </div>
             <div className="flex-1" onClick={() => setIsMobileSidebarOpen(false)} />
           </div>
@@ -552,15 +631,15 @@ export const SocialCommandCenterLayout: React.FC<SocialCommandCenterLayoutProps>
               {/* Theme Light/Dark Mode Toggle */}
               <ThemeToggle id="social-command-theme-toggle" />
 
-              {/* Direct WhatsApp Agency Hotline */}
-              <a
-                href="https://wa.me/917587939722?text=Hello%20Gwalior%20Web%20Labs%20Team%2C%20I%20have%20an%20inquiry%20regarding%20Social%20Command%20Center"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 text-xs font-semibold transition-all"
+              {/* Help Desk & Support Trigger */}
+              <button
+                onClick={() => setIsHelpOpen(true)}
+                className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/20 text-xs font-semibold transition-all cursor-pointer"
+                title="Help Desk & Documentation"
               >
-                <span>Support: +91 75879 39722</span>
-              </a>
+                <HelpCircle className="w-3.5 h-3.5" />
+                <span>Support &amp; Docs</span>
+              </button>
 
               {/* Direct Switch to Traditional Agency Website */}
               <button
@@ -600,6 +679,13 @@ export const SocialCommandCenterLayout: React.FC<SocialCommandCenterLayoutProps>
 
       {/* USER PROFILE & SECURITY CREDENTIALS MODAL */}
       <UserProfileModal />
+
+      {/* PUBLIC LEGAL & COMPLIANCE MODALS */}
+      <TermsOfServiceModal isOpen={isTermsOpen} onClose={() => setIsTermsOpen(false)} />
+      <PrivacyPolicyModal isOpen={isPrivacyOpen} onClose={() => setIsPrivacyOpen(false)} />
+
+      {/* HELP & ENGINEERING SUPPORT MODAL */}
+      <HelpSupportModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
     </div>
   );
 };

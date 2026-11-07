@@ -23,6 +23,7 @@ export const UserProfileModal: React.FC = () => {
     closeProfileModal, 
     currentUser, 
     logout, 
+    deleteAccount,
     openAuthModal, 
     openOnboarding,
     clientWorkspaces 
@@ -108,13 +109,32 @@ export const UserProfileModal: React.FC = () => {
             onClick={async () => {
               closeProfileModal();
               await logout();
-              openAuthModal('login');
             }}
-            className="w-full py-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/20 text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer"
+            className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer"
           >
-            <LogOut className="w-4 h-4" />
-            <span>Sign Out of Command Center</span>
+            <LogOut className="w-4 h-4 text-slate-400" />
+            <span>Sign Out to Public Page</span>
           </button>
+
+          <div className="pt-2 border-t border-slate-800/80">
+            <button
+              onClick={() => {
+                if (window.confirm("CRITICAL WARNING: Are you sure you want to permanently delete your account?\n\nThis will permanently purge your workspace, all connected social accounts, scheduled posts, analytics, and client data from the database. This action CANNOT be undone.")) {
+                  deleteAccount().then((res) => {
+                    if (res.success) {
+                      closeProfileModal();
+                    } else {
+                      alert(res.error || 'Failed to delete account');
+                    }
+                  });
+                }
+              }}
+              className="w-full py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+            >
+              <AlertCircle className="w-3.5 h-3.5" />
+              <span>Permanently Delete My Account &amp; Workspace</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

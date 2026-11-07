@@ -32,7 +32,8 @@ export const CreatePostModal: React.FC = () => {
     clientWorkspaces,
     activeClientId,
     userUsage,
-    openPaywall
+    openPaywall,
+    currentUser
   } = useSocialCommand();
 
   const [selectedPlatforms, setSelectedPlatforms] = useState<SocialPlatformType[]>(['instagram', 'linkedin', 'twitter']);
@@ -129,8 +130,8 @@ export const CreatePostModal: React.FC = () => {
         status: targetStatus,
         scheduledFor: targetStatus === 'scheduled' ? `${scheduledDate}T${scheduledTime}:00Z` : undefined,
         publishedAt: targetStatus === 'published' ? new Date().toISOString() : undefined,
-        authorName: 'Sumit Sharma',
-        authorAvatar: '/assets/aistudio/Gemini_Generated_Image_b1kwab1kwab1kwab_83d54e8a.png',
+        authorName: currentUser?.name || 'Workspace Member',
+        authorAvatar: currentUser?.avatar || '/assets/aistudio/Gemini_Generated_Image_b1kwab1kwab1kwab_83d54e8a.png',
         clientApproved: !currentWorkspace.approvalRequired || targetStatus === 'draft'
       });
 

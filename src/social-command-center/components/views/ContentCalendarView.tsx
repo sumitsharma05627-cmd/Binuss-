@@ -244,7 +244,8 @@ export const ContentCalendarView: React.FC = () => {
               {daysArray.map((day) => {
                 const dayPosts = getPostsForDay(day);
                 const isSelected = selectedDay === day;
-                const isToday = day === 4 && currentMonthIndex === 10 && currentYear === 2026;
+                const now = new Date();
+                const isToday = day === now.getDate() && currentMonthIndex === now.getMonth() && currentYear === now.getFullYear();
 
                 return (
                   <div
@@ -347,7 +348,7 @@ export const ContentCalendarView: React.FC = () => {
                           <button
                             onClick={() => {
                               setReschedulingPost(post);
-                              setRescheduleDate(post.scheduledFor ? post.scheduledFor.slice(0, 16) : '2026-11-06T15:30');
+                              setRescheduleDate(post.scheduledFor ? post.scheduledFor.slice(0, 16) : new Date(Date.now() + 86400000).toISOString().slice(0, 16));
                             }}
                             className="p-1 rounded text-slate-400 hover:text-cyan-400 hover:bg-slate-800"
                             title="Reschedule Post"

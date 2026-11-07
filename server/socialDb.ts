@@ -3,13 +3,6 @@ import path from 'path';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import { 
-  INITIAL_CLIENT_WORKSPACES, 
-  INITIAL_SOCIAL_ACCOUNTS, 
-  INITIAL_SOCIAL_POSTS, 
-  INITIAL_INBOX_CONVERSATIONS, 
-  INITIAL_AUTOMATIONS, 
-  INITIAL_MEDIA_ASSETS, 
-  INITIAL_TEAM_MEMBERS, 
   INITIAL_SUBSCRIPTION_PLANS 
 } from '../src/social-command-center/data/initialState';
 import { SubscriptionConfig, UserUsageStats } from '../src/social-command-center/types';
@@ -124,57 +117,121 @@ export interface SocialDatabase {
   }>;
 }
 
-// Ensure database file exists with initial records
+// Clean production database initialization with 0 demo data
 function initDatabase(): SocialDatabase {
   if (!fs.existsSync(DATA_DIR)) {
     fs.mkdirSync(DATA_DIR, { recursive: true });
   }
 
+  const defaultPassword = hashPassword('Admin@123456');
+  const adminId = 'user-sumit-admin';
+  const adminWorkspaceId = 'client-admin-primary';
+
+  // If DB exists, clean any old hardcoded demo records (like sample posts, fake clients)
   if (fs.existsSync(DB_FILE)) {
     try {
-      const data = JSON.parse(fs.readFileSync(DB_FILE, 'utf-8'));
-      // Migrations / backward compatibility checks
+      const data: SocialDatabase = JSON.parse(fs.readFileSync(DB_FILE, 'utf-8'));
+      
+      // Ensure collections exist
+      if (!Array.isArray(data.users)) data.users = [];
+      if (!Array.isArray(data.sessions)) data.sessions = [];
+      if (!Array.isArray(data.clients)) data.clients = [];
+      if (!Array.isArray(data.accounts)) data.accounts = [];
+      if (!Array.isArray(data.posts)) data.posts = [];
+      if (!Array.isArray(data.conversations)) data.conversations = [];
+      if (!Array.isArray(data.automations)) data.automations = [];
+      if (!Array.isArray(data.media)) data.media = [];
+      if (!Array.isArray(data.teamMembers)) data.teamMembers = [];
       if (!Array.isArray(data.payments)) data.payments = [];
+      if (!Array.isArray(data.auditLogs)) data.auditLogs = [];
       if (!Array.isArray(data.plans) || data.plans.length === 0) data.plans = INITIAL_SUBSCRIPTION_PLANS;
-      if (Array.isArray(data.users)) {
-        data.users.forEach((u: StoredUser) => {
-          if (!u.planTier) {
-            u.planTier = u.role === 'super_admin' ? 'agency' : 'starter';
-          }
-          if (!u.subscriptionStatus) {
-            u.subscriptionStatus = 'active';
-          }
-          if (!u.billingCycle) {
-            u.billingCycle = 'annual';
-          }
-          if (!u.subscriptionExpiresAt) {
-            u.subscriptionExpiresAt = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString();
-          }
-          if (!u.subscriptionStartedAt) {
-            u.subscriptionStartedAt = u.createdAt || new Date().toISOString();
-          }
-          if (u.aiQueriesUsedThisMonth === undefined) {
-            u.aiQueriesUsedThisMonth = 34;
-          }
+
+      // Filter out demo user if present
+      data.users = data.users.filter(u => u.id !== 'user-demo-marketer' && u.email !== 'demo@gwaliorweblabs.com');
+
+      // Purge fake demo clients
+      const demoClientIds = ['client-gwl', 'client-georgians', 'client-yanshi', 'client-brightedge', 'client-tellwell'];
+      data.clients = data.clients.filter(c => !demoClientIds.includes(c.id));
+
+      // Purge demo posts (those linked to demo clients or with fake demo metrics)
+      data.posts = data.posts.filter(p => !demoClientIds.includes(p.clientId) && p.id && !p.id.startsWith('post-ig-') && !p.id.startsWith('post-li-') && !p.id.startsWith('post-yt-') && !p.id.startsWith('post-wa-') && !p.id.startsWith('post-tw-'));
+
+      // Purge demo accounts
+      data.accounts = data.accounts.filter(a => !demoClientIds.includes(a.clientId) && a.id && !a.id.startsWith('acc-ig-') && !a.id.startsWith('acc-li-') && !a.id.startsWith('acc-yt-') && !a.id.startsWith('acc-x-') && !a.id.startsWith('acc-wa-') && !a.id.startsWith('acc-fb-'));
+
+      // Ensure super_admin user exists for platform administration
+      let adminUser = data.users.find(u => u.role === 'super_admin' || u.email === 'admin@commandcenter.local');
+      if (!adminUser) {
+        adminUser = {
+          id: 'user-platform-admin',
+          name: 'Platform Administrator',
+          email: 'admin@commandcenter.local',
+          passwordHash: defaultPassword,
+          phone: '',
+          country: 'India',
+          accountType: 'agency',
+          role: 'super_admin',
+          avatarUrl: '/assets/aistudio/Gemini_Generated_Image_b1kwab1kwab1kwab_83d54e8a.png',
+          status: 'active',
+          emailVerified: true,
+          onboardingCompleted: true,
+          planTier: 'agency',
+          subscriptionStatus: 'active',
+          billingCycle: 'annual',
+          subscriptionExpiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+          subscriptionStartedAt: new Date().toISOString(),
+          aiQueriesUsedThisMonth: 0,
+          createdAt: new Date().toISOString(),
+          lastLoginAt: new Date().toISOString()
+        };
+        data.users.push(adminUser);
+      }
+
+      // Ensure super_admin has a clean primary workspace
+      let adminWs = data.clients.find(c => c.userId === adminUser?.id);
+      if (!adminWs) {
+        data.clients.push({
+          id: adminWorkspaceId,
+          userId: adminUser.id,
+          name: 'Master Workspace',
+          companyName: 'Digital Agency',
+          slug: 'master-workspace',
+          logoUrl: adminUser.avatarUrl,
+          industry: 'Digital Engineering & Marketing',
+          website: 'https://example.com',
+          primaryContact: {
+            name: adminUser.name,
+            email: adminUser.email,
+            phone: adminUser.phone || ''
+          },
+          planTier: 'agency',
+          accountIds: [],
+          assignedTeamMemberIds: [adminUser.id],
+          approvalRequired: false,
+          brandColors: {
+            primary: '#06b6d4',
+            secondary: '#3b82f6'
+          },
+          createdAt: new Date().toISOString()
         });
       }
+
+      fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf-8');
       return data;
     } catch (err) {
-      console.error('Failed to parse existing DB file. Re-initializing...', err);
+      console.error('Failed to parse existing DB file. Initializing clean production database...', err);
     }
   }
 
-  const defaultPassword = hashPassword('Admin@123456');
-  const demoUserPassword = hashPassword('User@123456');
-
+  // Brand-new production initial database
   const initialDb: SocialDatabase = {
     users: [
       {
-        id: 'user-sumit-admin',
-        name: 'Sumit Sharma',
-        email: 'gwaliorweblabs@gmail.com',
+        id: 'user-platform-admin',
+        name: 'Platform Administrator',
+        email: 'admin@commandcenter.local',
         passwordHash: defaultPassword,
-        phone: '+91 75879 39722',
+        phone: '',
         country: 'India',
         accountType: 'agency',
         role: 'super_admin',
@@ -186,90 +243,66 @@ function initDatabase(): SocialDatabase {
         subscriptionStatus: 'active',
         billingCycle: 'annual',
         subscriptionExpiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-        subscriptionStartedAt: '2026-01-10T10:00:00.000Z',
-        aiQueriesUsedThisMonth: 142,
-        createdAt: '2026-01-10T10:00:00.000Z',
-        lastLoginAt: new Date().toISOString()
-      },
-      {
-        id: 'user-demo-marketer',
-        name: 'Aarav Gupta',
-        email: 'demo@gwaliorweblabs.com',
-        passwordHash: demoUserPassword,
-        phone: '+91 98260 12345',
-        country: 'India',
-        accountType: 'freelancer',
-        role: 'agency_admin',
-        avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
-        status: 'active',
-        emailVerified: true,
-        onboardingCompleted: true,
-        planTier: 'professional',
-        subscriptionStatus: 'active',
-        billingCycle: 'monthly',
-        subscriptionExpiresAt: new Date(Date.now() + 28 * 24 * 60 * 60 * 1000).toISOString(),
-        subscriptionStartedAt: '2026-02-01T12:00:00.000Z',
-        aiQueriesUsedThisMonth: 88,
-        createdAt: '2026-02-01T12:00:00.000Z',
+        subscriptionStartedAt: new Date().toISOString(),
+        aiQueriesUsedThisMonth: 0,
+        createdAt: new Date().toISOString(),
         lastLoginAt: new Date().toISOString()
       }
     ],
     sessions: [],
-    clients: INITIAL_CLIENT_WORKSPACES,
-    accounts: INITIAL_SOCIAL_ACCOUNTS,
-    posts: INITIAL_SOCIAL_POSTS,
-    conversations: INITIAL_INBOX_CONVERSATIONS,
-    automations: INITIAL_AUTOMATIONS,
-    media: INITIAL_MEDIA_ASSETS,
-    teamMembers: INITIAL_TEAM_MEMBERS,
-    plans: INITIAL_SUBSCRIPTION_PLANS,
-    payments: [
+    clients: [
       {
-        id: 'pay-sample-001',
-        userId: 'user-sumit-admin',
-        userEmail: 'gwaliorweblabs@gmail.com',
-        userName: 'Sumit Sharma',
-        orderId: 'order_GWL_PROD_99182',
-        paymentId: 'pay_GWL_LIVE_882914',
-        signature: 'sig_verified_hmac_sha256_mock_init',
-        planId: 'agency',
-        planName: 'Digital Agency Suite',
-        billingCycle: 'annual',
-        amount: 99990,
-        currency: 'INR',
-        status: 'verified',
-        invoiceNumber: 'INV-GWL-2026-0042',
-        method: 'razorpay_upi',
-        createdAt: '2026-01-10T10:05:00.000Z',
-        verifiedAt: '2026-01-10T10:05:12.000Z'
-      },
-      {
-        id: 'pay-sample-002',
-        userId: 'user-demo-marketer',
-        userEmail: 'demo@gwaliorweblabs.com',
-        userName: 'Aarav Gupta',
-        orderId: 'order_GWL_PROD_77261',
-        paymentId: 'pay_GWL_LIVE_661902',
-        signature: 'sig_verified_hmac_sha256_mock_init',
-        planId: 'professional',
-        planName: 'Growth Business',
-        billingCycle: 'monthly',
-        amount: 4999,
-        currency: 'INR',
-        status: 'verified',
-        invoiceNumber: 'INV-GWL-2026-0089',
-        method: 'razorpay_card',
-        createdAt: '2026-02-01T12:05:00.000Z',
-        verifiedAt: '2026-02-01T12:05:15.000Z'
+        id: adminWorkspaceId,
+        userId: 'user-platform-admin',
+        name: 'Master Workspace',
+        companyName: 'Digital Agency',
+        slug: 'master-workspace',
+        logoUrl: '/assets/aistudio/Gemini_Generated_Image_b1kwab1kwab1kwab_83d54e8a.png',
+        industry: 'Digital Engineering & Marketing',
+        website: 'https://example.com',
+        primaryContact: {
+          name: 'Platform Administrator',
+          email: 'admin@commandcenter.local',
+          phone: ''
+        },
+        planTier: 'agency',
+        accountIds: [],
+        assignedTeamMemberIds: ['user-platform-admin'],
+        approvalRequired: false,
+        brandColors: {
+          primary: '#06b6d4',
+          secondary: '#3b82f6'
+        },
+        createdAt: new Date().toISOString()
       }
     ],
+    accounts: [],
+    posts: [],
+    conversations: [],
+    automations: [],
+    media: [],
+    teamMembers: [
+      {
+        id: 'tm-admin-1',
+        userId: 'user-platform-admin',
+        workspaceId: adminWorkspaceId,
+        name: 'Platform Administrator',
+        email: 'admin@commandcenter.local',
+        role: 'super_admin',
+        avatarUrl: '/assets/aistudio/Gemini_Generated_Image_b1kwab1kwab1kwab_83d54e8a.png',
+        status: 'active',
+        joinedAt: new Date().toISOString()
+      }
+    ],
+    plans: INITIAL_SUBSCRIPTION_PLANS,
+    payments: [],
     auditLogs: [
       {
-        id: 'log-1',
+        id: 'log-boot-1',
         action: 'SYSTEM_BOOT',
         userId: 'system',
         userName: 'Gwalior Web Labs Engine',
-        details: 'Social Command Center persistent store & monetization engine mounted successfully.',
+        details: 'Social Command Center multi-user platform initialized with zero-data isolation.',
         status: 'success',
         timestamp: new Date().toISOString()
       }
@@ -325,7 +358,7 @@ class SocialDatabaseService {
 
               this.addAuditLog({
                 action: 'POST_AUTO_DISPATCHED',
-                userId: 'system-cron',
+                userId: post.userId || 'system-cron',
                 userName: 'Scheduler Daemon',
                 details: `Scheduled post ${post.id} auto-published to platforms: ${(post.platforms || []).join(', ')}`,
                 status: 'success'
@@ -360,7 +393,7 @@ class SocialDatabaseService {
       } catch (err) {
         console.error('Error in background dispatcher:', err);
       }
-    }, 20000); // Check every 20 seconds
+    }, 20000);
   }
 
   public getDbSnapshot(): SocialDatabase {
@@ -379,7 +412,6 @@ class SocialDatabaseService {
     this.db.plans[planIndex] = {
       ...this.db.plans[planIndex],
       ...updates,
-      // Ensure numeric limits remain numbers
       monthlyPrice: Number(updates.monthlyPrice ?? this.db.plans[planIndex].monthlyPrice),
       annualPrice: Number(updates.annualPrice ?? this.db.plans[planIndex].annualPrice),
       maxClients: Number(updates.maxClients ?? this.db.plans[planIndex].maxClients),
@@ -411,6 +443,10 @@ class SocialDatabaseService {
 
   public findUserById(id: string): StoredUser | undefined {
     return this.db.users.find((u) => u.id === id);
+  }
+
+  public getAllUsers(): StoredUser[] {
+    return this.db.users;
   }
 
   public createUser(userData: {
@@ -453,19 +489,21 @@ class SocialDatabaseService {
 
     this.db.users.push(newUser);
 
-    // Auto-create a private client workspace for this user
+    // Auto-create an isolated private workspace for this new user
+    const workspaceId = `client-${crypto.randomBytes(6).toString('hex')}`;
     const clientWorkspace = {
-      id: `client-${crypto.randomBytes(6).toString('hex')}`,
+      id: workspaceId,
+      userId: newUser.id,
       name: `${userData.name}'s Workspace`,
-      companyName: `${userData.name} Digital`,
-      slug: `${userData.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}-workspace`,
+      companyName: `${userData.name}`,
+      slug: `${userData.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Date.now().toString().slice(-4)}`,
       logoUrl: newUser.avatarUrl,
-      industry: userData.accountType === 'agency' ? 'Digital Agency & Marketing' : 'Business & Services',
+      industry: userData.accountType === 'agency' ? 'Digital Agency & Marketing' : 'Business & Creator',
       website: '',
       primaryContact: {
         name: userData.name,
         email: userData.email,
-        phone: userData.phone || '+91 75879 39722'
+        phone: userData.phone || ''
       },
       planTier: 'free',
       accountIds: [],
@@ -477,13 +515,26 @@ class SocialDatabaseService {
       },
       createdAt: new Date().toISOString()
     };
-
     this.db.clients.push(clientWorkspace);
+
+    // Create owner team member entry
+    this.db.teamMembers.push({
+      id: `tm-${crypto.randomBytes(6).toString('hex')}`,
+      userId: newUser.id,
+      workspaceId,
+      name: newUser.name,
+      email: newUser.email,
+      role: newUser.role,
+      avatarUrl: newUser.avatarUrl,
+      status: 'active',
+      joinedAt: new Date().toISOString()
+    });
+
     this.addAuditLog({
       action: 'USER_REGISTERED',
       userId: newUser.id,
       userName: newUser.name,
-      details: `New account created (${newUser.accountType}). 14-Day Free Trial initiated. PIN: ${verificationPin}`,
+      details: `New account created (${newUser.accountType}). 14-Day Free Trial initiated with private workspace. PIN: ${verificationPin}`,
       status: 'success'
     });
 
@@ -514,7 +565,7 @@ class SocialDatabaseService {
 
   public createSession(userId: string): StoredSession {
     const token = crypto.randomBytes(32).toString('hex');
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(); // 7 days
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
     const session: StoredSession = {
       token,
       userId,
@@ -539,6 +590,133 @@ class SocialDatabaseService {
   public deleteSession(token: string) {
     this.db.sessions = this.db.sessions.filter((s) => s.token !== token);
     this.save();
+  }
+
+  public googleAuth(profile: { email: string; name: string; avatarUrl?: string; googleId?: string }): { user: StoredUser; token: string } {
+    let user = this.findUserByEmail(profile.email);
+    if (!user) {
+      const newUser: StoredUser = {
+        id: `user-${crypto.randomBytes(6).toString('hex')}`,
+        name: profile.name || profile.email.split('@')[0],
+        email: profile.email.toLowerCase(),
+        passwordHash: hashPassword(crypto.randomBytes(16).toString('hex')),
+        phone: '',
+        country: 'India',
+        accountType: 'individual',
+        role: 'agency_admin',
+        avatarUrl: profile.avatarUrl || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(profile.email)}`,
+        status: 'active',
+        emailVerified: true,
+        onboardingCompleted: true,
+        planTier: 'free',
+        subscriptionStatus: 'trialing',
+        billingCycle: 'monthly',
+        subscriptionExpiresAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+        subscriptionStartedAt: new Date().toISOString(),
+        aiQueriesUsedThisMonth: 0,
+        createdAt: new Date().toISOString(),
+        lastLoginAt: new Date().toISOString()
+      };
+      this.db.users.push(newUser);
+
+      // Auto-create workspace
+      const workspaceId = `client-${crypto.randomBytes(6).toString('hex')}`;
+      const clientWorkspace = {
+        id: workspaceId,
+        userId: newUser.id,
+        name: `${newUser.name}'s Workspace`,
+        companyName: `${newUser.name}`,
+        slug: `${newUser.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Date.now().toString().slice(-4)}`,
+        logoUrl: newUser.avatarUrl,
+        industry: 'Business & Creator',
+        website: '',
+        primaryContact: {
+          name: newUser.name,
+          email: newUser.email,
+          phone: ''
+        },
+        planTier: 'free',
+        accountIds: [],
+        assignedTeamMemberIds: [newUser.id],
+        approvalRequired: false,
+        brandColors: {
+          primary: '#06b6d4',
+          secondary: '#3b82f6'
+        },
+        createdAt: new Date().toISOString()
+      };
+      this.db.clients.push(clientWorkspace);
+
+      this.db.teamMembers.push({
+        id: `tm-${crypto.randomBytes(6).toString('hex')}`,
+        userId: newUser.id,
+        workspaceId,
+        name: newUser.name,
+        email: newUser.email,
+        role: newUser.role,
+        avatarUrl: newUser.avatarUrl,
+        status: 'active',
+        joinedAt: new Date().toISOString()
+      });
+
+      this.addAuditLog({
+        action: 'USER_REGISTERED',
+        userId: newUser.id,
+        userName: newUser.name,
+        details: `Account created via Google Single Sign-On (${newUser.email}).`,
+        status: 'success'
+      });
+      user = newUser;
+    } else {
+      user.lastLoginAt = new Date().toISOString();
+      if (profile.avatarUrl && !user.avatarUrl) {
+        user.avatarUrl = profile.avatarUrl;
+      }
+      this.addAuditLog({
+        action: 'USER_LOGIN',
+        userId: user.id,
+        userName: user.name,
+        details: `Successful Google Sign-In (${user.email}).`,
+        status: 'success'
+      });
+    }
+
+    const session = this.createSession(user.id);
+    this.save();
+    return { user, token: session.token };
+  }
+
+  public deleteUserAccount(userId: string): boolean {
+    const user = this.findUserById(userId);
+    if (!user) return false;
+
+    // Purge user sessions
+    this.db.sessions = this.db.sessions.filter((s) => s.userId !== userId);
+
+    // Purge user workspaces and isolated records
+    const userWorkspaceIds = this.db.clients.filter((c) => c.userId === userId).map((c) => c.id);
+    this.db.clients = this.db.clients.filter((c) => c.userId !== userId);
+    this.db.accounts = this.db.accounts.filter((a) => a.userId !== userId && !userWorkspaceIds.includes(a.clientId));
+    this.db.posts = this.db.posts.filter((p) => p.userId !== userId && !userWorkspaceIds.includes(p.clientId));
+    this.db.conversations = this.db.conversations.filter((cv) => cv.userId !== userId);
+    this.db.automations = this.db.automations.filter((at) => at.userId !== userId);
+    this.db.media = this.db.media.filter((m) => m.userId !== userId);
+    this.db.teamMembers = this.db.teamMembers.filter((tm) => tm.userId !== userId);
+    this.db.payments = this.db.payments.filter((pm) => pm.userId !== userId);
+
+    // Remove user
+    this.db.users = this.db.users.filter((u) => u.id !== userId);
+
+    this.addAuditLog({
+      action: 'USER_ACCOUNT_DELETED',
+      userId,
+      userName: user.name,
+      details: `User account and all isolated workspaces permanently deleted upon user request.`,
+      status: 'warning'
+    });
+
+    this.save();
+    return true;
   }
 
   // --- Payment & Razorpay Gateway Operations ---
@@ -582,7 +760,7 @@ class SocialDatabaseService {
       customer: {
         name: user.name,
         email: user.email,
-        contact: user.phone || '+91 75879 39722'
+        contact: user.phone || ''
       }
     };
   }
@@ -602,12 +780,10 @@ class SocialDatabaseService {
     const plan = this.getPlanById(params.planId);
     if (!plan) throw new Error('Plan not found.');
 
-    // Server-side HMAC SHA256 Signature Verification
     const secret = process.env.RAZORPAY_KEY_SECRET || 'rzp_secret_gwl_secure_test_key';
     const body = `${params.orderId}|${params.paymentId}`;
     const expectedSignature = crypto.createHmac('sha256', secret).update(body).digest('hex');
 
-    // Allow verification if signature matches OR in sandbox test environments
     const isSignatureValid = (params.signature === expectedSignature) || 
       params.signature.startsWith('sig_test_') || 
       params.signature.startsWith('sandbox_');
@@ -623,7 +799,6 @@ class SocialDatabaseService {
       throw new Error('Payment signature verification failed. Tampered or invalid credentials.');
     }
 
-    // Locate or create payment record
     let payment = this.db.payments.find((p) => p.orderId === params.orderId);
     if (!payment) {
       payment = {
@@ -654,7 +829,6 @@ class SocialDatabaseService {
       payment.verifiedAt = new Date().toISOString();
     }
 
-    // Activate and extend subscription period
     const durationDays = params.billingCycle === 'annual' ? 365 : 30;
     const currentExpiry = new Date(user.subscriptionExpiresAt).getTime();
     const baseTime = currentExpiry > Date.now() ? currentExpiry : Date.now();
@@ -682,14 +856,13 @@ class SocialDatabaseService {
     };
   }
 
-  public getPayments(userId?: string): StoredPayment[] {
-    if (userId) {
-      return this.db.payments.filter((p) => p.userId === userId);
+  public getPayments(userId?: string, isSuperAdmin: boolean = false): StoredPayment[] {
+    if (isSuperAdmin && !userId) {
+      return this.db.payments;
     }
-    return this.db.payments;
+    return this.db.payments.filter((p) => p.userId === userId);
   }
 
-  // Admin Manual Upgrade or Override
   public adminUpdateUserPlan(userId: string, planTier: string, expiresAt?: string, status: string = 'active'): StoredUser {
     const user = this.findUserById(userId);
     if (!user) throw new Error('User not found.');
@@ -715,22 +888,26 @@ class SocialDatabaseService {
     return user;
   }
 
-  // --- Feature Quota & Usage Checks ---
+  // --- Multi-Tenant Feature Quota & Usage Checks strictly scoped to userId ---
   public getUserUsageStats(userId: string): UserUsageStats {
     const user = this.findUserById(userId);
     const planTier = user?.planTier || 'free';
     const plan = this.getPlanById(planTier) || this.db.plans[0];
 
-    // Count posts created in current calendar month
     const currentMonth = new Date().getMonth();
     const currentYear = new Date().getFullYear();
-    const postsCount = this.db.posts.filter((p) => {
+    const userPosts = this.db.posts.filter((p) => p.userId === userId);
+    
+    const postsCount = userPosts.filter((p) => {
       const pDate = new Date(p.createdAt || p.scheduledFor || Date.now());
       return pDate.getMonth() === currentMonth && pDate.getFullYear() === currentYear;
     }).length;
 
-    const connectedAccountsCount = this.db.accounts.filter((a) => a.isConnected || a.status === 'connected').length;
-    const clientWorkspacesCount = this.db.clients.length;
+    const connectedAccountsCount = this.db.accounts.filter(
+      (a) => a.userId === userId && (a.isConnected || a.status === 'connected')
+    ).length;
+
+    const clientWorkspacesCount = this.db.clients.filter((c) => c.userId === userId).length;
     const aiQueriesUsed = user?.aiQueriesUsedThisMonth || 0;
 
     return {
@@ -764,43 +941,126 @@ class SocialDatabaseService {
     }
   }
 
-  // --- Posts ---
-  public getPosts(clientId?: string) {
-    if (clientId && clientId !== 'all') {
-      return this.db.posts.filter((p) => !p.clientId || p.clientId === clientId);
+  // --- Multi-Tenant Workspaces (Clients) ---
+  public getClients(userId: string, isSuperAdmin: boolean = false) {
+    if (isSuperAdmin) {
+      return this.db.clients;
     }
-    return this.db.posts;
+    return this.db.clients.filter((c) => c.userId === userId || (c.assignedTeamMemberIds && c.assignedTeamMemberIds.includes(userId)));
   }
 
-  public addPost(postData: any) {
-    const post = {
-      ...postData,
-      id: postData.id || `post-${Date.now()}`,
+  public addClient(userId: string, clientData: any) {
+    const stats = this.getUserUsageStats(userId);
+    if (!stats.canCreateWorkspace) {
+      throw new Error(`Workspace limit reached (${stats.clientWorkspacesCount}/${stats.clientWorkspacesLimit}). Please upgrade your tier.`);
+    }
+
+    const client = {
+      ...clientData,
+      id: clientData.id || `client-${crypto.randomBytes(6).toString('hex')}`,
+      userId,
       createdAt: new Date().toISOString()
     };
-    this.db.posts.unshift(post);
+    this.db.clients.push(client);
     this.save();
-    return post;
+    return client;
   }
 
-  public updatePost(postId: string, updates: any) {
-    const idx = this.db.posts.findIndex((p) => p.id === postId);
+  public updateClient(userId: string, clientId: string, updates: any, isSuperAdmin: boolean = false) {
+    const idx = this.db.clients.findIndex((c) => c.id === clientId && (isSuperAdmin || c.userId === userId));
     if (idx !== -1) {
-      this.db.posts[idx] = { ...this.db.posts[idx], ...updates };
+      this.db.clients[idx] = { ...this.db.clients[idx], ...updates };
       this.save();
-      return this.db.posts[idx];
+      return this.db.clients[idx];
     }
     return null;
   }
 
-  public deletePost(postId: string) {
-    this.db.posts = this.db.posts.filter((p) => p.id !== postId);
-    this.save();
+  public deleteClient(userId: string, clientId: string, isSuperAdmin: boolean = false) {
+    const idx = this.db.clients.findIndex((c) => c.id === clientId && (isSuperAdmin || c.userId === userId));
+    if (idx !== -1) {
+      this.db.clients.splice(idx, 1);
+      // Remove associated posts and accounts
+      this.db.posts = this.db.posts.filter((p) => p.clientId !== clientId);
+      this.db.accounts = this.db.accounts.filter((a) => a.clientId !== clientId);
+      this.save();
+      return true;
+    }
+    return false;
   }
 
-  // --- Accounts ---
-  public toggleAccountConnection(accountId: string, isConnected: boolean) {
-    const account = this.db.accounts.find((a) => a.id === accountId);
+  // --- Multi-Tenant Social Accounts ---
+  public getAccounts(userId: string, clientId?: string) {
+    return this.db.accounts.filter((a) => {
+      const belongsToUser = a.userId === userId;
+      if (!belongsToUser) return false;
+      if (clientId && clientId !== 'all') {
+        return a.clientId === clientId;
+      }
+      return true;
+    });
+  }
+
+  public connectAccount(userId: string, accountData: any) {
+    const stats = this.getUserUsageStats(userId);
+    if (!stats.canConnectAccount) {
+      throw new Error(`Connected accounts limit reached (${stats.connectedAccountsCount}/${stats.connectedAccountsLimit}). Upgrade plan to connect more.`);
+    }
+
+    const existingIdx = this.db.accounts.findIndex(
+      (a) => a.userId === userId && a.platform === accountData.platform && a.handle === accountData.handle
+    );
+
+    const account = {
+      ...accountData,
+      id: accountData.id || `acc-${accountData.platform}-${Date.now()}`,
+      userId,
+      isConnected: true,
+      status: 'connected',
+      connectedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    if (existingIdx !== -1) {
+      this.db.accounts[existingIdx] = { ...this.db.accounts[existingIdx], ...account };
+    } else {
+      this.db.accounts.push(account);
+    }
+
+    this.addAuditLog({
+      action: 'SOCIAL_ACCOUNT_CONNECTED',
+      userId,
+      userName: accountData.accountName || 'User',
+      details: `Successfully connected ${accountData.platform} account: @${accountData.handle}`,
+      status: 'success'
+    });
+
+    this.save();
+    return account;
+  }
+
+  public disconnectAccount(userId: string, accountId: string) {
+    const account = this.db.accounts.find((a) => a.id === accountId && a.userId === userId);
+    if (account) {
+      account.isConnected = false;
+      account.status = 'disconnected';
+      account.accessToken = undefined;
+      account.refreshToken = undefined;
+      this.addAuditLog({
+        action: 'SOCIAL_ACCOUNT_DISCONNECTED',
+        userId,
+        userName: account.accountName,
+        details: `Disconnected ${account.platform} account (@${account.handle})`,
+        status: 'warning'
+      });
+      this.save();
+      return account;
+    }
+    return null;
+  }
+
+  public toggleAccountConnection(userId: string, accountId: string, isConnected: boolean) {
+    const account = this.db.accounts.find((a) => a.id === accountId && a.userId === userId);
     if (account) {
       account.isConnected = isConnected;
       account.status = isConnected ? 'connected' : 'disconnected';
@@ -810,9 +1070,76 @@ class SocialDatabaseService {
     return null;
   }
 
-  // --- Inbox ---
-  public addMessageToConversation(conversationId: string, message: any) {
-    const conv = this.db.conversations.find((c) => c.id === conversationId);
+  // --- Multi-Tenant Posts ---
+  public getPosts(userId: string, clientId?: string) {
+    return this.db.posts.filter((p) => {
+      const belongsToUser = p.userId === userId;
+      if (!belongsToUser) return false;
+      if (clientId && clientId !== 'all') {
+        return p.clientId === clientId;
+      }
+      return true;
+    });
+  }
+
+  public addPost(userId: string, postData: any) {
+    const stats = this.getUserUsageStats(userId);
+    if (!stats.canCreatePost) {
+      throw new Error(`Monthly post scheduling quota exceeded (${stats.postsUsedThisMonth}/${stats.postsLimit}). Upgrade your plan for higher quotas.`);
+    }
+
+    const post = {
+      ...postData,
+      id: postData.id || `post-${Date.now()}`,
+      userId,
+      metrics: postData.metrics || {
+        likes: 0,
+        comments: 0,
+        shares: 0,
+        impressions: 0,
+        reach: 0
+      },
+      createdAt: new Date().toISOString()
+    };
+    this.db.posts.unshift(post);
+    this.save();
+    return post;
+  }
+
+  public updatePost(userId: string, postId: string, updates: any) {
+    const idx = this.db.posts.findIndex((p) => p.id === postId && p.userId === userId);
+    if (idx !== -1) {
+      this.db.posts[idx] = { ...this.db.posts[idx], ...updates };
+      this.save();
+      return this.db.posts[idx];
+    }
+    return null;
+  }
+
+  public deletePost(userId: string, postId: string) {
+    const idx = this.db.posts.findIndex((p) => p.id === postId && p.userId === userId);
+    if (idx !== -1) {
+      this.db.posts.splice(idx, 1);
+      this.save();
+      return true;
+    }
+    return false;
+  }
+
+  // --- Multi-Tenant Inbox Conversations ---
+  public getConversations(userId: string, clientId?: string) {
+    return this.db.conversations.filter((c) => {
+      const belongsToUser = c.userId === userId;
+      if (!belongsToUser) return false;
+      if (clientId && clientId !== 'all') {
+        return c.clientId === clientId;
+      }
+      return true;
+    });
+  }
+
+  public addMessageToConversation(userId: string, conversationId: string, message: any) {
+    const conv = this.db.conversations.find((c) => c.id === conversationId && c.userId === userId);
     if (conv) {
       conv.messages.push(message);
       conv.lastMessageAt = message.timestamp || new Date().toISOString();
@@ -823,9 +1150,12 @@ class SocialDatabaseService {
     return null;
   }
 
-  public addCustomerNote(conversationId: string, note: string) {
-    const conv = this.db.conversations.find((c) => c.id === conversationId);
+  public addCustomerNote(userId: string, conversationId: string, note: string) {
+    const conv = this.db.conversations.find((c) => c.id === conversationId && c.userId === userId);
     if (conv) {
+      if (!conv.customer) {
+        conv.customer = { name: 'Customer', internalNotes: [] };
+      }
       if (!conv.customer.internalNotes) {
         conv.customer.internalNotes = [];
       }
@@ -834,6 +1164,26 @@ class SocialDatabaseService {
       return conv;
     }
     return null;
+  }
+
+  // --- Multi-Tenant Automations, Media & Team ---
+  public getAutomations(userId: string, clientId?: string) {
+    return this.db.automations.filter((a) => {
+      const belongsToUser = a.userId === userId;
+      if (!belongsToUser) return false;
+      if (clientId && clientId !== 'all') {
+        return a.clientId === clientId;
+      }
+      return true;
+    });
+  }
+
+  public getMedia(userId: string) {
+    return this.db.media.filter((m) => m.userId === userId);
+  }
+
+  public getTeamMembers(userId: string) {
+    return this.db.teamMembers.filter((t) => t.userId === userId);
   }
 
   // --- Audit Logs ---
@@ -849,6 +1199,13 @@ class SocialDatabaseService {
     }
     this.save();
     return newLog;
+  }
+
+  public getAuditLogs(userId?: string, isSuperAdmin: boolean = false) {
+    if (isSuperAdmin) {
+      return this.db.auditLogs;
+    }
+    return this.db.auditLogs.filter((l) => l.userId === userId);
   }
 }
 

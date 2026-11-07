@@ -56,32 +56,7 @@ export const SuperAdminView: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState<'users' | 'pricing' | 'transactions' | 'health'>('users');
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [users, setUsers] = useState<ManagedUser[]>([
-    {
-      id: 'user-sumit-admin',
-      name: 'Sumit Sharma',
-      email: 'gwaliorweblabs@gmail.com',
-      role: 'super_admin',
-      accountType: 'agency',
-      status: 'active',
-      planTier: 'agency',
-      subscriptionStatus: 'active',
-      subscriptionExpiresAt: '2027-01-10T10:00:00.000Z',
-      lastLoginAt: 'Just now'
-    },
-    {
-      id: 'user-demo-marketer',
-      name: 'Aarav Gupta',
-      email: 'demo@gwaliorweblabs.com',
-      role: 'agency_admin',
-      accountType: 'freelancer',
-      status: 'active',
-      planTier: 'professional',
-      subscriptionStatus: 'active',
-      subscriptionExpiresAt: '2026-12-31T23:59:59.000Z',
-      lastLoginAt: '12m ago'
-    }
-  ]);
+  const [users, setUsers] = useState<ManagedUser[]>([]);
 
   // Premium Access Modal State
   const [selectedUserForGrant, setSelectedUserForGrant] = useState<ManagedUser | null>(null);
@@ -100,12 +75,7 @@ export const SuperAdminView: React.FC = () => {
   const [editMaxPosts, setEditMaxPosts] = useState<number>(50);
   const [editAiGenerations, setEditAiGenerations] = useState<number>(50);
 
-  const [auditLogs, setAuditLogs] = useState([
-    { id: '1', action: 'POST_AUTO_DISPATCHED', user: 'Scheduler Daemon', details: 'Post published to LinkedIn & Instagram', time: '2m ago', type: 'success' },
-    { id: '2', action: 'USER_LOGIN', user: 'Sumit Sharma', details: 'Successful session established from IP 103.21.x.x', time: '14m ago', type: 'success' },
-    { id: '3', action: 'AI_PROMPT_GENERATED', user: 'GW Labs AI', details: 'Multilingual caption generated via Gemini 3.8 Flash', time: '25m ago', type: 'info' },
-    { id: '4', action: 'WORKSPACE_SYNC', user: 'System', details: '9 platform health checks passed with sub-150ms latency', time: '38m ago', type: 'info' }
-  ]);
+  const [auditLogs, setAuditLogs] = useState<Array<{ id: string; action: string; user: string; details: string; time: string; type: string }>>([]);
 
   const apiStatuses = [
     { name: 'Meta Graph API (Instagram & FB)', endpoint: 'graph.facebook.com/v19.0', status: 'Operational', latency: '64ms', rateLimit: '4,280 / 10,000 / hr' },

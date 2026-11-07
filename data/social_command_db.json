@@ -1,11 +1,11 @@
 {
   "users": [
     {
-      "id": "user-sumit-admin",
-      "name": "Sumit Sharma",
-      "email": "gwaliorweblabs@gmail.com",
+      "id": "user-platform-admin",
+      "name": "Platform Administrator",
+      "email": "admin@commandcenter.local",
       "passwordHash": "ed734c8e0ba4adb3d483eebcd8b5db1c:f0f0dcfd263f13f1664d0da974e59d690b7b617ec77e62e679d2296918708d3ac87a245e5ff1c987b2206e69fd5ab11208faf3f865c67145243bcb245b2a5237",
-      "phone": "+91 75879 39722",
+      "phone": "",
       "country": "India",
       "accountType": "agency",
       "role": "super_admin",
@@ -14,23 +14,13 @@
       "emailVerified": true,
       "onboardingCompleted": true,
       "createdAt": "2026-01-10T10:00:00.000Z",
-      "lastLoginAt": "2026-11-04T20:11:32.536Z"
-    },
-    {
-      "id": "user-demo-marketer",
-      "name": "Aarav Gupta",
-      "email": "demo@gwaliorweblabs.com",
-      "passwordHash": "a57264cb79b6d80a885cbf743f6f6afc:3cc339162e51be49ade898e6a96e9de5330b17cc606977a45cd873aba18da7c642fc5e4d8d637013086d92b55ff74c7169b2582dbd26fc3a0d42db4f429b46a6",
-      "phone": "+91 98260 12345",
-      "country": "India",
-      "accountType": "freelancer",
-      "role": "agency_admin",
-      "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
-      "status": "active",
-      "emailVerified": true,
-      "onboardingCompleted": true,
-      "createdAt": "2026-02-01T12:00:00.000Z",
-      "lastLoginAt": "2026-11-04T19:47:27.733Z"
+      "lastLoginAt": "2026-11-04T20:11:32.536Z",
+      "planTier": "agency",
+      "subscriptionStatus": "active",
+      "billingCycle": "annual",
+      "subscriptionExpiresAt": "2027-11-07T08:02:58.488Z",
+      "subscriptionStartedAt": "2026-01-10T10:00:00.000Z",
+      "aiQueriesUsedThisMonth": 34
     },
     {
       "id": "user-d2c3c81c4027",
@@ -47,7 +37,59 @@
       "verificationPin": "649036",
       "onboardingCompleted": false,
       "createdAt": "2026-11-04T20:11:48.411Z",
-      "lastLoginAt": "2026-11-04T20:11:48.411Z"
+      "lastLoginAt": "2026-11-04T20:11:48.411Z",
+      "planTier": "starter",
+      "subscriptionStatus": "active",
+      "billingCycle": "annual",
+      "subscriptionExpiresAt": "2027-11-07T08:02:58.488Z",
+      "subscriptionStartedAt": "2026-11-04T20:11:48.411Z",
+      "aiQueriesUsedThisMonth": 34
+    },
+    {
+      "id": "user-0f20f2a3b06e",
+      "name": "Aman Gupta",
+      "email": "aman.test@example.com",
+      "passwordHash": "80d98eb42b59113687225e95c0c081e8:ba89f65dfff3d0444597808f8d4a295abd663b7f3cfa5ce4ed468e7bab4cd2d846fc80fa5142a784f413a60a59b8bb262542d3005770912585dae388df0c9021",
+      "phone": "",
+      "country": "India",
+      "accountType": "freelancer",
+      "role": "agency_admin",
+      "avatarUrl": "https://api.dicebear.com/7.x/bottts/svg?seed=Aman%20Gupta",
+      "status": "active",
+      "emailVerified": false,
+      "verificationPin": "402771",
+      "onboardingCompleted": false,
+      "planTier": "free",
+      "subscriptionStatus": "trialing",
+      "billingCycle": "monthly",
+      "subscriptionExpiresAt": "2026-11-21T08:47:58.883Z",
+      "subscriptionStartedAt": "2026-11-07T08:47:58.883Z",
+      "aiQueriesUsedThisMonth": 0,
+      "createdAt": "2026-11-07T08:47:58.883Z",
+      "lastLoginAt": "2026-11-07T08:47:58.883Z"
+    },
+    {
+      "id": "user-de685bea67ad",
+      "name": "Rahul Roy",
+      "email": "rahul.roy@example.com",
+      "passwordHash": "9a8643180541526bf902b9f4a2926c8c:4a0d5b3c2b0e98c68622ac88f4fd44af5e92c2f50129144151d194d184cb953d314ed793414cb721543540b6754f955ef9c48f5d703ed0700971687bf3ac4f97",
+      "phone": "",
+      "country": "India",
+      "accountType": "individual",
+      "role": "agency_admin",
+      "avatarUrl": "https://api.dicebear.com/7.x/bottts/svg?seed=Rahul%20Roy",
+      "status": "active",
+      "emailVerified": false,
+      "verificationPin": "178081",
+      "onboardingCompleted": false,
+      "planTier": "free",
+      "subscriptionStatus": "trialing",
+      "billingCycle": "monthly",
+      "subscriptionExpiresAt": "2026-11-21T08:50:17.736Z",
+      "subscriptionStartedAt": "2026-11-07T08:50:17.736Z",
+      "aiQueriesUsedThisMonth": 0,
+      "createdAt": "2026-11-07T08:50:17.736Z",
+      "lastLoginAt": "2026-11-07T08:50:17.736Z"
     }
   ],
   "sessions": [
@@ -68,134 +110,21 @@
       "userId": "user-d2c3c81c4027",
       "createdAt": "2026-11-04T20:11:48.412Z",
       "expiresAt": "2026-11-11T20:11:48.412Z"
+    },
+    {
+      "token": "1c70d1aeb9cb20ff29212879928c7b5af151424aba1f558ea77530a2c0f37198",
+      "userId": "user-0f20f2a3b06e",
+      "createdAt": "2026-11-07T08:47:58.886Z",
+      "expiresAt": "2026-11-14T08:47:58.886Z"
+    },
+    {
+      "token": "d2e20374fb424f7cbe3f274734521cdf06a28dc0efbe7a473e6448a429e79cb9",
+      "userId": "user-de685bea67ad",
+      "createdAt": "2026-11-07T08:50:17.737Z",
+      "expiresAt": "2026-11-14T08:50:17.737Z"
     }
   ],
   "clients": [
-    {
-      "id": "client-gwl",
-      "name": "Gwalior Web Labs (HQ)",
-      "companyName": "Gwalior Web Labs Digital Innovations",
-      "slug": "gwl-hq",
-      "logoUrl": "/assets/aistudio/Gemini_Generated_Image_b1kwab1kwab1kwab_83d54e8a.png",
-      "industry": "Digital Agency & Cloud Engineering",
-      "website": "https://gwlweblab.com",
-      "primaryContact": {
-        "name": "Sumit Sharma",
-        "email": "gwaliorweblabs@gmail.com",
-        "phone": "+91 75879 39722"
-      },
-      "planTier": "enterprise",
-      "accountIds": [
-        "acc-ig-gwl",
-        "acc-li-gwl",
-        "acc-yt-gwl",
-        "acc-x-gwl",
-        "acc-wa-gwl"
-      ],
-      "assignedTeamMemberIds": [
-        "user-1",
-        "user-2",
-        "user-3"
-      ],
-      "approvalRequired": false,
-      "brandColors": {
-        "primary": "#10b981",
-        "secondary": "#3b82f6"
-      },
-      "createdAt": "2026-01-10T10:00:00.000Z"
-    },
-    {
-      "id": "client-georgians",
-      "name": "Georgians Academy",
-      "companyName": "Georgians Academy Higher Secondary School",
-      "slug": "georgians-academy",
-      "logoUrl": "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&w=200&q=80",
-      "industry": "Education & Academic Coaching",
-      "website": "https://georgians.gwlweblab.dev",
-      "primaryContact": {
-        "name": "Director R. K. Sharma",
-        "email": "admissions@georgiansacademy.edu.in",
-        "phone": "+91 75124 58900"
-      },
-      "planTier": "agency",
-      "accountIds": [
-        "acc-ig-geo",
-        "acc-fb-geo",
-        "acc-yt-geo",
-        "acc-wa-geo"
-      ],
-      "assignedTeamMemberIds": [
-        "user-2",
-        "user-4"
-      ],
-      "approvalRequired": true,
-      "brandColors": {
-        "primary": "#2563eb",
-        "secondary": "#f59e0b"
-      },
-      "createdAt": "2026-02-15T09:30:00.000Z"
-    },
-    {
-      "id": "client-yanshi",
-      "name": "Yanshi Physiotherapy",
-      "companyName": "Yanshi Neuro-Spine & Ortho Rehabilitation Center",
-      "slug": "yanshi-physio",
-      "logoUrl": "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=200&q=80",
-      "industry": "Healthcare & Clinical Practice",
-      "website": "https://yanshi.gwlweblab.dev",
-      "primaryContact": {
-        "name": "Dr. Neha Verma (PT)",
-        "email": "care@yanshiphysio.com",
-        "phone": "+91 94251 12345"
-      },
-      "planTier": "professional",
-      "accountIds": [
-        "acc-ig-yan",
-        "acc-fb-yan",
-        "acc-wa-yan"
-      ],
-      "assignedTeamMemberIds": [
-        "user-3",
-        "user-5"
-      ],
-      "approvalRequired": true,
-      "brandColors": {
-        "primary": "#059669",
-        "secondary": "#06b6d4"
-      },
-      "createdAt": "2026-03-01T11:00:00.000Z"
-    },
-    {
-      "id": "client-brightedge",
-      "name": "BrightEdge Academy",
-      "companyName": "BrightEdge Pan-India NEET & JEE LMS",
-      "slug": "brightedge",
-      "logoUrl": "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=200&q=80",
-      "industry": "EdTech & Online Test Prep",
-      "website": "https://brightedge.gwlweblab.dev",
-      "primaryContact": {
-        "name": "Vikram Rajput",
-        "email": "growth@brightedge.in",
-        "phone": "+91 98930 77112"
-      },
-      "planTier": "agency",
-      "accountIds": [
-        "acc-yt-bright",
-        "acc-tg-bright",
-        "acc-x-bright",
-        "acc-ig-bright"
-      ],
-      "assignedTeamMemberIds": [
-        "user-1",
-        "user-4"
-      ],
-      "approvalRequired": false,
-      "brandColors": {
-        "primary": "#7c3aed",
-        "secondary": "#ec4899"
-      },
-      "createdAt": "2026-03-20T14:15:00.000Z"
-    },
     {
       "id": "client-a92c0a54f55f",
       "name": "Priya Sharma's Workspace",
@@ -207,7 +136,7 @@
       "primaryContact": {
         "name": "Priya Sharma",
         "email": "priya.agency@example.com",
-        "phone": "+91 75879 39722"
+        "phone": ""
       },
       "planTier": "free",
       "accountIds": [],
@@ -220,649 +149,111 @@
         "secondary": "#3b82f6"
       },
       "createdAt": "2026-11-04T20:11:48.411Z"
+    },
+    {
+      "id": "client-a63e9e3d2614",
+      "name": "Aman Gupta's Workspace",
+      "companyName": "Aman Gupta Digital",
+      "slug": "aman-gupta-workspace",
+      "logoUrl": "https://api.dicebear.com/7.x/bottts/svg?seed=Aman%20Gupta",
+      "industry": "Business & Services",
+      "website": "",
+      "primaryContact": {
+        "name": "Aman Gupta",
+        "email": "aman.test@example.com",
+        "phone": ""
+      },
+      "planTier": "free",
+      "accountIds": [],
+      "assignedTeamMemberIds": [
+        "user-0f20f2a3b06e"
+      ],
+      "approvalRequired": false,
+      "brandColors": {
+        "primary": "#06b6d4",
+        "secondary": "#3b82f6"
+      },
+      "createdAt": "2026-11-07T08:47:58.883Z"
+    },
+    {
+      "id": "client-admin-primary",
+      "userId": "user-platform-admin",
+      "name": "Master Workspace",
+      "companyName": "Digital Agency",
+      "slug": "master-workspace",
+      "logoUrl": "/assets/aistudio/Gemini_Generated_Image_b1kwab1kwab1kwab_83d54e8a.png",
+      "industry": "Digital Engineering & Marketing",
+      "website": "https://example.com",
+      "primaryContact": {
+        "name": "Platform Administrator",
+        "email": "admin@commandcenter.local",
+        "phone": ""
+      },
+      "planTier": "agency",
+      "accountIds": [],
+      "assignedTeamMemberIds": [
+        "user-platform-admin"
+      ],
+      "approvalRequired": false,
+      "brandColors": {
+        "primary": "#06b6d4",
+        "secondary": "#3b82f6"
+      },
+      "createdAt": "2026-11-07T08:50:07.772Z"
+    },
+    {
+      "id": "client-de8b484be4a7",
+      "userId": "user-de685bea67ad",
+      "name": "Rahul Roy's Workspace",
+      "companyName": "Rahul Roy",
+      "slug": "rahul-roy-7736",
+      "logoUrl": "https://api.dicebear.com/7.x/bottts/svg?seed=Rahul%20Roy",
+      "industry": "Business & Creator",
+      "website": "",
+      "primaryContact": {
+        "name": "Rahul Roy",
+        "email": "rahul.roy@example.com",
+        "phone": ""
+      },
+      "planTier": "free",
+      "accountIds": [],
+      "assignedTeamMemberIds": [
+        "user-de685bea67ad"
+      ],
+      "approvalRequired": false,
+      "brandColors": {
+        "primary": "#06b6d4",
+        "secondary": "#3b82f6"
+      },
+      "createdAt": "2026-11-07T08:50:17.736Z"
     }
   ],
   "accounts": [
     {
-      "id": "acc-ig-gwl",
-      "clientId": "client-gwl",
       "platform": "instagram",
-      "accountName": "Gwalior Web Labs Official",
-      "accountHandle": "@gwlweblabs",
-      "avatarUrl": "/assets/aistudio/Gemini_Generated_Image_b1kwab1kwab1kwab_83d54e8a.png",
-      "profileUrl": "https://instagram.com/gwlweblabs",
-      "status": "connected",
-      "followersCount": 14280,
-      "followingCount": 230,
-      "postsCount": 312,
-      "connectedAt": "2026-01-12T10:00:00Z",
-      "tokenExpiresAt": "2026-12-31T23:59:59Z",
+      "accountName": "Rahul Roy Official",
+      "handle": "rahulroy_live",
+      "avatarUrl": "https://api.dicebear.com/7.x/identicon/svg?seed=rahulroy_live",
+      "clientId": "all",
+      "accessToken": "token_instagram_1794041432254",
       "permissions": [
-        "instagram_basic",
-        "instagram_content_publish",
-        "instagram_manage_comments",
-        "instagram_manage_messages"
+        "read_insights",
+        "publish_posts",
+        "manage_comments"
       ],
-      "capabilities": {
-        "canPublishFeed": true,
-        "canPublishReelOrShort": true,
-        "canPublishStory": true,
-        "canReadDirectMessages": true,
-        "canReadComments": true,
-        "hasAnalytics": true
-      },
-      "apiDetails": {
-        "appId": "meta-app-9081239102",
-        "authType": "oauth2",
-        "scopeGranted": [
-          "pages_show_list",
-          "instagram_basic",
-          "instagram_content_publish",
-          "pages_read_engagement"
-        ],
-        "rateLimitRemaining": 184,
-        "officialDocsUrl": "https://developers.facebook.com/docs/instagram-platform"
-      }
-    },
-    {
-      "id": "acc-li-gwl",
-      "clientId": "client-gwl",
-      "platform": "linkedin",
-      "accountName": "Gwalior Web Labs",
-      "accountHandle": "company/gwalior-web-labs",
-      "avatarUrl": "/assets/aistudio/Gemini_Generated_Image_b1kwab1kwab1kwab_83d54e8a.png",
-      "profileUrl": "https://linkedin.com/company/gwalior-web-labs",
-      "status": "connected",
-      "followersCount": 8940,
-      "followingCount": 88,
-      "postsCount": 184,
-      "connectedAt": "2026-01-14T11:00:00Z",
-      "tokenExpiresAt": "2026-08-20T10:00:00Z",
-      "permissions": [
-        "w_member_social",
-        "w_organization_social",
-        "r_organization_social",
-        "rw_organization_admin"
-      ],
-      "capabilities": {
-        "canPublishFeed": true,
-        "canPublishReelOrShort": false,
-        "canPublishStory": false,
-        "canReadDirectMessages": false,
-        "canReadComments": true,
-        "hasAnalytics": true
-      },
-      "apiDetails": {
-        "appId": "linkedin-app-7849102",
-        "authType": "oauth2",
-        "scopeGranted": [
-          "w_organization_social",
-          "r_organization_social"
-        ],
-        "rateLimitRemaining": 490,
-        "officialDocsUrl": "https://learn.microsoft.com/en-us/linkedin/marketing"
-      }
-    },
-    {
-      "id": "acc-yt-gwl",
-      "clientId": "client-gwl",
-      "platform": "youtube",
-      "accountName": "GWL Web Labs – Tech & Systems",
-      "accountHandle": "@GWLWebLabs",
-      "avatarUrl": "/assets/aistudio/Gemini_Generated_Image_b1kwab1kwab1kwab_83d54e8a.png",
-      "profileUrl": "https://youtube.com/@GWLWebLabs",
-      "status": "connected",
-      "followersCount": 32600,
-      "followingCount": 42,
-      "postsCount": 146,
-      "connectedAt": "2026-01-15T15:00:00Z",
-      "tokenExpiresAt": "2027-01-01T00:00:00Z",
-      "permissions": [
-        "youtube.upload",
-        "youtube.readonly",
-        "youtubepartner"
-      ],
-      "capabilities": {
-        "canPublishFeed": false,
-        "canPublishReelOrShort": true,
-        "canPublishStory": false,
-        "canReadDirectMessages": false,
-        "canReadComments": true,
-        "hasAnalytics": true
-      },
-      "apiDetails": {
-        "appId": "google-cloud-project-gwl",
-        "authType": "oauth2",
-        "scopeGranted": [
-          "https://www.googleapis.com/auth/youtube.upload",
-          "https://www.googleapis.com/auth/youtube.force-ssl"
-        ],
-        "rateLimitRemaining": 9400,
-        "officialDocsUrl": "https://developers.google.com/youtube/v3"
-      }
-    },
-    {
-      "id": "acc-x-gwl",
-      "clientId": "client-gwl",
-      "platform": "twitter",
-      "accountName": "GWL Web Labs",
-      "accountHandle": "@gwlweblabs",
-      "avatarUrl": "/assets/aistudio/Gemini_Generated_Image_b1kwab1kwab1kwab_83d54e8a.png",
-      "profileUrl": "https://x.com/gwlweblabs",
-      "status": "connected",
-      "followersCount": 11450,
-      "followingCount": 310,
-      "postsCount": 1240,
-      "connectedAt": "2026-02-01T12:00:00Z",
-      "tokenExpiresAt": "2026-06-15T12:00:00Z",
-      "permissions": [
-        "tweet.read",
-        "tweet.write",
-        "users.read",
-        "offline.access"
-      ],
-      "capabilities": {
-        "canPublishFeed": true,
-        "canPublishReelOrShort": true,
-        "canPublishStory": false,
-        "canReadDirectMessages": true,
-        "canReadComments": true,
-        "hasAnalytics": true
-      },
-      "apiDetails": {
-        "appId": "x-dev-v2-49182",
-        "authType": "oauth2",
-        "scopeGranted": [
-          "tweet.read",
-          "tweet.write",
-          "users.read",
-          "offline.access"
-        ],
-        "rateLimitRemaining": 295,
-        "officialDocsUrl": "https://developer.x.com/en/docs/x-api"
-      }
-    },
-    {
-      "id": "acc-wa-gwl",
-      "clientId": "client-gwl",
-      "platform": "whatsapp",
-      "accountName": "GWL Web Labs Official WhatsApp",
-      "accountHandle": "+91 75879 39722",
-      "avatarUrl": "/assets/aistudio/Gemini_Generated_Image_b1kwab1kwab1kwab_83d54e8a.png",
-      "profileUrl": "https://wa.me/917587939722",
-      "status": "connected",
-      "followersCount": 4890,
+      "followersCount": 0,
       "followingCount": 0,
       "postsCount": 0,
-      "connectedAt": "2026-01-10T10:00:00Z",
-      "tokenExpiresAt": null,
-      "permissions": [
-        "whatsapp_business_messaging",
-        "whatsapp_business_management"
-      ],
-      "capabilities": {
-        "canPublishFeed": false,
-        "canPublishReelOrShort": false,
-        "canPublishStory": false,
-        "canReadDirectMessages": true,
-        "canReadComments": false,
-        "hasAnalytics": true
-      },
-      "apiDetails": {
-        "appId": "waba-phone-id-104928301",
-        "authType": "cloud_api",
-        "scopeGranted": [
-          "whatsapp_business_messaging"
-        ],
-        "rateLimitRemaining": 1000,
-        "officialDocsUrl": "https://developers.facebook.com/docs/whatsapp/cloud-api"
-      }
-    },
-    {
-      "id": "acc-ig-geo",
-      "clientId": "client-georgians",
-      "platform": "instagram",
-      "accountName": "Georgians Academy Gwalior",
-      "accountHandle": "@georgiansacademy_gwl",
-      "avatarUrl": "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&w=200&q=80",
-      "profileUrl": "https://instagram.com/georgiansacademy_gwl",
+      "engagementRate": 0,
       "status": "connected",
-      "followersCount": 19800,
-      "followingCount": 110,
-      "postsCount": 420,
-      "connectedAt": "2026-02-16T12:00:00Z",
-      "tokenExpiresAt": "2026-11-20T12:00:00Z",
-      "permissions": [
-        "instagram_basic",
-        "instagram_content_publish",
-        "instagram_manage_comments",
-        "instagram_manage_messages"
-      ],
-      "capabilities": {
-        "canPublishFeed": true,
-        "canPublishReelOrShort": true,
-        "canPublishStory": true,
-        "canReadDirectMessages": true,
-        "canReadComments": true,
-        "hasAnalytics": true
-      },
-      "apiDetails": {
-        "appId": "meta-app-georgians-291",
-        "authType": "oauth2",
-        "scopeGranted": [
-          "pages_show_list",
-          "instagram_basic",
-          "instagram_content_publish"
-        ],
-        "rateLimitRemaining": 192,
-        "officialDocsUrl": "https://developers.facebook.com/docs/instagram-platform"
-      }
-    },
-    {
-      "id": "acc-fb-geo",
-      "clientId": "client-georgians",
-      "platform": "facebook",
-      "accountName": "Georgians Academy Morar & Bada Gaon",
-      "accountHandle": "georgiansacademygwalior",
-      "avatarUrl": "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&w=200&q=80",
-      "profileUrl": "https://facebook.com/georgiansacademygwalior",
-      "status": "connected",
-      "followersCount": 24500,
-      "followingCount": 35,
-      "postsCount": 580,
-      "connectedAt": "2026-02-16T12:30:00Z",
-      "tokenExpiresAt": "2026-12-10T12:00:00Z",
-      "permissions": [
-        "pages_manage_posts",
-        "pages_read_engagement",
-        "pages_messaging"
-      ],
-      "capabilities": {
-        "canPublishFeed": true,
-        "canPublishReelOrShort": true,
-        "canPublishStory": true,
-        "canReadDirectMessages": true,
-        "canReadComments": true,
-        "hasAnalytics": true
-      },
-      "apiDetails": {
-        "appId": "meta-app-fb-geo-992",
-        "authType": "oauth2",
-        "scopeGranted": [
-          "pages_manage_posts",
-          "pages_read_engagement"
-        ],
-        "rateLimitRemaining": 198,
-        "officialDocsUrl": "https://developers.facebook.com/docs/pages"
-      }
-    },
-    {
-      "id": "acc-yt-geo",
-      "clientId": "client-georgians",
-      "platform": "youtube",
-      "accountName": "Georgians Academy Lectures & Events",
-      "accountHandle": "@GeorgiansAcademyGwalior",
-      "avatarUrl": "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&w=200&q=80",
-      "profileUrl": "https://youtube.com/@GeorgiansAcademyGwalior",
-      "status": "connected",
-      "followersCount": 45200,
-      "followingCount": 15,
-      "postsCount": 260,
-      "connectedAt": "2026-02-18T10:00:00Z",
-      "tokenExpiresAt": "2027-02-01T00:00:00Z",
-      "permissions": [
-        "youtube.upload",
-        "youtube.readonly"
-      ],
-      "capabilities": {
-        "canPublishFeed": false,
-        "canPublishReelOrShort": true,
-        "canPublishStory": false,
-        "canReadDirectMessages": false,
-        "canReadComments": true,
-        "hasAnalytics": true
-      },
-      "apiDetails": {
-        "appId": "google-geo-yt-id",
-        "authType": "oauth2",
-        "scopeGranted": [
-          "https://www.googleapis.com/auth/youtube.upload"
-        ],
-        "rateLimitRemaining": 9850,
-        "officialDocsUrl": "https://developers.google.com/youtube/v3"
-      }
-    },
-    {
-      "id": "acc-wa-geo",
-      "clientId": "client-georgians",
-      "platform": "whatsapp",
-      "accountName": "Georgians Academy Admissions Desk",
-      "accountHandle": "+91 75124 58900",
-      "avatarUrl": "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&w=200&q=80",
-      "profileUrl": "https://wa.me/917512458900",
-      "status": "connected",
-      "followersCount": 8200,
-      "followingCount": 0,
-      "postsCount": 0,
-      "connectedAt": "2026-02-16T14:00:00Z",
-      "tokenExpiresAt": null,
-      "permissions": [
-        "whatsapp_business_messaging"
-      ],
-      "capabilities": {
-        "canPublishFeed": false,
-        "canPublishReelOrShort": false,
-        "canPublishStory": false,
-        "canReadDirectMessages": true,
-        "canReadComments": false,
-        "hasAnalytics": true
-      },
-      "apiDetails": {
-        "appId": "waba-geo-id-8821",
-        "authType": "cloud_api",
-        "scopeGranted": [
-          "whatsapp_business_messaging"
-        ],
-        "rateLimitRemaining": 1000,
-        "officialDocsUrl": "https://developers.facebook.com/docs/whatsapp/cloud-api"
-      }
-    },
-    {
-      "id": "acc-pin-gwl",
-      "clientId": "client-gwl",
-      "platform": "pinterest",
-      "accountName": "GWL Web Designs & UI Showcase",
-      "accountHandle": "gwlweblabs",
-      "avatarUrl": "/assets/aistudio/Gemini_Generated_Image_b1kwab1kwab1kwab_83d54e8a.png",
-      "profileUrl": "https://pinterest.com/gwlweblabs",
-      "status": "connected",
-      "followersCount": 3920,
-      "followingCount": 140,
-      "postsCount": 95,
-      "connectedAt": "2026-02-25T14:00:00Z",
-      "tokenExpiresAt": "2026-09-15T00:00:00Z",
-      "permissions": [
-        "boards:read",
-        "pins:read",
-        "pins:write"
-      ],
-      "capabilities": {
-        "canPublishFeed": true,
-        "canPublishReelOrShort": false,
-        "canPublishStory": false,
-        "canReadDirectMessages": false,
-        "canReadComments": false,
-        "hasAnalytics": true
-      },
-      "apiDetails": {
-        "appId": "pin-app-582910",
-        "authType": "oauth2",
-        "scopeGranted": [
-          "pins:write",
-          "boards:read"
-        ],
-        "rateLimitRemaining": 300,
-        "officialDocsUrl": "https://developers.pinterest.com/docs/api/v5/"
-      }
-    },
-    {
-      "id": "acc-red-gwl",
-      "clientId": "client-gwl",
-      "platform": "reddit",
-      "accountName": "u/gwl_digital_labs",
-      "accountHandle": "u/gwl_digital_labs",
-      "avatarUrl": "/assets/aistudio/Gemini_Generated_Image_b1kwab1kwab1kwab_83d54e8a.png",
-      "profileUrl": "https://reddit.com/user/gwl_digital_labs",
-      "status": "connected",
-      "followersCount": 1240,
-      "followingCount": 45,
-      "postsCount": 88,
-      "connectedAt": "2026-02-28T16:00:00Z",
-      "tokenExpiresAt": "2026-05-30T00:00:00Z",
-      "permissions": [
-        "submit",
-        "read",
-        "privatemessages"
-      ],
-      "capabilities": {
-        "canPublishFeed": true,
-        "canPublishReelOrShort": false,
-        "canPublishStory": false,
-        "canReadDirectMessages": true,
-        "canReadComments": true,
-        "hasAnalytics": false
-      },
-      "apiDetails": {
-        "appId": "reddit-oauth-cli-2918",
-        "authType": "oauth2",
-        "scopeGranted": [
-          "submit",
-          "read"
-        ],
-        "rateLimitRemaining": 60,
-        "officialDocsUrl": "https://www.reddit.com/dev/api"
-      }
-    },
-    {
-      "id": "acc-tg-bright",
-      "clientId": "client-brightedge",
-      "platform": "telegram",
-      "accountName": "BrightEdge NEET & JEE Daily Quiz Channel",
-      "accountHandle": "@brightedge_neet_daily",
-      "avatarUrl": "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=200&q=80",
-      "profileUrl": "https://t.me/brightedge_neet_daily",
-      "status": "connected",
-      "followersCount": 54100,
-      "followingCount": 0,
-      "postsCount": 1420,
-      "connectedAt": "2026-03-21T09:00:00Z",
-      "tokenExpiresAt": null,
-      "permissions": [
-        "send_messages",
-        "post_media",
-        "manage_chat"
-      ],
-      "capabilities": {
-        "canPublishFeed": true,
-        "canPublishReelOrShort": false,
-        "canPublishStory": false,
-        "canReadDirectMessages": true,
-        "canReadComments": true,
-        "hasAnalytics": false
-      },
-      "apiDetails": {
-        "authType": "bot_token",
-        "scopeGranted": [
-          "sendMessage",
-          "sendPhoto",
-          "sendVideo"
-        ],
-        "rateLimitRemaining": 30,
-        "officialDocsUrl": "https://core.telegram.org/bots/api"
-      }
+      "id": "acc-instagram-1794041432254",
+      "userId": "user-de685bea67ad",
+      "isConnected": true,
+      "connectedAt": "2026-11-07T08:50:32.254Z",
+      "updatedAt": "2026-11-07T08:50:32.255Z"
     }
   ],
-  "posts": [
-    {
-      "id": "post-1",
-      "clientId": "client-gwl",
-      "title": "Top 5 Core Web Vitals Optimization Secrets",
-      "caption": "How we achieve 0.8s LCP scores for business websites in 2026:\n\n1. Zero unnecessary client bundles\n2. Edge image compression in WebP/AVIF\n3. Pre-connecting critical DNS nodes\n4. Server components with instant hydrations\n\nIs your current website passing Google Lighthouse audits? Drop your URL below for a free technical benchmark.",
-      "platforms": [
-        "instagram",
-        "linkedin",
-        "twitter"
-      ],
-      "mediaUrls": [
-        "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80"
-      ],
-      "mediaType": "image",
-      "hashtags": [
-        "#WebDevelopment",
-        "#CoreWebVitals",
-        "#SEO",
-        "#GWLWebLabs",
-        "#PerformanceFirst"
-      ],
-      "status": "published",
-      "createdAt": "2026-10-20T08:30:00Z",
-      "publishedAt": "2026-10-20T10:00:00Z",
-      "authorName": "Sumit Sharma",
-      "authorAvatar": "/assets/aistudio/Gemini_Generated_Image_b1kwab1kwab1kwab_83d54e8a.png",
-      "metrics": {
-        "likes": 482,
-        "comments": 64,
-        "shares": 98,
-        "saves": 142,
-        "impressions": 18400,
-        "reach": 14900,
-        "clicks": 312
-      }
-    },
-    {
-      "id": "post-2",
-      "clientId": "client-georgians",
-      "title": "Admissions Open 2026-27 | Nursery to 12th",
-      "caption": "Secure your child's academic future with holistic learning, experiential science laboratories, sports academies, and smart interactive classrooms.\n\nAdmissions Open for Session 2026-27.\n📍 Campuses: Morar Cantt & Bada Gaon, Gwalior\n📞 Direct Admissions Helpline: +91 75124 58900\n\nVisit our campus today or book a counselling session online.",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "whatsapp"
-      ],
-      "mediaUrls": [
-        "https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=800&q=80"
-      ],
-      "mediaType": "image",
-      "hashtags": [
-        "#GeorgiansAcademy",
-        "#GwaliorSchools",
-        "#AdmissionsOpen2026",
-        "#BestSchoolGwalior"
-      ],
-      "status": "scheduled",
-      "scheduledFor": "2026-11-06T11:00:00Z",
-      "createdAt": "2026-11-02T14:20:00Z",
-      "authorName": "Priya Joshi (Content Manager)",
-      "authorAvatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80",
-      "clientApproved": true
-    },
-    {
-      "id": "post-3",
-      "clientId": "client-yanshi",
-      "title": "5 Posture Exercises for Desk Workers & Coders",
-      "caption": "Neck stiffness after 6 hours on the laptop? Try these 5 physical therapy stretches directly at your chair:\n\n1. Chin tucks (10 reps x 3 sets)\n2. Scapular retractions\n3. Upper trapezius stretch\n4. Doorway pectoral opener\n5. Seated spinal rotation\n\nSave this reel for your afternoon break!",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "youtube"
-      ],
-      "mediaUrls": [
-        "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=800&q=80"
-      ],
-      "mediaType": "video",
-      "hashtags": [
-        "#Physiotherapy",
-        "#DeskJobPain",
-        "#NeckPainRelief",
-        "#YanshiPhysio",
-        "#Ergonomics"
-      ],
-      "status": "scheduled",
-      "scheduledFor": "2026-11-08T17:30:00Z",
-      "createdAt": "2026-11-03T10:15:00Z",
-      "authorName": "Rohan Mehra (Creative)",
-      "authorAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
-      "clientApproved": true
-    },
-    {
-      "id": "post-4",
-      "clientId": "client-brightedge",
-      "title": "NEET 2026 Organic Chemistry Formula Sheet Drop",
-      "caption": "Full 1-page Reaction Roadmap for Named Organic Reactions is now live in our Telegram community! Over 42 reaction mechanisms condensed into high-yield visual mnemonics.\n\nLink in bio to download the free high-resolution PDF.",
-      "platforms": [
-        "youtube",
-        "telegram",
-        "instagram"
-      ],
-      "mediaUrls": [
-        "https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=800&q=80"
-      ],
-      "mediaType": "carousel",
-      "hashtags": [
-        "#NEET2026",
-        "#OrganicChemistry",
-        "#BrightEdgeAcademy",
-        "#MedicalAspirants"
-      ],
-      "status": "published",
-      "createdAt": "2026-10-28T09:00:00Z",
-      "publishedAt": "2026-10-28T10:30:00Z",
-      "authorName": "Sumit Sharma",
-      "authorAvatar": "/assets/aistudio/Gemini_Generated_Image_b1kwab1kwab1kwab_83d54e8a.png",
-      "metrics": {
-        "likes": 1290,
-        "comments": 340,
-        "shares": 890,
-        "saves": 1450,
-        "impressions": 48900,
-        "reach": 39500,
-        "clicks": 1820
-      }
-    },
-    {
-      "id": "post-5",
-      "clientId": "client-georgians",
-      "title": "Annual Sports Meet 2026 Highlights Reel",
-      "caption": "Energy, sportsmanship, and unforgettable victories! Watch the recap of the 2026 Inter-House Athletic Championships.",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "youtube"
-      ],
-      "mediaUrls": [
-        "https://images.unsplash.com/photo-1526676037777-05a232554f77?auto=format&fit=crop&w=800&q=80"
-      ],
-      "mediaType": "video",
-      "hashtags": [
-        "#SportsMeet2026",
-        "#GeorgiansAthletics",
-        "#Champions",
-        "#SchoolSpirit"
-      ],
-      "status": "pending_approval",
-      "createdAt": "2026-11-04T08:00:00Z",
-      "authorName": "Priya Joshi (Content Manager)",
-      "authorAvatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80",
-      "clientApproved": false,
-      "clientComments": [
-        "Please verify the names of the winning gold medalists in the caption before publishing."
-      ]
-    },
-    {
-      "id": "post-6",
-      "clientId": "client-gwl",
-      "title": "The Omnichannel Customer Engagement Blueprint",
-      "caption": "Why isolated marketing fails: If your Instagram ads lead to an unresponsive WhatsApp inbox, you are burning 68% of your ad spend.\n\nDiscover how unified communication workflows increase qualified conversions by 310%.",
-      "platforms": [
-        "linkedin",
-        "twitter"
-      ],
-      "mediaUrls": [
-        "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=800&q=80"
-      ],
-      "mediaType": "image",
-      "hashtags": [
-        "#DigitalStrategy",
-        "#Omnichannel",
-        "#ConversionFunnel",
-        "#EnterpriseScale"
-      ],
-      "status": "draft",
-      "createdAt": "2026-11-03T16:00:00Z",
-      "authorName": "Sumit Sharma",
-      "authorAvatar": "/assets/aistudio/Gemini_Generated_Image_b1kwab1kwab1kwab_83d54e8a.png"
-    }
-  ],
+  "posts": [],
   "conversations": [
     {
       "id": "conv-1",
@@ -1342,6 +733,17 @@
       ],
       "status": "active",
       "joinedAt": "2026-02-15T10:00:00Z"
+    },
+    {
+      "id": "tm-fe04ffbf82bc",
+      "userId": "user-de685bea67ad",
+      "workspaceId": "client-de8b484be4a7",
+      "name": "Rahul Roy",
+      "email": "rahul.roy@example.com",
+      "role": "agency_admin",
+      "avatarUrl": "https://api.dicebear.com/7.x/bottts/svg?seed=Rahul%20Roy",
+      "status": "active",
+      "joinedAt": "2026-11-07T08:50:17.736Z"
     }
   ],
   "plans": [
@@ -1459,6 +861,42 @@
   ],
   "auditLogs": [
     {
+      "action": "SOCIAL_ACCOUNT_CONNECTED",
+      "userId": "user-de685bea67ad",
+      "userName": "Rahul Roy Official",
+      "details": "Successfully connected instagram account: @rahulroy_live",
+      "status": "success",
+      "id": "log-1794041432255-216",
+      "timestamp": "2026-11-07T08:50:32.255Z"
+    },
+    {
+      "action": "USER_REGISTERED",
+      "userId": "user-de685bea67ad",
+      "userName": "Rahul Roy",
+      "details": "New account created (individual). 14-Day Free Trial initiated with private workspace. PIN: 178081",
+      "status": "success",
+      "id": "log-1794041417736-460",
+      "timestamp": "2026-11-07T08:50:17.736Z"
+    },
+    {
+      "action": "USER_REGISTERED",
+      "userId": "user-0f20f2a3b06e",
+      "userName": "Aman Gupta",
+      "details": "New account created (freelancer). 14-Day Free Trial initiated. PIN: 402771",
+      "status": "success",
+      "id": "log-1794041278883-624",
+      "timestamp": "2026-11-07T08:47:58.883Z"
+    },
+    {
+      "action": "POST_AUTO_DISPATCHED",
+      "userId": "system-cron",
+      "userName": "Scheduler Daemon",
+      "details": "Scheduled post post-2 auto-published to platforms: instagram, facebook, whatsapp",
+      "status": "success",
+      "id": "log-1794038598490-371",
+      "timestamp": "2026-11-07T08:03:18.490Z"
+    },
+    {
       "action": "USER_REGISTERED",
       "userId": "user-d2c3c81c4027",
       "userName": "Priya Sharma",
@@ -1550,5 +988,6 @@
       "latencyMs": 110,
       "lastChecked": "2026-11-04T19:47:27.733Z"
     }
-  ]
+  ],
+  "payments": []
 }

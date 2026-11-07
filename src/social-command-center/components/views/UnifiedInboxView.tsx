@@ -23,11 +23,13 @@ import {
   HelpCircle,
   Archive,
   MoreVertical,
-  ChevronRight
+  ChevronRight,
+  Inbox
 } from 'lucide-react';
 
 export const UnifiedInboxView: React.FC = () => {
   const {
+    currentUser,
     conversations,
     sendReplyMessage,
     addInternalNote,
@@ -48,23 +50,23 @@ export const UnifiedInboxView: React.FC = () => {
   const [newNoteInput, setNewNoteInput] = useState('');
   const [newTagInput, setNewTagInput] = useState('');
 
-  // Pre-configured Quick Replies / Saved Responses
+  // Professional Customer Support Templates
   const savedReplies = [
     {
-      title: 'GWL Transparent Pricing Blueprint',
-      text: 'Hello! Thank you for inquiring. Here is our direct transparent pricing blueprint: https://gwlweblab.com/#plans. We would be happy to schedule a free 15-minute technical audit for your project.'
+      title: 'Standard Greeting & Welcome',
+      text: 'Hello! Thank you for reaching out. How can our team assist you today?'
     },
     {
-      title: 'Georgians Academy Campus Tour',
-      text: 'Greetings from Georgians Academy! We would love to host you and your child for a campus tour. Our admission counselor is available Monday through Saturday from 9 AM to 3 PM.'
+      title: 'Business Hours & Support Schedule',
+      text: 'Thank you for contacting us! Our team is available Monday through Friday, 9:00 AM to 6:00 PM. We will review your message and reply promptly.'
     },
     {
-      title: 'Yanshi Spine & Physio OPD Timings',
-      text: 'Hello! Dr. Neha Verma is available for clinical consultations from 9:30 AM to 1:00 PM and 5:00 PM to 8:30 PM. Would you like us to reserve a slot for you today?'
+      title: 'Consultation & Meeting Request',
+      text: 'We would love to schedule a quick 15-minute consultation to understand your goals. What day and time works best for you this week?'
     },
     {
-      title: 'BrightEdge NEET Test Series Access',
-      text: 'Hello future doctor! The BrightEdge NEET 2026 Test Series contains 45 full-length mock tests with instant video solutions. Tap here to enroll: https://brightedge.in/neet'
+      title: 'Inquiry Follow-up',
+      text: 'Following up on your inquiry. Please let us know if you need any additional details or assistance.'
     }
   ];
 
@@ -93,7 +95,7 @@ export const UnifiedInboxView: React.FC = () => {
 
   const handleAddNote = () => {
     if (!newNoteInput.trim() || !activeConversation) return;
-    addInternalNote(activeConversation.id, newNoteInput.trim(), 'Sumit Sharma (Lead)');
+    addInternalNote(activeConversation.id, newNoteInput.trim(), currentUser?.name || 'Workspace Member');
     setNewNoteInput('');
   };
 
@@ -347,7 +349,7 @@ export const UnifiedInboxView: React.FC = () => {
                 <div className="flex items-center justify-between text-[11px] text-slate-400">
                   <span className="flex items-center gap-1 font-mono">
                     <Check className="w-3 h-3 text-emerald-400" />
-                    <span>Replying as: <strong>Sumit Sharma (Lead)</strong></span>
+                    <span>Replying as: <strong>{currentUser?.name || 'Support Agent'} ({currentUser?.role ? currentUser.role.replace('_', ' ') : 'Member'})</strong></span>
                   </span>
                   <button
                     onClick={() => setActiveRightTab('templates')}
@@ -580,7 +582,13 @@ export const UnifiedInboxView: React.FC = () => {
               )}
             </>
           ) : (
-            <div className="p-6 text-center text-slate-500 text-xs">No active conversation.</div>
+            <div className="h-full flex flex-col items-center justify-center text-center p-8 text-slate-500">
+              <Inbox className="w-12 h-12 text-slate-600 mb-3 opacity-60" />
+              <h3 className="text-base font-semibold text-slate-200">No incoming messages yet</h3>
+              <p className="text-xs text-slate-400 max-w-sm mt-1">
+                Direct messages, comments, and customer inquiries from your connected social channels will sync here automatically in real time.
+              </p>
+            </div>
           )}
         </div>
       </div>

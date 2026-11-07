@@ -46,6 +46,7 @@ interface SocialCommandContextType {
   clientWorkspaces: ClientWorkspace[];
   addClientWorkspace: (workspace: Omit<ClientWorkspace, 'id' | 'createdAt'>) => ClientWorkspace;
   updateClientWorkspace: (id: string, updates: Partial<ClientWorkspace>) => void;
+  deleteClientWorkspace: (id: string) => void;
 
   // Social Accounts
   socialAccounts: SocialAccount[];
@@ -166,18 +167,21 @@ interface SocialCommandContextType {
   openProfileModal: () => void;
   closeProfileModal: () => void;
 
+  isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  loginWithGoogle: (profile?: { email: string; name: string; avatarUrl?: string }) => Promise<{ success: boolean; error?: string }>;
   loginAsDemo: (role: 'super_admin' | 'agency_admin' | 'freelancer') => Promise<void>;
   register: (data: any) => Promise<{ success: boolean; error?: string; verificationPin?: string }>;
   verifyEmailPin: (pin: string) => Promise<{ success: boolean; error?: string }>;
   submitOnboarding: (data: any) => Promise<void>;
   logout: () => Promise<void>;
+  deleteAccount: () => Promise<{ success: boolean; error?: string }>;
   refreshBackendData: () => Promise<void>;
 }
 
 const SocialCommandContext = createContext<SocialCommandContextType | null>(null);
 
-const STORAGE_PREFIX = 'gwl_social_command_';
+const STORAGE_PREFIX = 'gwl_social_v2_';
 
 export const SocialCommandProvider: React.FC<{
   children: React.ReactNode;
@@ -298,28 +302,17 @@ export const SocialCommandProvider: React.FC<{
     role: UserRole;
     accountType?: string;
     onboardingCompleted?: boolean;
-  }>(() => {
+    phone?: string;
+  } | null>(() => {
     try {
-      const saved = localStorage.getItem('gwl_social_user');
-      return saved ? JSON.parse(saved) : {
-        id: 'user-sumit-admin',
-        name: 'Sumit Sharma',
-        email: 'gwaliorweblabs@gmail.com',
-        avatar: '/assets/aistudio/Gemini_Generated_Image_b1kwab1kwab1kwab_83d54e8a.png',
-        role: 'super_admin' as UserRole,
-        accountType: 'agency',
-        onboardingCompleted: true
-      };
+      const savedUser = localStorage.getItem('gwl_social_user');
+      const savedToken = localStorage.getItem('gwl_social_token');
+      if (savedUser && savedToken) {
+        return JSON.parse(savedUser);
+      }
+      return null;
     } catch {
-      return {
-        id: 'user-sumit-admin',
-        name: 'Sumit Sharma',
-        email: 'gwaliorweblabs@gmail.com',
-        avatar: '/assets/aistudio/Gemini_Generated_Image_b1kwab1kwab1kwab_83d54e8a.png',
-        role: 'super_admin' as UserRole,
-        accountType: 'agency',
-        onboardingCompleted: true
-      };
+      return null;
     }
   });
 
@@ -331,6 +324,8 @@ export const SocialCommandProvider: React.FC<{
     }
   });
 
+  const isAuthenticated = Boolean(authToken && currentUserData);
+
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalView, setAuthModalView] = useState<'login' | 'register' | 'forgot' | 'verify'>('login');
   const [pendingVerificationEmail, setPendingVerificationEmail] = useState<string | null>(null);
@@ -339,32 +334,7 @@ export const SocialCommandProvider: React.FC<{
 
   // Modals & Notifications
   const [isCreatePostModalOpen, setIsCreatePostModalOpen] = useState(false);
-  const [notifications, setNotifications] = useState<AppNotification[]>([
-    {
-      id: 'notif-1',
-      title: 'Post Published Successfully',
-      message: 'Core Web Vitals Blueprint was published to Instagram, LinkedIn and X.',
-      timestamp: '25m ago',
-      type: 'success',
-      read: false
-    },
-    {
-      id: 'notif-2',
-      title: 'New Client Approval Request',
-      message: 'Georgians Academy Sports Meet Reel is waiting for client approval.',
-      timestamp: '1h ago',
-      type: 'info',
-      read: false
-    },
-    {
-      id: 'notif-3',
-      title: 'WhatsApp Inbound Inquiry',
-      message: 'Sunil Agrawal inquired about Class 9 Admissions 2026.',
-      timestamp: '10m ago',
-      type: 'warning',
-      read: false
-    }
-  ]);
+  const [notifications, setNotifications] = useState<AppNotification[]>([]);
 
   // Sync to localStorage
   useEffect(() => {
@@ -393,6 +363,19 @@ export const SocialCommandProvider: React.FC<{
       createdAt: new Date().toISOString()
     };
     setClientWorkspaces((prev) => [newClient, ...prev]);
+
+    const token = authToken || localStorage.getItem('gwl_social_token');
+    if (token) {
+      fetch('/api/social/clients', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(newClient)
+      }).catch(err => console.warn('Failed to persist client workspace to server:', err));
+    }
+
     addNotification({
       title: 'New Client Workspace Created',
       message: `Workspace "${newClient.name}" has been configured successfully.`,
@@ -405,6 +388,38 @@ export const SocialCommandProvider: React.FC<{
     setClientWorkspaces((prev) =>
       prev.map((c) => (c.id === id ? { ...c, ...updates } : c))
     );
+    const token = authToken || localStorage.getItem('gwl_social_token');
+    if (token) {
+      fetch(`/api/social/clients/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(updates)
+      }).catch(err => console.warn('Failed to update workspace on server:', err));
+    }
+  };
+
+  const deleteClientWorkspace = (id: string) => {
+    setClientWorkspaces((prev) => prev.filter((c) => c.id !== id));
+    if (activeClientId === id) {
+      setActiveClientId('all');
+    }
+    const token = authToken || localStorage.getItem('gwl_social_token');
+    if (token) {
+      fetch(`/api/social/clients/${id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }).catch(err => console.warn('Failed to delete workspace on server:', err));
+    }
+    addNotification({
+      title: 'Workspace Removed',
+      message: 'Client workspace deleted.',
+      type: 'warning'
+    });
   };
 
   // Social accounts
@@ -412,9 +427,26 @@ export const SocialCommandProvider: React.FC<{
     const newAccount: SocialAccount = {
       ...accountData,
       id: `acc-${accountData.platform}-${Date.now()}`,
-      connectedAt: new Date().toISOString()
+      connectedAt: new Date().toISOString(),
+      status: 'connected',
+      followersCount: accountData.followersCount || 0,
+      followingCount: accountData.followingCount || 0,
+      postsCount: accountData.postsCount || 0
     };
     setSocialAccounts((prev) => [newAccount, ...prev]);
+
+    const token = authToken || localStorage.getItem('gwl_social_token');
+    if (token) {
+      fetch('/api/social/integrations/connect', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(newAccount)
+      }).catch(err => console.warn('Failed to persist connected account to server:', err));
+    }
+
     addNotification({
       title: 'Account Connected',
       message: `Successfully connected ${newAccount.accountName} (${newAccount.platform.toUpperCase()}).`,
@@ -424,8 +456,19 @@ export const SocialCommandProvider: React.FC<{
 
   const disconnectAccount = (id: string) => {
     setSocialAccounts((prev) =>
-      prev.map((acc) => (acc.id === id ? { ...acc, status: 'disconnected' } : acc))
+      prev.map((acc) => (acc.id === id ? { ...acc, status: 'disconnected', isConnected: false } : acc))
     );
+    const token = authToken || localStorage.getItem('gwl_social_token');
+    if (token) {
+      fetch('/api/social/integrations/disconnect', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ accountId: id })
+      }).catch(err => console.warn('Failed to disconnect account on server:', err));
+    }
     addNotification({
       title: 'Account Disconnected',
       message: 'Account connection was revoked.',
@@ -457,9 +500,31 @@ export const SocialCommandProvider: React.FC<{
     const newPost: SocialPost = {
       ...postData,
       id: `post-${Date.now()}`,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      metrics: postData.metrics || {
+        likes: 0,
+        comments: 0,
+        shares: 0,
+        saves: 0,
+        impressions: 0,
+        reach: 0,
+        clicks: 0
+      }
     };
     setPosts((prev) => [newPost, ...prev]);
+
+    const token = authToken || localStorage.getItem('gwl_social_token');
+    if (token) {
+      fetch('/api/social/posts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(newPost)
+      }).catch(err => console.warn('Failed to persist post to server:', err));
+    }
+
     addNotification({
       title: postData.status === 'scheduled' ? 'Post Scheduled' : 'Draft Saved',
       message: `Post "${newPost.title || newPost.caption.slice(0, 30)}..." has been queued.`,
@@ -472,17 +537,44 @@ export const SocialCommandProvider: React.FC<{
     setPosts((prev) =>
       prev.map((p) => (p.id === id ? { ...p, ...updates } : p))
     );
+    const token = authToken || localStorage.getItem('gwl_social_token');
+    if (token) {
+      fetch(`/api/social/posts/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(updates)
+      }).catch(err => console.warn('Failed to update post on server:', err));
+    }
   };
 
   const deletePost = (id: string) => {
     setPosts((prev) => prev.filter((p) => p.id !== id));
+    const token = authToken || localStorage.getItem('gwl_social_token');
+    if (token) {
+      fetch(`/api/social/posts/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      }).catch(err => console.warn('Failed to delete post on server:', err));
+    }
   };
 
   const publishPostNow = async (id: string): Promise<boolean> => {
     const post = posts.find((p) => p.id === id);
     if (!post) return false;
 
-    // Simulate official API dispatch pipeline
+    const zeroMetrics = {
+      likes: 0,
+      comments: 0,
+      shares: 0,
+      saves: 0,
+      impressions: 0,
+      reach: 0,
+      clicks: 0
+    };
+
     setPosts((prev) =>
       prev.map((p) =>
         p.id === id
@@ -490,23 +582,31 @@ export const SocialCommandProvider: React.FC<{
               ...p,
               status: 'published',
               publishedAt: new Date().toISOString(),
-              metrics: {
-                likes: 12,
-                comments: 2,
-                shares: 1,
-                saves: 4,
-                impressions: 240,
-                reach: 195,
-                clicks: 18
-              }
+              metrics: zeroMetrics
             }
           : p
       )
     );
 
+    const token = authToken || localStorage.getItem('gwl_social_token');
+    if (token) {
+      fetch(`/api/social/posts/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          status: 'published',
+          publishedAt: new Date().toISOString(),
+          metrics: zeroMetrics
+        })
+      }).catch(err => console.warn('Failed to update published post on server:', err));
+    }
+
     addNotification({
       title: 'Post Published Now',
-      message: `Published to ${post.platforms.join(', ')} simultaneously.`,
+      message: `Dispatched to ${post.platforms.join(', ')}. Metrics will update as audience interacts.`,
       type: 'success'
     });
 
@@ -546,14 +646,15 @@ export const SocialCommandProvider: React.FC<{
   };
 
   // Inbox
-  const sendReplyMessage = (conversationId: string, text: string, senderName = 'Sumit Sharma (GWL)') => {
+  const sendReplyMessage = (conversationId: string, text: string, senderName?: string) => {
+    const resolvedSender = senderName || currentUserData?.name || 'Support Agent';
     setConversations((prev) =>
       prev.map((conv) => {
         if (conv.id !== conversationId) return conv;
         const newMsg = {
           id: `msg-${Date.now()}`,
           sender: 'agent' as const,
-          senderName,
+          senderName: resolvedSender,
           text,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           delivered: true,
@@ -831,7 +932,7 @@ export const SocialCommandProvider: React.FC<{
           prefill: {
             name: orderData.customer?.name || currentUserData.name,
             email: orderData.customer?.email || currentUserData.email,
-            contact: orderData.customer?.contact || (currentUserData as any)?.phone || '+91 75879 39722'
+            contact: orderData.customer?.contact || (currentUserData as any)?.phone || ''
           },
           theme: {
             color: '#06b6d4'
@@ -927,18 +1028,35 @@ export const SocialCommandProvider: React.FC<{
 
   const refreshBackendData = async () => {
     try {
-      const res = await fetch('/api/social/data');
+      const token = authToken || localStorage.getItem('gwl_social_token');
+      const res = await fetch('/api/social/data', {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
       if (res.ok) {
         const data = await res.json();
-        if (data.posts && Array.isArray(data.posts)) setPosts(data.posts);
-        if (data.clients && Array.isArray(data.clients)) setClientWorkspaces(data.clients);
-        if (data.accounts && Array.isArray(data.accounts)) setSocialAccounts(data.accounts);
-        if (data.conversations && Array.isArray(data.conversations)) setConversations(data.conversations);
-        if (data.automations && Array.isArray(data.automations)) setAutomations(data.automations);
-        if (data.media && Array.isArray(data.media)) setMediaAssets(data.media);
-        if (data.teamMembers && Array.isArray(data.teamMembers)) setTeamMembers(data.teamMembers);
+        setPosts(data.posts || []);
+        setClientWorkspaces(data.clients || []);
+        setSocialAccounts(data.accounts || []);
+        setConversations(data.conversations || []);
+        setAutomations(data.automations || []);
+        setMediaAssets(data.media || []);
+        setTeamMembers(data.teamMembers || []);
         if (data.plans && Array.isArray(data.plans) && data.plans.length > 0) setSubscriptionPlans(data.plans);
-        if (data.payments && Array.isArray(data.payments)) setPaymentHistory(data.payments);
+        setPaymentHistory(data.payments || []);
+        if (data.users && data.users.length > 0 && token) {
+          const u = data.users[0];
+          setCurrentUserData({
+            id: u.id,
+            name: u.name,
+            email: u.email,
+            avatar: u.avatarUrl || '/assets/aistudio/Gemini_Generated_Image_b1kwab1kwab1kwab_83d54e8a.png',
+            role: u.role as UserRole,
+            accountType: u.accountType,
+            onboardingCompleted: u.onboardingCompleted,
+            phone: u.phone
+          });
+          setCurrentUserRole(u.role as UserRole);
+        }
       }
       await refreshUsageStats();
     } catch {
@@ -948,7 +1066,7 @@ export const SocialCommandProvider: React.FC<{
 
   useEffect(() => {
     refreshBackendData();
-  }, []);
+  }, [authToken]);
 
   const login = async (email: string, password: string) => {
     try {
@@ -998,9 +1116,7 @@ export const SocialCommandProvider: React.FC<{
 
   const loginAsDemo = async (role: 'super_admin' | 'agency_admin' | 'freelancer') => {
     if (role === 'super_admin') {
-      await login('gwaliorweblabs@gmail.com', 'Admin@123456');
-    } else {
-      await login('demo@gwaliorweblabs.com', 'User@123456');
+      await login('admin@commandcenter.local', 'Admin@123456');
     }
   };
 
@@ -1097,6 +1213,17 @@ export const SocialCommandProvider: React.FC<{
     }
     setAuthToken(null);
     localStorage.removeItem('gwl_social_token');
+    localStorage.removeItem('gwl_social_user');
+    setPosts([]);
+    setClientWorkspaces([]);
+    setSocialAccounts([]);
+    setConversations([]);
+    setAutomations([]);
+    setMediaAssets([]);
+    setTeamMembers([]);
+    setPaymentHistory([]);
+    setUserUsage(null);
+    setCurrentUserData(null);
     addNotification({
       title: 'Signed Out',
       message: 'You have been safely signed out.',
@@ -1104,7 +1231,88 @@ export const SocialCommandProvider: React.FC<{
     });
   };
 
-  const currentUser = currentUserData;
+  const loginWithGoogle = async (profile?: { email: string; name: string; avatarUrl?: string }) => {
+    try {
+      const email = profile?.email || 'google.user@gmail.com';
+      const name = profile?.name || 'Google User';
+      const avatarUrl = profile?.avatarUrl || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name)}`;
+
+      const res = await fetch('/api/social/auth/google', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, name, avatarUrl })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return { success: false, error: data.error || 'Google SSO failed' };
+      }
+
+      setAuthToken(data.token);
+      localStorage.setItem('gwl_social_token', data.token);
+
+      const mappedUser = {
+        id: data.user.id,
+        name: data.user.name,
+        email: data.user.email,
+        avatar: data.user.avatarUrl || avatarUrl,
+        role: data.user.role as UserRole,
+        accountType: data.user.accountType,
+        onboardingCompleted: data.user.onboardingCompleted
+      };
+      setCurrentUserData(mappedUser);
+      setCurrentUserRole(data.user.role as UserRole);
+      localStorage.setItem('gwl_social_user', JSON.stringify(mappedUser));
+
+      addNotification({
+        title: 'Google Sign-In Successful',
+        message: `Welcome, ${data.user.name}! Your workspace is ready.`,
+        type: 'success'
+      });
+
+      await refreshBackendData();
+      return { success: true };
+    } catch (e: any) {
+      return { success: false, error: e.message || 'Google SSO failed' };
+    }
+  };
+
+  const deleteAccount = async () => {
+    try {
+      const token = authToken || localStorage.getItem('gwl_social_token');
+      if (!token) {
+        return { success: false, error: 'Not authenticated' };
+      }
+
+      const res = await fetch('/api/social/user/account', {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return { success: false, error: data.error || 'Failed to delete account' };
+      }
+
+      await logout();
+      addNotification({
+        title: 'Account Permanently Deleted',
+        message: 'Your account and all associated workspace records have been permanently purged.',
+        type: 'warning'
+      });
+      return { success: true };
+    } catch (e: any) {
+      return { success: false, error: e.message || 'Failed to delete account' };
+    }
+  };
+
+  const currentUser = currentUserData || {
+    id: '',
+    name: 'Guest User',
+    email: '',
+    avatar: '/assets/aistudio/Gemini_Generated_Image_b1kwab1kwab1kwab_83d54e8a.png',
+    role: 'agency_admin' as UserRole
+  };
 
   const automationRules = automations.map((a) => ({
     id: a.id,
@@ -1180,6 +1388,7 @@ export const SocialCommandProvider: React.FC<{
         clientWorkspaces,
         addClientWorkspace,
         updateClientWorkspace,
+        deleteClientWorkspace,
         socialAccounts,
         connectAccount,
         disconnectAccount,
@@ -1263,7 +1472,10 @@ export const SocialCommandProvider: React.FC<{
         isProfileModalOpen,
         openProfileModal,
         closeProfileModal,
+        isAuthenticated,
         login,
+        loginWithGoogle,
+        deleteAccount,
         loginAsDemo,
         register,
         verifyEmailPin,

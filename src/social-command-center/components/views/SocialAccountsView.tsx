@@ -39,7 +39,7 @@ export const SocialAccountsView: React.FC = () => {
   const [customHandleInput, setCustomHandleInput] = useState('');
   const [customNameInput, setCustomNameInput] = useState('');
   const [isAuthorizing, setIsAuthorizing] = useState(false);
-  const [selectedTargetWorkspace, setSelectedTargetWorkspace] = useState(activeClientId === 'all' ? 'client-gwl' : activeClientId);
+  const [selectedTargetWorkspace, setSelectedTargetWorkspace] = useState(clientWorkspaces[0]?.id || activeClientId);
   const [selectedTab, setSelectedTab] = useState<'all' | 'connected' | 'disconnected'>('all');
 
   const filteredAccounts = activeClientId === 'all'
@@ -76,19 +76,21 @@ export const SocialAccountsView: React.FC = () => {
 
     const platformMeta = PLATFORM_REGISTRY[connectModalPlatform];
     const targetWorkspace = clientWorkspaces.find((c) => c.id === selectedTargetWorkspace) || clientWorkspaces[0];
+    const wsName = targetWorkspace ? targetWorkspace.name : 'Personal';
+    const wsSlug = targetWorkspace ? targetWorkspace.slug : 'account';
 
     setTimeout(() => {
       connectAccount({
-        clientId: selectedTargetWorkspace,
+        clientId: selectedTargetWorkspace || targetWorkspace?.id || 'default',
         platform: connectModalPlatform,
-        accountName: customNameInput.trim() || `${targetWorkspace.name} (${platformMeta.name.split(' ')[0]})`,
-        accountHandle: customHandleInput.trim() || `@${targetWorkspace.slug}_${connectModalPlatform}`,
-        avatarUrl: targetWorkspace.logoUrl,
-        profileUrl: `https://${connectModalPlatform}.com/${targetWorkspace.slug}`,
+        accountName: customNameInput.trim() || `${wsName} (${platformMeta.name.split(' ')[0]})`,
+        accountHandle: customHandleInput.trim() || `@${wsSlug}_${connectModalPlatform}`,
+        avatarUrl: targetWorkspace?.logoUrl || `https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(customHandleInput || connectModalPlatform)}`,
+        profileUrl: `https://${connectModalPlatform}.com/${wsSlug}`,
         status: 'connected',
-        followersCount: Math.floor(Math.random() * 8000) + 1200,
-        followingCount: 140,
-        postsCount: 45,
+        followersCount: 0,
+        followingCount: 0,
+        postsCount: 0,
         tokenExpiresAt: new Date(Date.now() + 90 * 24 * 3600 * 1000).toISOString(),
         permissions: platformMeta.requiredScopes,
         capabilities: {
@@ -194,8 +196,9 @@ export const SocialAccountsView: React.FC = () => {
 
       {/* Account Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {displayAccounts.map((account) => {
-          const meta = PLATFORM_REGISTRY[account.platform];
+        {displayAccounts.length > 0 ? (
+          displayAccounts.map((account) => {
+            const meta = PLATFORM_REGISTRY[account.platform];
           const isConnected = account.status === 'connected';
 
           return (
@@ -334,7 +337,28 @@ export const SocialAccountsView: React.FC = () => {
               </div>
             </div>
           );
-        })}
+        })
+      ) : (
+        <div className="col-span-full p-12 text-center rounded-3xl bg-slate-900/40 border border-dashed border-slate-800">
+          <ShieldCheck className="w-12 h-12 text-slate-500 mx-auto mb-3 opacity-60" />
+          <h4 className="text-base font-bold text-white mb-1">No data available yet</h4>
+          <p className="text-xs text-slate-400 max-w-md mx-auto mb-5">
+            Connect your official social accounts to start managing content, monitoring inbox conversations, and reviewing real-time analytics.
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            {(['instagram', 'linkedin', 'youtube', 'facebook', 'twitter'] as SocialPlatformType[]).map((platform) => (
+              <button
+                key={platform}
+                onClick={() => handleOpenConnect(platform)}
+                className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-white flex items-center gap-1.5 transition-all cursor-pointer border border-slate-700"
+              >
+                {getPlatformIcon(platform, 'w-3.5 h-3.5')}
+                <span className="capitalize">{platform}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
       </div>
 
       {/* Official OAuth Connect Modal */}

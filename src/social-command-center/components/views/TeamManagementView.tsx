@@ -16,71 +16,34 @@ import {
 } from 'lucide-react';
 
 export const TeamManagementView: React.FC = () => {
-  const { currentClient, clients } = useSocialCommand();
+  const { currentClient, clients, currentUser } = useSocialCommand();
 
-  // Mock team members
-  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([
-    {
-      id: 'tm-1',
-      name: 'Aditya Sharma',
-      email: 'aditya@gwaliorweblabs.com',
-      avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
-      role: 'super_admin',
-      assignedClientIds: ['c-gwl', 'c-georgians', 'c-yanshi', 'c-brightedge'],
-      status: 'active'
-    },
-    {
-      id: 'tm-2',
-      name: 'Pooja Verma',
-      email: 'pooja.verma@gwaliorweblabs.com',
-      avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80',
-      role: 'agency_admin',
-      assignedClientIds: ['c-georgians', 'c-brightedge'],
-      status: 'active'
-    },
-    {
-      id: 'tm-3',
-      name: 'Rohit Verma',
-      email: 'rohit@gwaliorweblabs.com',
-      avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
-      role: 'manager',
-      assignedClientIds: ['c-yanshi'],
-      status: 'active'
-    },
-    {
-      id: 'tm-4',
-      name: 'Simran Rathore',
-      email: 'simran.r@gwaliorweblabs.com',
-      avatarUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=200&q=80',
-      role: 'content_creator',
-      assignedClientIds: ['c-georgians', 'c-yanshi'],
-      status: 'active'
-    },
-    {
-      id: 'tm-5',
-      name: 'Ankit Dubey',
-      email: 'ankit.support@gwaliorweblabs.com',
-      avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80',
-      role: 'customer_support',
-      assignedClientIds: ['c-georgians'],
-      status: 'active'
-    },
-    {
-      id: 'tm-6',
-      name: 'Dr. Yanshi Sharma',
-      email: 'director@yanshiphysio.com',
-      avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80',
-      role: 'client',
-      assignedClientIds: ['c-yanshi'],
-      status: 'active'
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>(() => {
+    try {
+      const saved = localStorage.getItem('gwl_social_team_members');
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    if (currentUser) {
+      return [
+        {
+          id: currentUser.id || 'tm-owner',
+          name: currentUser.name || 'Workspace Owner',
+          email: currentUser.email || 'user@example.com',
+          avatarUrl: currentUser.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+          role: currentUser.role || 'agency_admin',
+          assignedClientIds: clients.length > 0 ? clients.map(c => c.id) : ['workspace-default'],
+          status: 'active'
+        }
+      ];
     }
-  ]);
+    return [];
+  });
 
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [inviteName, setInviteName] = useState('');
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState<UserRole>('content_creator');
-  const [inviteClientId, setInviteClientId] = useState<string>(currentClient?.id || 'c-georgians');
+  const [inviteClientId, setInviteClientId] = useState<string>(currentClient?.id || (clients[0]?.id || 'workspace-default'));
 
   const roleDefinitions: Record<UserRole, { label: string; color: string; desc: string }> = {
     super_admin: {
@@ -129,7 +92,13 @@ export const TeamManagementView: React.FC = () => {
       status: 'invited'
     };
 
-    setTeamMembers(prev => [...prev, newMember]);
+    setTeamMembers(prev => {
+      const updated = [...prev, newMember];
+      try {
+        localStorage.setItem('gwl_social_team_members', JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
     setInviteName('');
     setInviteEmail('');
     setShowInviteModal(false);

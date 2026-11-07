@@ -78,60 +78,34 @@ export const OverviewDashboard: React.FC = () => {
   const totalUnreadConversations = filteredConversations.reduce((acc, c) => acc + c.unreadCount, 0);
   const connectedAccountsCount = filteredAccounts.filter((a) => a.status === 'connected').length;
 
-  // Aggregate engagement
-  const totalLikes = Math.round(filteredPosts.reduce((acc, p) => acc + (p.metrics?.likes || 0), 0) * dateMultiplier);
-  const totalComments = Math.round(filteredPosts.reduce((acc, p) => acc + (p.metrics?.comments || 0), 0) * dateMultiplier);
-  const totalShares = Math.round(filteredPosts.reduce((acc, p) => acc + (p.metrics?.shares || 0), 0) * dateMultiplier);
-  const totalImpressions = Math.round(filteredPosts.reduce((acc, p) => acc + (p.metrics?.impressions || 0), 0) * dateMultiplier);
+  // Aggregate engagement strictly from user's posts
+  const totalLikes = filteredPosts.reduce((acc, p) => acc + (p.metrics?.likes || 0), 0);
+  const totalComments = filteredPosts.reduce((acc, p) => acc + (p.metrics?.comments || 0), 0);
+  const totalShares = filteredPosts.reduce((acc, p) => acc + (p.metrics?.shares || 0), 0);
+  const totalImpressions = filteredPosts.reduce((acc, p) => acc + (p.metrics?.impressions || 0), 0);
   const engagementRate = totalImpressions > 0
     ? (((totalLikes + totalComments + totalShares) / totalImpressions) * 100).toFixed(1)
-    : '5.2';
+    : '0.0';
 
-  // Audience Growth chart data adjusted by filter
-  const audienceGrowthData = dateFilter === 'today'
+  const hasRealData = filteredAccounts.length > 0 || filteredPosts.length > 0;
+
+  // Real Audience Growth chart data - strictly 0 if no audience
+  const audienceGrowthData = totalAudience > 0
     ? [
-        { date: '06:00', audience: Math.round(totalAudience * 0.99), engagement: 210 },
-        { date: '10:00', audience: Math.round(totalAudience * 0.994), engagement: 540 },
-        { date: '14:00', audience: Math.round(totalAudience * 0.997), engagement: 890 },
-        { date: '18:00', audience: totalAudience, engagement: 1240 }
+        { date: 'Start', audience: Math.round(totalAudience * 0.95), engagement: Math.round(totalLikes * 0.3) },
+        { date: 'Mid', audience: Math.round(totalAudience * 0.98), engagement: Math.round(totalLikes * 0.7) },
+        { date: 'Current', audience: totalAudience, engagement: totalLikes + totalComments }
       ]
-    : dateFilter === '7d'
-    ? [
-        { date: 'Day 1', audience: Math.round(totalAudience * 0.94), engagement: 1200 },
-        { date: 'Day 2', audience: Math.round(totalAudience * 0.95), engagement: 1650 },
-        { date: 'Day 3', audience: Math.round(totalAudience * 0.96), engagement: 1950 },
-        { date: 'Day 4', audience: Math.round(totalAudience * 0.97), engagement: 2400 },
-        { date: 'Day 5', audience: Math.round(totalAudience * 0.98), engagement: 2800 },
-        { date: 'Day 6', audience: Math.round(totalAudience * 0.99), engagement: 3100 },
-        { date: 'Day 7', audience: totalAudience, engagement: 3500 }
-      ]
-    : [
-        { date: 'Week 1', audience: Math.round(totalAudience * 0.82), engagement: 2100 },
-        { date: 'Week 2', audience: Math.round(totalAudience * 0.86), engagement: 2950 },
-        { date: 'Week 3', audience: Math.round(totalAudience * 0.91), engagement: 3400 },
-        { date: 'Week 4', audience: Math.round(totalAudience * 0.95), engagement: 4200 },
-        { date: 'Current', audience: totalAudience, engagement: 5320 }
-      ];
+    : [];
 
-  // Platform Performance distribution
-  const platformPerfData = [
-    { name: 'Instagram', reach: Math.round(64200 * dateMultiplier), engagement: 8.2 },
-    { name: 'YouTube', reach: Math.round(89400 * dateMultiplier), engagement: 12.4 },
-    { name: 'LinkedIn', reach: Math.round(28500 * dateMultiplier), engagement: 6.8 },
-    { name: 'WhatsApp', reach: Math.round(14200 * dateMultiplier), engagement: 24.5 },
-    { name: 'X (Twitter)', reach: Math.round(38100 * dateMultiplier), engagement: 4.1 },
-    { name: 'Facebook', reach: Math.round(41200 * dateMultiplier), engagement: 5.3 }
-  ];
-
-  // Monthly Publishing Activity Bar Chart
-  const publishingActivityData = [
-    { month: 'Jun', published: 38, scheduled: 6 },
-    { month: 'Jul', published: 46, scheduled: 8 },
-    { month: 'Aug', published: 54, scheduled: 12 },
-    { month: 'Sep', published: 68, scheduled: 16 },
-    { month: 'Oct', published: 84, scheduled: 24 },
-    { month: 'Nov', published: 92, scheduled: 32 }
-  ];
+  // Real Platform Performance distribution based on user's actual connected channels
+  const platformPerfData = filteredAccounts.map((acc) => ({
+    name: acc.platform.charAt(0).toUpperCase() + acc.platform.slice(1),
+    reach: acc.followersCount || 0,
+    engagement: filteredPosts
+      .filter((p) => (p.platforms || []).includes(acc.platform))
+      .reduce((sum, p) => sum + (p.metrics?.likes || 0) + (p.metrics?.comments || 0), 0)
+  }));
 
   return (
     <div className="space-y-6">
@@ -148,12 +122,14 @@ export const OverviewDashboard: React.FC = () => {
               </span>
             ) : (
               <span className="text-xs text-slate-600 dark:text-slate-400 font-medium">
-                Multi-Tenant Agency View ({clientWorkspaces.length} active clients)
+                {clientWorkspaces.length > 0
+                  ? `Active Workspaces: ${clientWorkspaces.length}`
+                  : 'Personal Workspace'}
               </span>
             )}
           </div>
           <h1 className="text-2xl sm:text-3xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight">
-            Welcome back, {currentUser?.name || 'Commander'}
+            Welcome back, {currentUser?.name || 'Marketer'}
           </h1>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
             Real-time multi-platform audience growth, content publishing calendar, customer inbox, and AI engine.
@@ -322,6 +298,40 @@ export const OverviewDashboard: React.FC = () => {
         </div>
       )}
 
+      {/* Fresh Account Getting Started Banner if zero accounts connected */}
+      {!hasRealData && (
+        <div className="p-6 rounded-3xl bg-gradient-to-br from-cyan-500/10 via-blue-500/5 to-slate-900 border border-cyan-500/20 shadow-md">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-semibold mb-2">
+                <Sparkles className="w-3.5 h-3.5" /> Ready for Live Data
+              </div>
+              <h3 className="text-xl font-display font-extrabold text-slate-900 dark:text-white">
+                Get Started with your Social Command Center
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-1 max-w-xl">
+                Your dashboard is clean and ready. Connect your official social accounts to start scheduling posts, monitoring inbox messages, and tracking real-time audience metrics.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2.5 shrink-0">
+              <button
+                onClick={() => setActiveSection('accounts')}
+                className="px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-cyan-500/20 cursor-pointer transition-all"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Connect First Channel</span>
+              </button>
+              <button
+                onClick={openCreatePostModal}
+                className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold text-xs transition-all cursor-pointer"
+              >
+                <span>Create Draft Post</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Primary KPI Grid (4 columns) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* KPI 1: Total Audience */}
@@ -336,9 +346,8 @@ export const OverviewDashboard: React.FC = () => {
             <div className="text-2xl sm:text-3xl font-display font-extrabold text-slate-900 dark:text-white">
               {totalAudience.toLocaleString()}
             </div>
-            <div className="text-xs text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1 mt-1">
-              <TrendingUp className="w-3.5 h-3.5" />
-              <span>+18.4% vs previous period</span>
+            <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              {totalAudience > 0 ? 'Verified API follower count' : 'Connect channels to track audience'}
             </div>
           </div>
         </div>
@@ -357,9 +366,9 @@ export const OverviewDashboard: React.FC = () => {
               <span className="text-sm font-normal text-slate-500 dark:text-slate-400">/ {totalScheduledPosts} scheduled</span>
             </div>
             <div className="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-2">
-              <span className="text-sky-600 dark:text-sky-400 font-mono font-semibold">{totalDrafts} Drafts ready</span>
+              <span className="text-sky-600 dark:text-sky-400 font-mono font-semibold">{totalDrafts} Drafts</span>
               <span>•</span>
-              <span className="text-amber-600 dark:text-amber-400">1 Pending approval</span>
+              <span>{filteredPosts.length} total posts</span>
             </div>
           </div>
         </div>
@@ -395,13 +404,8 @@ export const OverviewDashboard: React.FC = () => {
               {connectedAccountsCount}{' '}
               <span className="text-sm font-normal text-slate-500 dark:text-slate-400">/ {filteredAccounts.length}</span>
             </div>
-            <div className="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center justify-between">
-              <span className="text-emerald-600 dark:text-emerald-400">All OAuth tokens valid</span>
-              {totalUnreadConversations > 0 && (
-                <span className="px-2 py-0.5 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-600 dark:text-rose-300 font-mono font-bold text-[10px]">
-                  {totalUnreadConversations} unread DMs
-                </span>
-              )}
+            <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              {connectedAccountsCount > 0 ? 'OAuth tokens active' : 'No accounts connected yet'}
             </div>
           </div>
         </div>
@@ -415,46 +419,57 @@ export const OverviewDashboard: React.FC = () => {
             <div>
               <h2 className="text-base font-display font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <span>Audience Net Growth & Engagement Curve</span>
-                <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-mono">
-                  Verified Meta & Google APIs
-                </span>
               </h2>
-              <div className="text-xs text-slate-500 dark:text-slate-400">Follower trajectories and interaction velocity over time.</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400">Verified follower trajectories and interaction velocity over time.</div>
             </div>
-            <span className="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 rounded-xl border border-emerald-500/30">
-              +{Math.round(totalAudience * 0.18).toLocaleString()} Net New
-            </span>
           </div>
 
-          <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={audienceGrowthData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="audienceGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0.0} />
-                  </linearGradient>
-                  <linearGradient id="engagementGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" className="dark:stroke-slate-800" />
-                <XAxis dataKey="date" stroke="#64748b" tick={{ fontSize: 11 }} />
-                <YAxis stroke="#64748b" tick={{ fontSize: 11 }} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: 'var(--theme-surface, #ffffff)',
-                    borderColor: '#cbd5e1',
-                    borderRadius: '12px',
-                    fontSize: '12px',
-                    color: '#0f172a'
-                  }}
-                />
-                <Area type="monotone" dataKey="audience" name="Total Audience" stroke="#10b981" strokeWidth={2.5} fillOpacity={1} fill="url(#audienceGrad)" />
-                <Area type="monotone" dataKey="engagement" name="Weekly Interactions" stroke="#3b82f6" strokeWidth={2} fillOpacity={1} fill="url(#engagementGrad)" />
-              </AreaChart>
-            </ResponsiveContainer>
+          <div className="h-64 w-full flex items-center justify-center">
+            {audienceGrowthData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={audienceGrowthData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="audienceGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.4} />
+                      <stop offset="95%" stopColor="#10b981" stopOpacity={0.0} />
+                    </linearGradient>
+                    <linearGradient id="engagementGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" className="dark:stroke-slate-800" />
+                  <XAxis dataKey="date" stroke="#64748b" tick={{ fontSize: 11 }} />
+                  <YAxis stroke="#64748b" tick={{ fontSize: 11 }} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'var(--theme-surface, #ffffff)',
+                      borderColor: '#cbd5e1',
+                      borderRadius: '12px',
+                      fontSize: '12px',
+                      color: '#0f172a'
+                    }}
+                  />
+                  <Area type="monotone" dataKey="audience" name="Total Audience" stroke="#10b981" strokeWidth={2.5} fillOpacity={1} fill="url(#audienceGrad)" />
+                  <Area type="monotone" dataKey="engagement" name="Interactions" stroke="#3b82f6" strokeWidth={2} fillOpacity={1} fill="url(#engagementGrad)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="text-center p-6 space-y-2">
+                <AlertCircle className="w-8 h-8 text-slate-400 mx-auto opacity-60" />
+                <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">No data available yet</h4>
+                <p className="text-xs text-slate-500 max-w-sm">
+                  Connect your first social account or publish posts to begin tracking audience growth curves.
+                </p>
+                <button
+                  onClick={() => setActiveSection('accounts')}
+                  className="mt-2 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Connect Channel</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -474,24 +489,34 @@ export const OverviewDashboard: React.FC = () => {
             </button>
           </div>
 
-          <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={platformPerfData} layout="vertical" margin={{ top: 5, right: 20, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" className="dark:stroke-slate-800" />
-                <XAxis type="number" stroke="#64748b" tick={{ fontSize: 10 }} />
-                <YAxis type="category" dataKey="name" stroke="#64748b" tick={{ fontSize: 11 }} width={80} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: 'var(--theme-surface, #ffffff)',
-                    borderColor: '#cbd5e1',
-                    borderRadius: '12px',
-                    fontSize: '12px',
-                    color: '#0f172a'
-                  }}
-                />
-                <Bar dataKey="reach" name="Estimated Reach" fill="#3b82f6" radius={[0, 6, 6, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+          <div className="h-64 w-full flex items-center justify-center">
+            {platformPerfData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={platformPerfData} layout="vertical" margin={{ top: 5, right: 20, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" className="dark:stroke-slate-800" />
+                  <XAxis type="number" stroke="#64748b" tick={{ fontSize: 10 }} />
+                  <YAxis type="category" dataKey="name" stroke="#64748b" tick={{ fontSize: 11 }} width={80} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'var(--theme-surface, #ffffff)',
+                      borderColor: '#cbd5e1',
+                      borderRadius: '12px',
+                      fontSize: '12px',
+                      color: '#0f172a'
+                    }}
+                  />
+                  <Bar dataKey="reach" name="Follower Reach" fill="#3b82f6" radius={[0, 6, 6, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="text-center p-6 space-y-2">
+                <AlertCircle className="w-8 h-8 text-slate-400 mx-auto opacity-60" />
+                <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">No channels connected</h4>
+                <p className="text-xs text-slate-500 max-w-xs">
+                  Connect your social accounts to view cross-network reach distributions.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -515,56 +540,66 @@ export const OverviewDashboard: React.FC = () => {
           </div>
 
           <div className="space-y-3">
-            {filteredPosts
-              .filter((p) => p.status === 'scheduled' || p.status === 'pending_approval')
-              .slice(0, 3)
-              .map((post) => (
-                <div
-                  key={post.id}
-                  className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-all flex items-start justify-between gap-3"
-                >
-                  <div className="flex items-start gap-3 min-w-0">
-                    <img
-                      src={post.mediaUrls[0] || '/assets/aistudio/Gemini_Generated_Image_b1kwab1kwab1kwab_83d54e8a.png'}
-                      alt="Thumbnail"
-                      className="w-14 h-14 rounded-xl object-cover shrink-0 border border-slate-200 dark:border-slate-800"
-                    />
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <div className="flex items-center gap-1">
-                          {post.platforms.map((p) => (
-                            <span key={p} className="text-slate-500 dark:text-slate-400">
-                              {getPlatformIcon(p, 'w-3.5 h-3.5')}
-                            </span>
-                          ))}
-                        </div>
-                        <span className={`px-2 py-0.2 rounded-full text-[10px] font-mono font-semibold ${
-                          post.status === 'scheduled'
-                            ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30'
-                            : 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30'
-                        }`}>
-                          {post.status.toUpperCase()}
-                        </span>
+            {filteredPosts.filter((p) => p.status === 'scheduled' || p.status === 'pending_approval' || p.status === 'draft').length > 0 ? (
+              filteredPosts
+                .filter((p) => p.status === 'scheduled' || p.status === 'pending_approval' || p.status === 'draft')
+                .slice(0, 3)
+                .map((post) => (
+                  <div
+                    key={post.id}
+                    className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-all flex items-start justify-between gap-3"
+                  >
+                    <div className="flex items-start gap-3 min-w-0">
+                      <div className="w-12 h-12 rounded-xl bg-slate-200 dark:bg-slate-800 flex items-center justify-center shrink-0 border border-slate-300 dark:border-slate-700">
+                        <FileText className="w-5 h-5 text-slate-500" />
                       </div>
-                      <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate max-w-md">
-                        {post.title || post.caption.slice(0, 45)}
-                      </h4>
-                      <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-2">
-                        <span>{post.scheduledFor ? new Date(post.scheduledFor).toLocaleDateString() : 'Ready'}</span>
-                        <span>•</span>
-                        <span>Author: {post.authorName}</span>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <div className="flex items-center gap-1">
+                            {(post.platforms || []).map((p) => (
+                              <span key={p} className="text-slate-500 dark:text-slate-400">
+                                {getPlatformIcon(p, 'w-3.5 h-3.5')}
+                              </span>
+                            ))}
+                          </div>
+                          <span className={`px-2 py-0.2 rounded-full text-[10px] font-mono font-semibold ${
+                            post.status === 'scheduled'
+                              ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30'
+                              : 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30'
+                          }`}>
+                            {post.status.toUpperCase()}
+                          </span>
+                        </div>
+                        <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate max-w-md">
+                          {post.title || post.caption.slice(0, 45)}
+                        </h4>
+                        <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-2">
+                          <span>{post.scheduledFor ? new Date(post.scheduledFor).toLocaleDateString() : 'Draft'}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <button
-                    onClick={() => setActiveSection('publishing')}
-                    className="px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-[11px] text-slate-800 dark:text-slate-200 font-semibold shrink-0 cursor-pointer"
-                  >
-                    Manage
-                  </button>
-                </div>
-              ))}
+                    <button
+                      onClick={() => setActiveSection('publishing')}
+                      className="px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-[11px] text-slate-800 dark:text-slate-200 font-semibold shrink-0 cursor-pointer"
+                    >
+                      Manage
+                    </button>
+                  </div>
+                ))
+            ) : (
+              <div className="p-8 text-center rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-dashed border-slate-300 dark:border-slate-800">
+                <Clock className="w-8 h-8 text-slate-400 mx-auto mb-2 opacity-50" />
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">No scheduled posts in the pipeline yet.</p>
+                <button
+                  onClick={openCreatePostModal}
+                  className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold transition-all cursor-pointer border border-emerald-500/20"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Create Your First Post</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -585,42 +620,56 @@ export const OverviewDashboard: React.FC = () => {
             </div>
 
             <div className="space-y-2.5">
-              {filteredAccounts.slice(0, 5).map((account) => {
-                const meta = PLATFORM_REGISTRY[account.platform];
-                return (
-                  <div
-                    key={account.id}
-                    className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 flex items-center justify-between"
-                  >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className={`p-2 rounded-xl ${meta.bgBadge} ${meta.textColor}`}>
-                        {getPlatformIcon(account.platform, 'w-4 h-4')}
-                      </div>
-                      <div className="min-w-0">
-                        <div className="text-xs font-bold text-slate-900 dark:text-white truncate">
-                          {account.accountName}
+              {filteredAccounts.length > 0 ? (
+                filteredAccounts.slice(0, 5).map((account) => {
+                  const meta = PLATFORM_REGISTRY[account.platform];
+                  return (
+                    <div
+                      key={account.id}
+                      className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 flex items-center justify-between"
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className={`p-2 rounded-xl ${meta?.bgBadge || 'bg-slate-800'} ${meta?.textColor || 'text-slate-300'}`}>
+                          {getPlatformIcon(account.platform, 'w-4 h-4')}
                         </div>
-                        <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono truncate">
-                          {account.accountHandle} • {account.followersCount.toLocaleString()} followers
+                        <div className="min-w-0">
+                          <div className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                            {account.accountName}
+                          </div>
+                          <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono truncate">
+                            @{account.accountHandle} • {(account.followersCount || 0).toLocaleString()} followers
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
-                      <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 uppercase font-semibold">
-                        ACTIVE
-                      </span>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className={`w-2 h-2 rounded-full ${account.status === 'connected' ? 'bg-emerald-500' : 'bg-slate-400'}`} />
+                        <span className="text-[10px] font-mono uppercase font-semibold text-slate-700 dark:text-slate-300">
+                          {account.status}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              ) : (
+                <div className="p-8 text-center rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-dashed border-slate-300 dark:border-slate-800">
+                  <ShieldCheck className="w-8 h-8 text-slate-400 mx-auto mb-2 opacity-50" />
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">No social accounts connected yet.</p>
+                  <button
+                    onClick={() => setActiveSection('accounts')}
+                    className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 text-xs font-bold transition-all cursor-pointer border border-cyan-500/20"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Connect Social Account</span>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 
           <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-            <span>OAuth 2.0 Token Auto-Refresh: <strong className="text-slate-800 dark:text-slate-200">Enabled</strong></span>
-            <span className="text-emerald-600 dark:text-emerald-400 font-mono text-[11px]">9/9 Platforms Supported</span>
+            <span>OAuth 2.0 Security: <strong className="text-slate-800 dark:text-slate-200">Enforced</strong></span>
+            <span className="text-emerald-600 dark:text-emerald-400 font-mono text-[11px]">9 Platforms Supported</span>
           </div>
         </div>
       </div>

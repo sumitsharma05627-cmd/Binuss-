@@ -5,6 +5,7 @@ export type SocialPlatformType =
   | 'linkedin'
   | 'twitter'
   | 'pinterest'
+  | 'tiktok'
   | 'reddit'
   | 'telegram'
   | 'whatsapp';

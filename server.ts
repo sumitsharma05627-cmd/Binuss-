@@ -501,23 +501,99 @@ app.post('/api/social/auth/onboarding', (req: Request, res: Response) => {
   res.json({ success: true, user: userSafe });
 });
 
-// 8. Full Snapshot Data Query
-app.get('/api/social/data', (_req: Request, res: Response) => {
+// 7b. Google Single Sign-On Authentication
+app.post('/api/social/auth/google', (req: Request, res: Response) => {
+  try {
+    const { email, name, avatarUrl, googleId } = req.body;
+    if (!email) {
+      res.status(400).json({ error: 'Google profile email is required.' });
+      return;
+    }
+    const { user, token } = socialDb.googleAuth({
+      email,
+      name: name || email.split('@')[0],
+      avatarUrl,
+      googleId
+    });
+    const { passwordHash: _, ...userSafe } = user;
+    res.json({
+      success: true,
+      message: 'Google authentication successful.',
+      user: userSafe,
+      token
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Google authentication failed.' });
+  }
+});
+
+// 7c. Permanent Account Deletion Endpoint
+app.delete('/api/social/user/account', (req: Request, res: Response) => {
+  const user = getAuthUser(req);
+  if (!user) {
+    res.status(401).json({ error: 'Unauthorized.' });
+    return;
+  }
+  const deleted = socialDb.deleteUserAccount(user.id);
+  if (deleted) {
+    res.json({ success: true, message: 'Account and associated workspaces permanently purged.' });
+  } else {
+    res.status(400).json({ error: 'Failed to delete account.' });
+  }
+});
+
+// 8. Full Snapshot Data Query (Strictly Scoped by Authenticated User)
+app.get('/api/social/data', (req: Request, res: Response) => {
+  const user = getAuthUser(req);
+  if (!user) {
+    res.json({
+      success: true,
+      clients: [],
+      accounts: [],
+      posts: [],
+      conversations: [],
+      automations: [],
+      media: [],
+      teamMembers: [],
+      plans: socialDb.getPlans(),
+      payments: [],
+      users: [],
+      auditLogs: [],
+      apiHealthLogs: socialDb.getDbSnapshot().apiHealthLogs
+    });
+    return;
+  }
+
+  const isSuperAdminView = user.role === 'super_admin' && req.query.adminView === 'true';
+  const { passwordHash: _, ...userSafe } = user;
   const snapshot = socialDb.getDbSnapshot();
-  const safeUsers = snapshot.users.map(({ passwordHash: _, ...u }) => u);
+
+  const clients = socialDb.getClients(user.id, isSuperAdminView);
+  const accounts = isSuperAdminView ? snapshot.accounts : socialDb.getAccounts(user.id);
+  const posts = isSuperAdminView ? snapshot.posts : socialDb.getPosts(user.id);
+  const conversations = isSuperAdminView ? snapshot.conversations : socialDb.getConversations(user.id);
+  const automations = isSuperAdminView ? snapshot.automations : socialDb.getAutomations(user.id);
+  const media = isSuperAdminView ? snapshot.media : socialDb.getMedia(user.id);
+  const teamMembers = isSuperAdminView ? snapshot.teamMembers : socialDb.getTeamMembers(user.id);
+  const payments = socialDb.getPayments(user.id, isSuperAdminView);
+  const safeUsers = isSuperAdminView 
+    ? socialDb.getAllUsers().map(({ passwordHash: _, ...u }) => u)
+    : [userSafe];
+  const auditLogs = socialDb.getAuditLogs(user.id, isSuperAdminView);
+
   res.json({
     success: true,
-    clients: snapshot.clients,
-    accounts: snapshot.accounts,
-    posts: snapshot.posts,
-    conversations: snapshot.conversations,
-    automations: snapshot.automations,
-    media: snapshot.media,
-    teamMembers: snapshot.teamMembers,
-    plans: snapshot.plans,
-    payments: snapshot.payments || [],
+    clients,
+    accounts,
+    posts,
+    conversations,
+    automations,
+    media,
+    teamMembers,
+    plans: socialDb.getPlans(),
+    payments,
     users: safeUsers,
-    auditLogs: snapshot.auditLogs,
+    auditLogs,
     apiHealthLogs: snapshot.apiHealthLogs
   });
 });
@@ -530,8 +606,7 @@ app.get('/api/social/plans', (_req: Request, res: Response) => {
 app.put('/api/social/plans/:id', (req: Request, res: Response) => {
   try {
     const user = getAuthUser(req);
-    // Allow update if admin or if no token provided in local development
-    if (user && user.role !== 'super_admin' && user.role !== 'agency_admin') {
+    if (user && user.role !== 'super_admin') {
       res.status(403).json({ error: 'Forbidden. Administrator credentials required.' });
       return;
     }
@@ -551,8 +626,11 @@ app.put('/api/social/plans/:id', (req: Request, res: Response) => {
 // 8c. User Usage & Feature Limits
 app.get('/api/social/user/usage', (req: Request, res: Response) => {
   const user = getAuthUser(req);
-  const userId = user ? user.id : 'user-sumit-admin';
-  const usage = socialDb.getUserUsageStats(userId);
+  if (!user) {
+    res.status(401).json({ error: 'Unauthorized. Please log in.' });
+    return;
+  }
+  const usage = socialDb.getUserUsageStats(user.id);
   res.json({ success: true, usage });
 });
 
@@ -562,14 +640,17 @@ app.post('/api/social/payments/create-order', (req: Request, res: Response) => {
   try {
     const { planId, billingCycle = 'monthly' } = req.body;
     const user = getAuthUser(req);
-    const userId = user ? user.id : 'user-sumit-admin';
+    if (!user) {
+      res.status(401).json({ error: 'Unauthorized. Please sign in to purchase a plan.' });
+      return;
+    }
 
     if (!planId) {
       res.status(400).json({ error: 'planId is required.' });
       return;
     }
 
-    const orderData = socialDb.createRazorpayOrder(userId, planId, billingCycle);
+    const orderData = socialDb.createRazorpayOrder(user.id, planId, billingCycle);
     res.json({ success: true, ...orderData });
   } catch (err: any) {
     res.status(400).json({ error: err.message || 'Failed to create payment order.' });
@@ -581,7 +662,10 @@ app.post('/api/social/payments/verify', (req: Request, res: Response) => {
   try {
     const { orderId, paymentId, signature, planId, billingCycle = 'monthly', method = 'razorpay_gateway' } = req.body;
     const user = getAuthUser(req);
-    const userId = user ? user.id : 'user-sumit-admin';
+    if (!user) {
+      res.status(401).json({ error: 'Unauthorized.' });
+      return;
+    }
 
     if (!orderId || !paymentId) {
       res.status(400).json({ error: 'orderId and paymentId are required.' });
@@ -592,7 +676,7 @@ app.post('/api/social/payments/verify', (req: Request, res: Response) => {
       orderId,
       paymentId,
       signature: signature || `sandbox_sig_${Date.now()}`,
-      userId,
+      userId: user.id,
       planId,
       billingCycle,
       method
@@ -627,8 +711,12 @@ app.post('/api/social/payments/webhook', (req: Request, res: Response) => {
 // Payment History & Invoices
 app.get('/api/social/payments/history', (req: Request, res: Response) => {
   const user = getAuthUser(req);
-  const isSuperAdmin = user?.role === 'super_admin';
-  const payments = socialDb.getPayments(isSuperAdmin ? undefined : user?.id);
+  if (!user) {
+    res.json({ success: true, payments: [] });
+    return;
+  }
+  const isSuperAdmin = user.role === 'super_admin' && req.query.all === 'true';
+  const payments = socialDb.getPayments(user.id, isSuperAdmin);
   res.json({ success: true, payments });
 });
 
@@ -636,7 +724,7 @@ app.get('/api/social/payments/history', (req: Request, res: Response) => {
 app.post('/api/social/admin/grant-premium', (req: Request, res: Response) => {
   try {
     const user = getAuthUser(req);
-    if (user && user.role !== 'super_admin') {
+    if (!user || user.role !== 'super_admin') {
       res.status(403).json({ error: 'Forbidden. Super admin credentials required.' });
       return;
     }
@@ -654,58 +742,178 @@ app.post('/api/social/admin/grant-premium', (req: Request, res: Response) => {
   }
 });
 
+// Workspace / Client Management Endpoints
+app.post('/api/social/clients', (req: Request, res: Response) => {
+  try {
+    const user = getAuthUser(req);
+    if (!user) {
+      res.status(401).json({ error: 'Unauthorized.' });
+      return;
+    }
+    const client = socialDb.addClient(user.id, req.body);
+    res.status(201).json({ success: true, client });
+  } catch (err: any) {
+    res.status(400).json({ error: err.message || 'Failed to create workspace.' });
+  }
+});
+
+app.put('/api/social/clients/:id', (req: Request, res: Response) => {
+  try {
+    const user = getAuthUser(req);
+    if (!user) {
+      res.status(401).json({ error: 'Unauthorized.' });
+      return;
+    }
+    const updated = socialDb.updateClient(user.id, req.params.id, req.body, user.role === 'super_admin');
+    if (updated) {
+      res.json({ success: true, client: updated });
+    } else {
+      res.status(404).json({ error: 'Workspace not found.' });
+    }
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to update workspace.' });
+  }
+});
+
+app.delete('/api/social/clients/:id', (req: Request, res: Response) => {
+  try {
+    const user = getAuthUser(req);
+    if (!user) {
+      res.status(401).json({ error: 'Unauthorized.' });
+      return;
+    }
+    const deleted = socialDb.deleteClient(user.id, req.params.id, user.role === 'super_admin');
+    if (deleted) {
+      res.json({ success: true, message: 'Workspace deleted.' });
+    } else {
+      res.status(404).json({ error: 'Workspace not found.' });
+    }
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to delete workspace.' });
+  }
+});
+
 // 9. Post Management Endpoints
 app.post('/api/social/posts', (req: Request, res: Response) => {
   try {
     const postData = req.body;
-    if (!postData.caption) {
-      res.status(400).json({ error: 'Post caption is required.' });
+    if (!postData.caption && !postData.content) {
+      res.status(400).json({ error: 'Post caption/content is required.' });
       return;
     }
 
     const user = getAuthUser(req);
-    const userId = user ? user.id : 'user-sumit-admin';
-    const usage = socialDb.getUserUsageStats(userId);
-
-    // Limit check
-    if (usage.postsUsedThisMonth >= usage.postsLimit) {
-      res.status(403).json({
-        error: `Monthly scheduled post limit reached (${usage.postsLimit} posts on ${usage.planName}). Please upgrade your plan.`,
-        limitReached: true,
-        currentUsage: usage
-      });
+    if (!user) {
+      res.status(401).json({ error: 'Unauthorized. Please sign in to create posts.' });
       return;
     }
 
-    const newPost = socialDb.addPost(postData);
+    const newPost = socialDb.addPost(user.id, postData);
     res.status(201).json({ success: true, post: newPost });
   } catch (e: any) {
-    res.status(500).json({ error: 'Failed to create post.', details: e.message });
+    res.status(400).json({ error: e.message || 'Failed to create post.' });
   }
 });
 
 app.put('/api/social/posts/:id', (req: Request, res: Response) => {
-  const updated = socialDb.updatePost(req.params.id, req.body);
+  const user = getAuthUser(req);
+  if (!user) {
+    res.status(401).json({ error: 'Unauthorized.' });
+    return;
+  }
+  const updated = socialDb.updatePost(user.id, req.params.id, req.body);
   if (updated) {
     res.json({ success: true, post: updated });
   } else {
-    res.status(404).json({ error: 'Post not found.' });
+    res.status(404).json({ error: 'Post not found or unauthorized.' });
   }
 });
 
 app.delete('/api/social/posts/:id', (req: Request, res: Response) => {
-  socialDb.deletePost(req.params.id);
-  res.json({ success: true, message: 'Post removed.' });
+  const user = getAuthUser(req);
+  if (!user) {
+    res.status(401).json({ error: 'Unauthorized.' });
+    return;
+  }
+  const ok = socialDb.deletePost(user.id, req.params.id);
+  if (ok) {
+    res.json({ success: true, message: 'Post removed.' });
+  } else {
+    res.status(404).json({ error: 'Post not found or unauthorized.' });
+  }
 });
 
-// 10. Social Account Connect / Disconnect
+// 10. Real Social Media Integration Endpoints (Connect / Disconnect / Test)
+app.post('/api/social/integrations/connect', (req: Request, res: Response) => {
+  try {
+    const user = getAuthUser(req);
+    if (!user) {
+      res.status(401).json({ error: 'Unauthorized. Please sign in to connect accounts.' });
+      return;
+    }
+
+    const { platform, accountName, handle, avatarUrl, clientId, accessToken, permissions } = req.body;
+    if (!platform || !handle) {
+      res.status(400).json({ error: 'Platform and handle are required.' });
+      return;
+    }
+
+    const connectedAccount = socialDb.connectAccount(user.id, {
+      platform,
+      accountName: accountName || handle,
+      handle: handle.replace(/^@/, ''),
+      avatarUrl: avatarUrl || `https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(handle)}`,
+      clientId: clientId || 'all',
+      accessToken: accessToken || `token_${platform}_${Date.now()}`,
+      permissions: permissions || ['read_insights', 'publish_posts', 'manage_comments'],
+      followersCount: 0,
+      followingCount: 0,
+      postsCount: 0,
+      engagementRate: 0,
+      status: 'connected'
+    });
+
+    res.status(201).json({ success: true, account: connectedAccount });
+  } catch (err: any) {
+    res.status(400).json({ error: err.message || 'Failed to connect account.' });
+  }
+});
+
+app.post('/api/social/integrations/disconnect', (req: Request, res: Response) => {
+  try {
+    const user = getAuthUser(req);
+    if (!user) {
+      res.status(401).json({ error: 'Unauthorized.' });
+      return;
+    }
+
+    const { accountId } = req.body;
+    if (!accountId) {
+      res.status(400).json({ error: 'accountId is required.' });
+      return;
+    }
+
+    const disconnected = socialDb.disconnectAccount(user.id, accountId);
+    if (disconnected) {
+      res.json({ success: true, message: 'Account disconnected successfully.', account: disconnected });
+    } else {
+      res.status(404).json({ error: 'Account not found or unauthorized.' });
+    }
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to disconnect account.' });
+  }
+});
+
 app.post('/api/social/accounts/:id/toggle', (req: Request, res: Response) => {
   const { isConnected } = req.body;
   const user = getAuthUser(req);
-  const userId = user ? user.id : 'user-sumit-admin';
+  if (!user) {
+    res.status(401).json({ error: 'Unauthorized.' });
+    return;
+  }
 
   if (isConnected) {
-    const usage = socialDb.getUserUsageStats(userId);
+    const usage = socialDb.getUserUsageStats(user.id);
     if (usage.connectedAccountsCount >= usage.connectedAccountsLimit) {
       res.status(403).json({
         error: `Account connection limit reached (${usage.connectedAccountsLimit} channels on ${usage.planName}). Please upgrade your subscription tier.`,
@@ -715,40 +923,50 @@ app.post('/api/social/accounts/:id/toggle', (req: Request, res: Response) => {
     }
   }
 
-  const updated = socialDb.toggleAccountConnection(req.params.id, Boolean(isConnected));
+  const updated = socialDb.toggleAccountConnection(user.id, req.params.id, Boolean(isConnected));
   if (updated) {
     res.json({ success: true, account: updated });
   } else {
-    res.status(404).json({ error: 'Account not found.' });
+    res.status(404).json({ error: 'Account not found or unauthorized.' });
   }
 });
 
 // 11. Inbox Message Reply & Customer Note
 app.post('/api/social/inbox/:id/reply', (req: Request, res: Response) => {
+  const user = getAuthUser(req);
+  if (!user) {
+    res.status(401).json({ error: 'Unauthorized.' });
+    return;
+  }
   const { message } = req.body;
   if (!message || !message.content) {
     res.status(400).json({ error: 'Message content is required.' });
     return;
   }
-  const updated = socialDb.addMessageToConversation(req.params.id, message);
+  const updated = socialDb.addMessageToConversation(user.id, req.params.id, message);
   if (updated) {
     res.json({ success: true, conversation: updated });
   } else {
-    res.status(404).json({ error: 'Conversation not found.' });
+    res.status(404).json({ error: 'Conversation not found or unauthorized.' });
   }
 });
 
 app.post('/api/social/inbox/:id/note', (req: Request, res: Response) => {
+  const user = getAuthUser(req);
+  if (!user) {
+    res.status(401).json({ error: 'Unauthorized.' });
+    return;
+  }
   const { note } = req.body;
   if (!note) {
     res.status(400).json({ error: 'Note is required.' });
     return;
   }
-  const updated = socialDb.addCustomerNote(req.params.id, note);
+  const updated = socialDb.addCustomerNote(user.id, req.params.id, note);
   if (updated) {
     res.json({ success: true, conversation: updated });
   } else {
-    res.status(404).json({ error: 'Conversation not found.' });
+    res.status(404).json({ error: 'Conversation not found or unauthorized.' });
   }
 });
 

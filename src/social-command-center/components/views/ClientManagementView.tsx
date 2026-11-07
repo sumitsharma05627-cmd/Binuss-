@@ -28,6 +28,7 @@ export const ClientManagementView: React.FC = () => {
     clientWorkspaces,
     addClientWorkspace,
     updateClientWorkspace,
+    deleteClientWorkspace,
     socialAccounts,
     posts,
     approvePost,
@@ -192,8 +193,28 @@ export const ClientManagementView: React.FC = () => {
       )}
 
       {/* Client Workspaces Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {clientWorkspaces.map((client) => {
+      {clientWorkspaces.length === 0 ? (
+        <div className="p-12 text-center rounded-3xl bg-white dark:bg-[#090f1f] border border-dashed border-slate-300 dark:border-slate-800 space-y-4">
+          <div className="w-16 h-16 mx-auto rounded-3xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-500">
+            <Briefcase className="w-8 h-8" />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white">No client workspaces created yet</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto mt-1">
+              Organize multiple brands, clients, or internal business units into isolated workspaces with separate channels, permissions, and approval flows.
+            </p>
+          </div>
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs shadow-lg shadow-blue-500/20 cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Create Your First Workspace</span>
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {clientWorkspaces.map((client) => {
           const clientAccounts = socialAccounts.filter((a) => a.clientId === client.id);
           const clientPosts = posts.filter((p) => p.clientId === client.id);
           const isCurrentActive = activeClientId === client.id;
@@ -294,20 +315,34 @@ export const ClientManagementView: React.FC = () => {
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
 
-                <button
-                  onClick={() => {
-                    setActiveClientId(client.id);
-                    setActiveSection('publishing');
-                  }}
-                  className="text-slate-400 hover:text-emerald-400 font-semibold cursor-pointer"
-                >
-                  Manage Posts
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      if (window.confirm(`Are you sure you want to delete workspace "${client.name}"? All associated posts and configurations will be removed.`)) {
+                        deleteClientWorkspace(client.id);
+                      }
+                    }}
+                    className="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer"
+                    title="Delete Client Workspace"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => {
+                      setActiveClientId(client.id);
+                      setActiveSection('publishing');
+                    }}
+                    className="text-slate-400 hover:text-emerald-400 font-semibold cursor-pointer"
+                  >
+                    Manage Posts
+                  </button>
+                </div>
               </div>
             </div>
           );
         })}
       </div>
+      )}
 
       {/* Add Client Modal */}
       {isAddModalOpen && (
@@ -343,7 +378,7 @@ export const ClientManagementView: React.FC = () => {
                     required
                     value={newClientName}
                     onChange={(e) => setNewClientName(e.target.value)}
-                    placeholder="e.g. Georgians Academy"
+                    placeholder="e.g. Apex Media Agency"
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white"
                   />
                 </div>
@@ -354,7 +389,7 @@ export const ClientManagementView: React.FC = () => {
                     required
                     value={newCompanyName}
                     onChange={(e) => setNewCompanyName(e.target.value)}
-                    placeholder="e.g. Georgians Education Trust"
+                    placeholder="e.g. Apex Global Enterprises"
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white"
                   />
                 </div>

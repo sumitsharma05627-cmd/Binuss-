@@ -139,14 +139,14 @@ export const AiAssistantView: React.FC = () => {
                     onClick={() => setSelectedTask(task.id as any)}
                     className={`p-2.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
                       isSelected
-                        ? 'bg-indigo-600/20 border-indigo-500/60 text-white shadow-md'
-                        : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-white hover:bg-slate-900'
+                        ? 'bg-indigo-50 dark:bg-indigo-600/20 border-indigo-500/60 text-indigo-700 dark:text-white shadow-md'
+                        : 'bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900'
                     }`}
                   >
-                    <IconComponent className={`w-4 h-4 mb-1.5 ${isSelected ? 'text-indigo-400' : 'text-slate-500'}`} />
+                    <IconComponent className={`w-4 h-4 mb-1.5 ${isSelected ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500'}`} />
                     <div>
                       <div className="font-bold text-xs">{task.label}</div>
-                      <div className="text-[9px] text-slate-400 truncate">{task.desc}</div>
+                      <div className="text-[9px] text-slate-500 dark:text-slate-400 truncate">{task.desc}</div>
                     </div>
                   </button>
                 );
@@ -156,7 +156,7 @@ export const AiAssistantView: React.FC = () => {
 
           {/* 2. Platform Selector */}
           <div>
-            <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5 font-semibold">
+            <label className="block text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5 font-semibold">
               Target Channel:
             </label>
             <div className="grid grid-cols-3 gap-2">
@@ -170,7 +170,7 @@ export const AiAssistantView: React.FC = () => {
                     className={`p-2 rounded-xl text-xs font-semibold border transition-all flex items-center gap-1.5 cursor-pointer ${
                       isSelected
                         ? `${meta.bgBadge} ${meta.borderBadge} ${meta.textColor} shadow-sm`
-                        : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-slate-200'
+                        : 'bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                     }`}
                   >
                     {getPlatformIcon(p, 'w-3.5 h-3.5')}
@@ -184,11 +184,11 @@ export const AiAssistantView: React.FC = () => {
           {/* 3. Dropdown Controls: Language, Tone & Objective */}
           <div className="grid grid-cols-2 gap-3 text-xs">
             <div>
-              <label className="block text-[10px] font-mono text-slate-400 uppercase mb-1">Language:</label>
+              <label className="block text-[10px] font-mono text-slate-500 dark:text-slate-400 uppercase mb-1">Language:</label>
               <select
                 value={language}
                 onChange={(e) => setLanguage(e.target.value as any)}
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-white"
+                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-1.5 text-slate-900 dark:text-white"
               >
                 <option value="English">English</option>
                 <option value="Hindi">Hindi (हिंदी)</option>
@@ -197,11 +197,11 @@ export const AiAssistantView: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-[10px] font-mono text-slate-400 uppercase mb-1">Campaign Objective:</label>
+              <label className="block text-[10px] font-mono text-slate-500 dark:text-slate-400 uppercase mb-1">Campaign Objective:</label>
               <select
                 value={objective}
                 onChange={(e) => setObjective(e.target.value as any)}
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-white"
+                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-1.5 text-slate-900 dark:text-white"
               >
                 <option value="Lead Generation">Lead Generation</option>
                 <option value="Brand Authority">Brand Authority</option>
@@ -212,11 +212,11 @@ export const AiAssistantView: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-[10px] font-mono text-slate-400 uppercase mb-1">Voice & Tone:</label>
+            <label className="block text-[10px] font-mono text-slate-500 dark:text-slate-400 uppercase mb-1">Voice & Tone:</label>
             <select
               value={tone}
               onChange={(e) => setTone(e.target.value as any)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white"
+              className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-1.5 text-xs text-slate-900 dark:text-white"
             >
               <option value="Engaging & Authoritative">Engaging & Authoritative</option>
               <option value="Conversational & Friendly">Conversational & Friendly</option>
@@ -228,7 +228,7 @@ export const AiAssistantView: React.FC = () => {
 
           {/* 4. Prompt Input */}
           <div>
-            <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5 font-semibold">
+            <label className="block text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5 font-semibold">
               Topic, Concept, or Customer Inquiry:
             </label>
             <textarea
@@ -236,7 +236,7 @@ export const AiAssistantView: React.FC = () => {
               onChange={(e) => setPromptInput(e.target.value)}
               placeholder="Describe your subject, key points, offer, or customer comment..."
               rows={4}
-              className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-3 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-400 leading-relaxed font-sans"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-2xl p-3 text-xs sm:text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-400 leading-relaxed font-sans"
             />
           </div>
 
@@ -276,9 +276,9 @@ export const AiAssistantView: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handleCopy}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold cursor-pointer"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold cursor-pointer border border-slate-200 dark:border-transparent"
                   >
-                    {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                    {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                     <span>{isCopied ? 'Copied!' : 'Copy Copy'}</span>
                   </button>
 
@@ -295,16 +295,16 @@ export const AiAssistantView: React.FC = () => {
 
             {/* Content Output Box */}
             {generatedOutput ? (
-              <div className="p-4 sm:p-5 rounded-2xl bg-slate-950 border border-slate-800/80 max-h-[520px] overflow-y-auto text-slate-200 text-xs sm:text-sm leading-relaxed whitespace-pre-wrap font-sans">
+              <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80 max-h-[520px] overflow-y-auto text-slate-800 dark:text-slate-200 text-xs sm:text-sm leading-relaxed whitespace-pre-wrap font-sans">
                 {generatedOutput}
               </div>
             ) : (
               <div className="py-20 text-center text-slate-500 text-xs space-y-3">
-                <div className="w-14 h-14 rounded-2xl bg-indigo-950/40 border border-indigo-500/20 text-indigo-400 mx-auto flex items-center justify-center">
-                  <Sparkles className="w-7 h-7 text-amber-300" />
+                <div className="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-500/20 text-indigo-600 dark:text-indigo-400 mx-auto flex items-center justify-center">
+                  <Sparkles className="w-7 h-7 text-amber-500 dark:text-amber-300" />
                 </div>
-                <h4 className="text-sm font-bold text-slate-300">Ready to engineer your next viral post</h4>
-                <p className="max-w-sm mx-auto text-slate-400">
+                <h4 className="text-sm font-bold text-slate-800 dark:text-slate-300">Ready to engineer your next viral post</h4>
+                <p className="max-w-sm mx-auto text-slate-600 dark:text-slate-400">
                   Select your task, channel, voice, and topic on the left. GW Labs AI will tailor hooks, captions, and hashtag strategies instantly.
                 </p>
               </div>
@@ -312,9 +312,9 @@ export const AiAssistantView: React.FC = () => {
           </div>
 
           {/* Bottom helper tip */}
-          <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+          <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
             <span>Optimal Peak Time for {PLATFORM_REGISTRY[selectedPlatform].name}: <strong>11:00 AM – 1:30 PM IST</strong></span>
-            <span className="text-emerald-400 font-mono">Sub-second Latency</span>
+            <span className="text-emerald-600 dark:text-emerald-400 font-mono">Sub-second Latency</span>
           </div>
         </div>
       </div>

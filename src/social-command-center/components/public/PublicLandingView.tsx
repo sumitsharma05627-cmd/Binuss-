@@ -22,7 +22,9 @@ import {
   HelpCircle,
   FileText,
   ExternalLink,
-  Bot
+  Bot,
+  Copy,
+  Check
 } from 'lucide-react';
 
 interface PublicLandingViewProps {
@@ -43,6 +45,27 @@ export const PublicLandingView: React.FC<PublicLandingViewProps> = ({
   const isLight = theme === 'clean-light' || !themeConfig.isDark;
 
   const [activeFeatureTab, setActiveFeatureTab] = useState<'composer' | 'calendar' | 'inbox' | 'ai' | 'analytics'>('composer');
+  const [copiedRls, setCopiedRls] = useState(false);
+
+  const handleCopyRls = () => {
+    const rlsSql = `-- Row Level Security (RLS) Enforcement
+ALTER TABLE public.social_accounts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.social_posts ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can only access their authorized workspace"
+    ON public.social_accounts FOR ALL
+    USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can only publish to verified owned channels"
+    ON public.social_posts FOR ALL
+    USING (auth.uid() = user_id);`;
+
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(rlsSql);
+      setCopiedRls(true);
+      setTimeout(() => setCopiedRls(false), 2000);
+    }
+  };
 
   const platforms: SocialPlatformType[] = [
     'instagram',
@@ -582,28 +605,91 @@ export const PublicLandingView: React.FC<PublicLandingViewProps> = ({
           </div>
 
           <div className="lg:col-span-6">
-            <div className={`p-6 rounded-3xl border font-mono text-xs ${
-              isLight ? 'bg-slate-900 text-cyan-300 border-slate-800' : 'bg-black/90 text-cyan-300 border-slate-800'
+            <div className={`p-5 sm:p-6 rounded-3xl border font-mono text-xs shadow-xl transition-all ${
+              isLight
+                ? 'bg-white border-slate-200 text-slate-800 shadow-slate-200/70'
+                : 'bg-[#080d19] border-slate-800 text-slate-200 shadow-2xl'
             }`}>
-              <div className="flex items-center gap-2 pb-3 mb-3 border-b border-slate-800 text-slate-500">
-                <span className="w-2.5 h-2.5 rounded-full bg-rose-500" />
-                <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                <span className="text-[10px] ml-2">supabase/migrations/20261107_social_command_center_rls.sql</span>
+              {/* Window Header */}
+              <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-200 dark:border-slate-800">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="w-2.5 h-2.5 rounded-full bg-rose-500 shrink-0" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500 shrink-0" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0" />
+                  <span className="text-[11px] font-mono text-slate-600 dark:text-slate-400 font-semibold ml-1.5 truncate">
+                    20261107_social_command_center_rls.sql
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className="text-[10px] px-2 py-0.5 rounded-full font-mono font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                    PostgreSQL RLS Active
+                  </span>
+                  <button
+                    onClick={handleCopyRls}
+                    className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-mono font-bold transition-all cursor-pointer ${
+                      copiedRls
+                        ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
+                        : isLight
+                        ? 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200'
+                        : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700'
+                    }`}
+                    title="Copy Migration SQL"
+                  >
+                    {copiedRls ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                    <span>{copiedRls ? 'Copied' : 'Copy'}</span>
+                  </button>
+                </div>
               </div>
-              <pre className="overflow-x-auto text-[11px] leading-relaxed text-slate-300">
-{`-- Row Level Security (RLS) Enforcement
-ALTER TABLE public.social_accounts ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.social_posts ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Users can only access their authorized workspace"
-    ON public.social_accounts FOR ALL
-    USING (auth.uid() = user_id);
-
-CREATE POLICY "Users can only publish to verified owned channels"
-    ON public.social_posts FOR ALL
-    USING (auth.uid() = user_id);`}
-              </pre>
+              {/* Syntax Highlighted Code Box */}
+              <div className={`p-4 rounded-2xl overflow-x-auto text-[11px] sm:text-xs leading-relaxed font-mono border ${
+                isLight
+                  ? 'bg-slate-50 border-slate-200 text-slate-900'
+                  : 'bg-slate-950/90 border-slate-800 text-slate-100'
+              }`}>
+                <div className="text-slate-400 dark:text-slate-500 italic select-none mb-1.5">
+                  -- Row Level Security (RLS) Enforcement
+                </div>
+                <div className="space-x-1">
+                  <span className="text-indigo-600 dark:text-purple-400 font-bold">ALTER TABLE</span>
+                  <span className="text-cyan-700 dark:text-cyan-300 font-semibold">public.social_accounts</span>
+                  <span className="text-indigo-600 dark:text-purple-400 font-bold">ENABLE ROW LEVEL SECURITY;</span>
+                </div>
+                <div className="space-x-1">
+                  <span className="text-indigo-600 dark:text-purple-400 font-bold">ALTER TABLE</span>
+                  <span className="text-cyan-700 dark:text-cyan-300 font-semibold">public.social_posts</span>
+                  <span className="text-indigo-600 dark:text-purple-400 font-bold">ENABLE ROW LEVEL SECURITY;</span>
+                </div>
+                <div className="my-2.5 border-t border-dashed border-slate-200 dark:border-slate-800" />
+                <div className="space-x-1">
+                  <span className="text-blue-600 dark:text-sky-400 font-bold">CREATE POLICY</span>
+                  <span className="text-emerald-700 dark:text-emerald-400 font-medium">&quot;Users can only access their authorized workspace&quot;</span>
+                </div>
+                <div className="pl-4 space-x-1">
+                  <span className="text-indigo-600 dark:text-purple-400 font-bold">ON</span>
+                  <span className="text-cyan-700 dark:text-cyan-300 font-semibold">public.social_accounts</span>
+                  <span className="text-indigo-600 dark:text-purple-400 font-bold">FOR ALL</span>
+                </div>
+                <div className="pl-4 space-x-1">
+                  <span className="text-indigo-600 dark:text-purple-400 font-bold">USING</span>
+                  <span className="text-amber-700 dark:text-amber-300 font-bold">(auth.uid() = user_id);</span>
+                </div>
+                <div className="my-2.5 border-t border-dashed border-slate-200 dark:border-slate-800" />
+                <div className="space-x-1">
+                  <span className="text-blue-600 dark:text-sky-400 font-bold">CREATE POLICY</span>
+                  <span className="text-emerald-700 dark:text-emerald-400 font-medium">&quot;Users can only publish to verified owned channels&quot;</span>
+                </div>
+                <div className="pl-4 space-x-1">
+                  <span className="text-indigo-600 dark:text-purple-400 font-bold">ON</span>
+                  <span className="text-cyan-700 dark:text-cyan-300 font-semibold">public.social_posts</span>
+                  <span className="text-indigo-600 dark:text-purple-400 font-bold">FOR ALL</span>
+                </div>
+                <div className="pl-4 space-x-1">
+                  <span className="text-indigo-600 dark:text-purple-400 font-bold">USING</span>
+                  <span className="text-amber-700 dark:text-amber-300 font-bold">(auth.uid() = user_id);</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>

@@ -300,10 +300,10 @@ export const OverviewDashboard: React.FC = () => {
 
       {/* Fresh Account Getting Started Banner if zero accounts connected */}
       {!hasRealData && (
-        <div className="p-6 rounded-3xl bg-gradient-to-br from-cyan-500/10 via-blue-500/5 to-slate-900 border border-cyan-500/20 shadow-md">
+        <div className="p-6 rounded-3xl bg-gradient-to-br from-cyan-50 via-blue-50/60 to-white dark:from-cyan-500/10 dark:via-blue-500/5 dark:to-slate-900 border border-cyan-200 dark:border-cyan-500/20 shadow-md">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-semibold mb-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/15 dark:bg-cyan-500/20 text-cyan-800 dark:text-cyan-400 text-xs font-bold mb-2 border border-cyan-500/25">
                 <Sparkles className="w-3.5 h-3.5" /> Ready for Live Data
               </div>
               <h3 className="text-xl font-display font-extrabold text-slate-900 dark:text-white">
@@ -323,7 +323,7 @@ export const OverviewDashboard: React.FC = () => {
               </button>
               <button
                 onClick={openCreatePostModal}
-                className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold text-xs transition-all cursor-pointer"
+                className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold text-xs transition-all cursor-pointer border border-slate-200 dark:border-slate-700"
               >
                 <span>Create Draft Post</span>
               </button>

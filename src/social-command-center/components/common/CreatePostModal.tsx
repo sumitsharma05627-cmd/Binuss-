@@ -191,12 +191,12 @@ export const CreatePostModal: React.FC = () => {
         </div>
 
         {/* Modal Body: Split 2 Columns */}
-        <div className="flex-1 overflow-y-auto grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-slate-800">
+        <div className="flex-1 overflow-y-auto grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-slate-200 dark:divide-slate-800">
           {/* Left Column: Form & Customizer (7 cols) */}
           <div className="lg:col-span-7 p-6 space-y-5">
             {/* 1. Target Platforms Selection */}
             <div>
-              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-2">
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
                 Select Target Platforms:
               </label>
               <div className="flex flex-wrap gap-2">
@@ -211,7 +211,7 @@ export const CreatePostModal: React.FC = () => {
                       className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
                         isSelected
                           ? `${meta.bgBadge} ${meta.borderBadge} ${meta.textColor} shadow-md`
-                          : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-slate-200'
+                          : 'bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                       }`}
                     >
                       {getPlatformIcon(platformKey, 'w-3.5 h-3.5')}
@@ -227,34 +227,34 @@ export const CreatePostModal: React.FC = () => {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono uppercase tracking-wider text-slate-400">Caption & Hook:</span>
+                  <span className="text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400">Caption & Hook:</span>
                   <button
                     type="button"
                     onClick={() => setShowAiDrawer(!showAiDrawer)}
-                    className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border border-indigo-500/40 text-indigo-300 hover:text-white text-[11px] font-semibold transition-all cursor-pointer"
+                    className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border border-indigo-500/40 text-indigo-700 dark:text-indigo-300 hover:text-indigo-900 dark:hover:text-white text-[11px] font-semibold transition-all cursor-pointer"
                   >
-                    <Sparkles className="w-3 h-3 text-amber-300 animate-pulse" />
+                    <Sparkles className="w-3 h-3 text-amber-500 dark:text-amber-300 animate-pulse" />
                     <span>GW Labs AI Assistant</span>
                   </button>
                 </div>
 
-                <div className={`text-[11px] font-mono ${isOverLimit ? 'text-rose-400 font-bold' : 'text-slate-500'}`}>
+                <div className={`text-[11px] font-mono ${isOverLimit ? 'text-rose-500 dark:text-rose-400 font-bold' : 'text-slate-500'}`}>
                   {caption.length} / {charLimit} chars ({activePreviewPlatform})
                 </div>
               </div>
 
               {/* AI Quick Generator Drawer */}
               {showAiDrawer && (
-                <div className="mb-3 p-3.5 rounded-2xl bg-indigo-950/40 border border-indigo-500/30 text-xs space-y-2.5 animate-in slide-in-from-top-2">
-                  <div className="flex items-center justify-between font-semibold text-indigo-200">
+                <div className="mb-3 p-3.5 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-500/30 text-xs space-y-2.5 animate-in slide-in-from-top-2">
+                  <div className="flex items-center justify-between font-semibold text-indigo-900 dark:text-indigo-200">
                     <span className="flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                      <Sparkles className="w-3.5 h-3.5 text-amber-500 dark:text-amber-300" />
                       <span>Instant AI Copywriter for {PLATFORM_REGISTRY[activePreviewPlatform].name}</span>
                     </span>
                     <button
                       type="button"
                       onClick={() => setShowAiDrawer(false)}
-                      className="text-slate-400 hover:text-white"
+                      className="text-slate-400 hover:text-slate-800 dark:hover:text-white"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
@@ -265,7 +265,7 @@ export const CreatePostModal: React.FC = () => {
                       value={aiPrompt}
                       onChange={(e) => setAiPrompt(e.target.value)}
                       placeholder="e.g. Announcing new physics lab admissions or posture relief reel..."
-                      className="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-400"
+                      className="flex-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-1.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-400"
                     />
                     <button
                       type="button"
@@ -285,26 +285,26 @@ export const CreatePostModal: React.FC = () => {
                 onChange={(e) => setCaption(e.target.value)}
                 placeholder="Write your high-impact caption here... Include hooks, key takeaways, and call-to-actions."
                 rows={5}
-                className="w-full bg-[#070b14] border border-slate-800 rounded-2xl p-3.5 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-emerald-400 leading-relaxed font-sans"
+                className="w-full bg-white dark:bg-[#070b14] border border-slate-300 dark:border-slate-800 rounded-2xl p-3.5 text-xs sm:text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-emerald-400 leading-relaxed font-sans"
               />
             </div>
 
             {/* 3. Hashtags */}
             <div>
-              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
                 Hashtags:
               </label>
               <div className="flex flex-wrap items-center gap-1.5 mb-2">
                 {hashtags.map((tag) => (
                   <span
                     key={tag}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-sky-300 text-xs font-mono"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-sky-700 dark:text-sky-300 text-xs font-mono"
                   >
                     <span>{tag}</span>
                     <button
                       type="button"
                       onClick={() => handleRemoveHashtag(tag)}
-                      className="hover:text-rose-400 ml-0.5 cursor-pointer"
+                      className="hover:text-rose-500 ml-0.5 cursor-pointer"
                     >
                       <X className="w-3 h-3" />
                     </button>
@@ -314,7 +314,7 @@ export const CreatePostModal: React.FC = () => {
 
               <div className="flex gap-2">
                 <div className="relative flex-1">
-                  <Hash className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-500" />
+                  <Hash className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400 dark:text-slate-500" />
                   <input
                     type="text"
                     value={newHashtagInput}
@@ -326,13 +326,13 @@ export const CreatePostModal: React.FC = () => {
                       }
                     }}
                     placeholder="Add custom hashtag and press Enter..."
-                    className="w-full bg-slate-900/60 border border-slate-800 rounded-xl pl-9 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-emerald-400"
+                    className="w-full bg-white dark:bg-slate-900/60 border border-slate-300 dark:border-slate-800 rounded-xl pl-9 pr-3 py-1.5 text-xs text-slate-900 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-emerald-400"
                   />
                 </div>
                 <button
                   type="button"
                   onClick={handleAddHashtag}
-                  className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 cursor-pointer"
+                  className="px-3 py-1.5 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer"
                 >
                   Add
                 </button>
@@ -341,7 +341,7 @@ export const CreatePostModal: React.FC = () => {
 
             {/* 4. Media Attachments */}
             <div>
-              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-2">
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
                 Media Attachments:
               </label>
 
@@ -357,8 +357,8 @@ export const CreatePostModal: React.FC = () => {
                       }}
                       className={`group relative aspect-video rounded-xl overflow-hidden border cursor-pointer transition-all ${
                         isSelected
-                          ? 'border-emerald-400 ring-2 ring-emerald-400/30'
-                          : 'border-slate-800 hover:border-slate-600'
+                          ? 'border-emerald-500 ring-2 ring-emerald-400/30'
+                          : 'border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600'
                       }`}
                     >
                       <img src={asset.url} alt={asset.title} className="w-full h-full object-cover" />
@@ -376,8 +376,8 @@ export const CreatePostModal: React.FC = () => {
                 })}
               </div>
 
-              <div className="flex items-center gap-2 text-[11px] text-slate-400">
-                <span className="px-2 py-0.5 rounded bg-slate-900 border border-slate-800 font-mono text-emerald-400">
+              <div className="flex items-center gap-2 text-[11px] text-slate-500 dark:text-slate-400">
+                <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-mono text-emerald-600 dark:text-emerald-400">
                   {mediaType.toUpperCase()}
                 </span>
                 <span>Select from media assets or upload new client creative in Media Library.</span>
@@ -385,33 +385,33 @@ export const CreatePostModal: React.FC = () => {
             </div>
 
             {/* 5. Scheduling Timing */}
-            <div className="p-4 rounded-2xl bg-[#070b14] border border-slate-800 space-y-2">
+            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#070b14] border border-slate-200 dark:border-slate-800 space-y-2">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-semibold text-slate-300 flex items-center gap-1.5">
-                  <Calendar className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
                   <span>Optimal Schedule Timing</span>
                 </span>
-                <span className="font-mono text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                <span className="font-mono text-[10px] text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
                   Best Audience Peak: 11:00 AM IST
                 </span>
               </div>
               <div className="grid grid-cols-2 gap-3 pt-1">
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1 font-mono">Date:</label>
+                  <label className="block text-[10px] text-slate-500 dark:text-slate-400 mb-1 font-mono">Date:</label>
                   <input
                     type="date"
                     value={scheduledDate}
                     onChange={(e) => setScheduledDate(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white"
+                    className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-1.5 text-xs text-slate-900 dark:text-white"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1 font-mono">Time (IST):</label>
+                  <label className="block text-[10px] text-slate-500 dark:text-slate-400 mb-1 font-mono">Time (IST):</label>
                   <input
                     type="time"
                     value={scheduledTime}
                     onChange={(e) => setScheduledTime(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white"
+                    className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-1.5 text-xs text-slate-900 dark:text-white"
                   />
                 </div>
               </div>
@@ -486,7 +486,7 @@ export const CreatePostModal: React.FC = () => {
               type="button"
               disabled={isSubmitting}
               onClick={() => handleSubmit('draft')}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold transition-colors cursor-pointer border border-slate-200 dark:border-transparent"
             >
               <Save className="w-3.5 h-3.5" />
               <span>Save as Draft</span>

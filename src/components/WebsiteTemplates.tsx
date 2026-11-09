@@ -338,9 +338,9 @@ export const TEMPLATES_DATA: WebsiteTemplate[] = [
   {
     id: 'cloudscale-saas',
     category: 'saas',
-    name: 'CloudScale AI & Tech SaaS Platform',
+    name: 'CloudScale AI & Tech Cloud Platform',
     tagline: 'Modern Silicon-Valley style product landing page with interactive pricing tiers, demo video modal and feature tabs.',
-    badge: 'TECH & SAAS',
+    badge: 'TECH & CLOUD',
     rating: 5.0,
     reviewsCount: 65,
     turnaround: '4-6 Business Days',
@@ -366,7 +366,7 @@ export const TEMPLATES_DATA: WebsiteTemplate[] = [
     ],
     features: [
       { title: 'Interactive Tier Switcher', desc: 'Users toggle Monthly/Annual pricing with instant calculated savings.' },
-      { title: 'Interactive Demo Modal', desc: 'Clean popup player to showcase SaaS screen recordings and UI tours.' },
+      { title: 'Interactive Demo Modal', desc: 'Clean popup player to showcase product screen recordings and UI tours.' },
       { title: 'Conversion Hook CTA', desc: 'Lead capture with validation syncing directly to CRM or WhatsApp.' },
       { title: 'API Documentation Teaser', desc: 'Code snippets in cURL, Python, and TypeScript showcasing developer velocity.' },
       { title: 'Security & Compliance Badges', desc: 'SOC2 Type II, GDPR, and ISO 27001 trust badges displayed prominently.' },
@@ -613,7 +613,7 @@ export const WebsiteTemplates: React.FC<WebsiteTemplatesProps> = ({ onSelectTemp
     { id: 'realestate', label: language === 'hi' ? 'रियल एस्टेट' : 'Real Estate' },
     { id: 'restaurant', label: language === 'hi' ? 'रेस्तरां व कैफे' : 'Bistro & Cafes' },
     { id: 'corporate', label: language === 'hi' ? 'कॉर्पोरेट व सीए' : 'Corporate & Law' },
-    { id: 'saas', label: language === 'hi' ? 'टेक व स्टार्टअप्स' : 'Tech & SaaS' },
+    { id: 'saas', label: language === 'hi' ? 'टेक व स्टार्टअप्स' : 'Tech & Cloud' },
     { id: 'ecommerce', label: language === 'hi' ? 'ई-कॉमर्स' : 'D2C & Retail' },
     { id: 'creator', label: language === 'hi' ? 'क्रिएटर स्टोर' : 'Creator Storefronts' }
   ];

@@ -147,7 +147,7 @@ export const PublishingStudioView: React.FC = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search captions, tags, campaigns..."
-            className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-emerald-400"
+            className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl pl-9 pr-3 py-1.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-emerald-400"
           />
         </div>
       </div>
@@ -157,15 +157,15 @@ export const PublishingStudioView: React.FC = () => {
         {/* Posts Table / List (7 cols) */}
         <div className="lg:col-span-7 space-y-3">
           {filteredPosts.length === 0 ? (
-            <div className="p-12 text-center rounded-3xl bg-[#080d19] border border-slate-800">
-              <FileText className="w-10 h-10 text-slate-600 mx-auto mb-3" />
-              <h4 className="text-base font-bold text-white">No content matching this filter</h4>
-              <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
+            <div className="p-12 text-center rounded-3xl bg-slate-50 dark:bg-[#080d19] border border-slate-200 dark:border-slate-800">
+              <FileText className="w-10 h-10 text-slate-400 dark:text-slate-600 mx-auto mb-3" />
+              <h4 className="text-base font-bold text-slate-900 dark:text-white">No content matching this filter</h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">
                 Create a new multi-channel post or adjust your filters above.
               </p>
               <button
                 onClick={openCreatePostModal}
-                className="mt-4 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs cursor-pointer"
+                className="mt-4 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs cursor-pointer shadow-md"
               >
                 Create First Post
               </button>
@@ -186,20 +186,20 @@ export const PublishingStudioView: React.FC = () => {
                   }}
                   className={`p-4 sm:p-5 rounded-3xl border transition-all cursor-pointer ${
                     isSelected
-                      ? 'bg-[#0f172a] border-emerald-500/50 shadow-xl ring-1 ring-emerald-500/20'
-                      : 'bg-[#080d19] border-slate-800 hover:border-slate-700'
+                      ? 'bg-emerald-50/60 dark:bg-[#0f172a] border-emerald-500/60 shadow-xl ring-1 ring-emerald-500/20'
+                      : 'bg-white dark:bg-[#080d19] border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
                   }`}
                 >
                   <div className="flex items-start justify-between gap-3 mb-2.5">
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-slate-900 border border-slate-800 text-slate-300">
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300">
                         {client?.name || 'Workspace'}
                       </span>
                       <div className="flex items-center gap-1">
                         {post.platforms.map((p) => (
                           <span
                             key={p}
-                            className={`p-1 rounded-md text-slate-300 ${PLATFORM_REGISTRY[p].bgBadge}`}
+                            className={`p-1 rounded-md text-slate-700 dark:text-slate-300 ${PLATFORM_REGISTRY[p].bgBadge}`}
                             title={PLATFORM_REGISTRY[p].name}
                           >
                             {getPlatformIcon(p, 'w-3 h-3')}
@@ -335,23 +335,23 @@ export const PublishingStudioView: React.FC = () => {
 
               {/* Performance Diagnostics if published */}
               {activePost.status === 'published' && activePost.metrics && (
-                <div className="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800 text-xs space-y-2">
-                  <div className="font-bold text-slate-200 flex items-center justify-between">
+                <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs space-y-2">
+                  <div className="font-bold text-slate-800 dark:text-slate-200 flex items-center justify-between">
                     <span>Performance Analytics</span>
-                    <span className="text-emerald-400 font-mono">High Engagement</span>
+                    <span className="text-emerald-600 dark:text-emerald-400 font-mono">High Engagement</span>
                   </div>
                   <div className="grid grid-cols-3 gap-2 text-center text-[11px] font-mono">
-                    <div className="p-2 rounded-xl bg-slate-950">
-                      <div className="text-slate-400 text-[9px]">Impressions</div>
-                      <div className="font-bold text-white mt-0.5">{activePost.metrics.impressions.toLocaleString()}</div>
+                    <div className="p-2 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-transparent">
+                      <div className="text-slate-500 dark:text-slate-400 text-[9px]">Impressions</div>
+                      <div className="font-bold text-slate-900 dark:text-white mt-0.5">{activePost.metrics.impressions.toLocaleString()}</div>
                     </div>
-                    <div className="p-2 rounded-xl bg-slate-950">
-                      <div className="text-slate-400 text-[9px]">Saves / Bookmarks</div>
-                      <div className="font-bold text-white mt-0.5">{activePost.metrics.saves}</div>
+                    <div className="p-2 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-transparent">
+                      <div className="text-slate-500 dark:text-slate-400 text-[9px]">Saves / Bookmarks</div>
+                      <div className="font-bold text-slate-900 dark:text-white mt-0.5">{activePost.metrics.saves}</div>
                     </div>
-                    <div className="p-2 rounded-xl bg-slate-950">
-                      <div className="text-slate-400 text-[9px]">Clicks</div>
-                      <div className="font-bold text-emerald-400 mt-0.5">{activePost.metrics.clicks}</div>
+                    <div className="p-2 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-transparent">
+                      <div className="text-slate-500 dark:text-slate-400 text-[9px]">Clicks</div>
+                      <div className="font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">{activePost.metrics.clicks}</div>
                     </div>
                   </div>
                 </div>

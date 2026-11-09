@@ -190,21 +190,21 @@ export const SubscriptionPricingView: React.FC = () => {
       </div>
 
       {/* ACTIVE SUBSCRIPTION OVERVIEW BANNER */}
-      <div className="bg-gradient-to-r from-cyan-900/30 via-slate-900/80 to-blue-950/30 border border-cyan-500/30 rounded-2xl p-6 shadow-md relative overflow-hidden">
+      <div className="bg-gradient-to-r from-cyan-50 via-sky-50 to-blue-50 dark:from-cyan-900/30 dark:via-slate-900/80 dark:to-blue-950/30 border border-cyan-200 dark:border-cyan-500/30 rounded-2xl p-6 shadow-md relative overflow-hidden">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+            <div className="w-12 h-12 rounded-2xl bg-cyan-500/15 dark:bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-700 dark:text-cyan-400">
               <Sparkles className="w-6 h-6" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-cyan-400 uppercase tracking-wider">Active Workspace Plan</span>
-                <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-black">
+                <span className="text-xs font-bold text-cyan-800 dark:text-cyan-400 uppercase tracking-wider">Active Workspace Plan</span>
+                <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-[10px] font-black border border-emerald-500/30">
                   {userUsage?.status === 'active' ? 'Active' : 'Trialing'}
                 </span>
               </div>
-              <h2 className="text-xl font-bold text-white mt-0.5">{currentPlan.name}</h2>
-              <p className="text-xs text-slate-300 mt-1">
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white mt-0.5">{currentPlan.name}</h2>
+              <p className="text-xs text-slate-600 dark:text-slate-300 mt-1">
                 Renews on {userUsage?.expiresAt ? new Date(userUsage.expiresAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Next billing cycle'} • Billed {billingCycle}
               </p>
             </div>
@@ -212,21 +212,21 @@ export const SubscriptionPricingView: React.FC = () => {
 
           {/* Usage Quick Counters */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full md:w-auto text-xs">
-            <div className="bg-slate-900/60 p-2.5 rounded-xl border border-slate-700/60 text-center">
-              <span className="text-slate-400 block text-[10px] uppercase">Workspaces</span>
-              <span className="text-white font-bold">{userUsage?.clientWorkspacesCount ?? 1} / {currentPlan.maxClients}</span>
+            <div className="bg-white dark:bg-slate-900/60 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700/60 text-center shadow-2xs">
+              <span className="text-slate-500 dark:text-slate-400 block text-[10px] uppercase font-medium">Workspaces</span>
+              <span className="text-slate-900 dark:text-white font-bold">{userUsage?.clientWorkspacesCount ?? 1} / {currentPlan.maxClients}</span>
             </div>
-            <div className="bg-slate-900/60 p-2.5 rounded-xl border border-slate-700/60 text-center">
-              <span className="text-slate-400 block text-[10px] uppercase">Social Accounts</span>
-              <span className="text-white font-bold">{userUsage?.connectedAccountsCount ?? 3} / {currentPlan.maxConnectedAccounts}</span>
+            <div className="bg-white dark:bg-slate-900/60 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700/60 text-center shadow-2xs">
+              <span className="text-slate-500 dark:text-slate-400 block text-[10px] uppercase font-medium">Social Accounts</span>
+              <span className="text-slate-900 dark:text-white font-bold">{userUsage?.connectedAccountsCount ?? 3} / {currentPlan.maxConnectedAccounts}</span>
             </div>
-            <div className="bg-slate-900/60 p-2.5 rounded-xl border border-slate-700/60 text-center">
-              <span className="text-slate-400 block text-[10px] uppercase">Monthly Posts</span>
-              <span className="text-white font-bold">{userUsage?.postsUsedThisMonth ?? 12} / {currentPlan.maxScheduledPostsPerMonth}</span>
+            <div className="bg-white dark:bg-slate-900/60 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700/60 text-center shadow-2xs">
+              <span className="text-slate-500 dark:text-slate-400 block text-[10px] uppercase font-medium">Monthly Posts</span>
+              <span className="text-slate-900 dark:text-white font-bold">{userUsage?.postsUsedThisMonth ?? 12} / {currentPlan.maxScheduledPostsPerMonth}</span>
             </div>
-            <div className="bg-slate-900/60 p-2.5 rounded-xl border border-slate-700/60 text-center">
-              <span className="text-slate-400 block text-[10px] uppercase">AI Credits</span>
-              <span className="text-cyan-400 font-bold">{userUsage?.aiQueriesUsedThisMonth ?? 45} / {currentPlan.aiQueriesLimitPerMonth}</span>
+            <div className="bg-white dark:bg-slate-900/60 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700/60 text-center shadow-2xs">
+              <span className="text-slate-500 dark:text-slate-400 block text-[10px] uppercase font-medium">AI Credits</span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-bold">{userUsage?.aiQueriesUsedThisMonth ?? 45} / {currentPlan.aiQueriesLimitPerMonth}</span>
             </div>
           </div>
         </div>
@@ -234,7 +234,7 @@ export const SubscriptionPricingView: React.FC = () => {
 
       {/* RAZORPAY GATEWAY SETUP DRAWER FOR ADMINS */}
       {isAdmin && showGatewayConfig && (
-        <div className="bg-slate-900/90 border border-cyan-500/30 rounded-2xl p-6 shadow-xl space-y-4">
+        <div className="bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-cyan-500/30 rounded-2xl p-6 shadow-xl space-y-4">
           <div className="flex items-center justify-between border-b border-slate-800 pb-3">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-black text-white text-xs">

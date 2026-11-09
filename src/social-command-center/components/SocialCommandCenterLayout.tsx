@@ -319,23 +319,27 @@ export const SocialCommandCenterLayout: React.FC<SocialCommandCenterLayoutProps>
           </div>
 
           {/* User Profile Mini Footer */}
-          <div className="p-3 border-t border-slate-800/80 bg-slate-950/40 space-y-2">
+          <div className={`p-3 border-t space-y-2 ${
+            isLight ? 'border-slate-200 bg-slate-50' : 'border-slate-800/80 bg-slate-950/40'
+          }`}>
             <button
               onClick={openProfileModal}
-              className={`w-full flex items-center gap-2.5 p-1.5 rounded-xl hover:bg-slate-800/60 transition-colors text-left cursor-pointer ${
-                isSidebarCollapsed ? 'justify-center' : ''
-              }`}
+              className={`w-full flex items-center gap-2.5 p-1.5 rounded-xl transition-colors text-left cursor-pointer ${
+                isLight ? 'hover:bg-slate-200/70' : 'hover:bg-slate-800/60'
+              } ${isSidebarCollapsed ? 'justify-center' : ''}`}
               title="View User Profile & Security Settings"
             >
               <img
                 src={currentUser.avatar}
                 alt={currentUser.name}
-                className="w-8 h-8 rounded-full object-cover border border-slate-700 shrink-0"
+                className={`w-8 h-8 rounded-full object-cover border shrink-0 ${
+                  isLight ? 'border-slate-300' : 'border-slate-700'
+                }`}
               />
               {!isSidebarCollapsed && (
                 <div className="truncate flex-1">
-                  <p className="text-xs font-bold text-white truncate">{currentUser.name}</p>
-                  <p className="text-[10px] text-cyan-400 uppercase font-semibold">{currentUser.role.replace('_', ' ')}</p>
+                  <p className={`text-xs font-bold truncate ${isLight ? 'text-slate-950 font-black' : 'text-white'}`}>{currentUser.name}</p>
+                  <p className={`text-[10px] uppercase font-semibold ${isLight ? 'text-cyan-700 font-bold' : 'text-cyan-400'}`}>{currentUser.role.replace('_', ' ')}</p>
                 </div>
               )}
             </button>
@@ -345,15 +349,23 @@ export const SocialCommandCenterLayout: React.FC<SocialCommandCenterLayoutProps>
                 <div className="grid grid-cols-2 gap-1.5">
                   <button
                     onClick={openOnboarding}
-                    className="px-2 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700/80 text-[10px] font-semibold text-slate-300 hover:text-white flex items-center justify-center gap-1 transition-all"
+                    className={`px-2 py-1.5 rounded-lg text-[10px] font-semibold flex items-center justify-center gap-1 transition-all border ${
+                      isLight 
+                        ? 'bg-white hover:bg-slate-100 text-slate-800 border-slate-200 shadow-2xs' 
+                        : 'bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 hover:text-white border-transparent'
+                    }`}
                     title="Launch Step-by-Step Onboarding Setup"
                   >
-                    <Sparkles className="w-3 h-3 text-cyan-400" />
+                    <Sparkles className={`w-3 h-3 ${isLight ? 'text-cyan-600' : 'text-cyan-400'}`} />
                     <span>Setup Guide</span>
                   </button>
                   <button
                     onClick={logout}
-                    className="px-2 py-1.5 rounded-lg bg-slate-800/80 hover:bg-rose-500/20 text-[10px] font-semibold text-slate-300 hover:text-rose-300 flex items-center justify-center gap-1 transition-all cursor-pointer"
+                    className={`px-2 py-1.5 rounded-lg text-[10px] font-semibold flex items-center justify-center gap-1 transition-all cursor-pointer border ${
+                      isLight 
+                        ? 'bg-white hover:bg-rose-50 text-slate-700 hover:text-rose-700 border-slate-200 shadow-2xs' 
+                        : 'bg-slate-800/80 hover:bg-rose-500/20 text-slate-300 hover:text-rose-300 border-transparent'
+                    }`}
                     title="Sign Out of Social Command Center"
                   >
                     <span>Sign Out</span>
@@ -362,21 +374,21 @@ export const SocialCommandCenterLayout: React.FC<SocialCommandCenterLayoutProps>
                 <div className="flex items-center justify-between text-[10px] text-slate-500 pt-1 px-1">
                   <button
                     onClick={() => setIsHelpOpen(true)}
-                    className="hover:text-cyan-400 transition-colors cursor-pointer"
+                    className="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors cursor-pointer"
                   >
                     Help
                   </button>
                   <span>•</span>
                   <button
                     onClick={() => setIsTermsOpen(true)}
-                    className="hover:text-cyan-400 transition-colors cursor-pointer"
+                    className="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors cursor-pointer"
                   >
                     Terms
                   </button>
                   <span>•</span>
                   <button
                     onClick={() => setIsPrivacyOpen(true)}
-                    className="hover:text-cyan-400 transition-colors cursor-pointer"
+                    className="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors cursor-pointer"
                   >
                     Privacy
                   </button>
@@ -388,20 +400,26 @@ export const SocialCommandCenterLayout: React.FC<SocialCommandCenterLayoutProps>
 
         {/* MOBILE DRAWER */}
         {isMobileSidebarOpen && (
-          <div className="fixed inset-0 z-50 md:hidden bg-slate-950/80 backdrop-blur-md flex">
-            <div className="w-72 bg-slate-900 border-r border-slate-800 p-4 flex flex-col h-full">
-              <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+          <div className={`fixed inset-0 z-50 md:hidden backdrop-blur-md flex ${
+            isLight ? 'bg-slate-900/40' : 'bg-slate-950/80'
+          }`}>
+            <div className={`w-72 border-r p-4 flex flex-col h-full ${
+              isLight ? 'bg-white border-slate-200 text-slate-900' : 'bg-slate-900 border-slate-800 text-slate-100'
+            }`}>
+              <div className={`flex items-center justify-between pb-4 border-b ${
+                isLight ? 'border-slate-200' : 'border-slate-800'
+              }`}>
                 <div className="flex items-center gap-2">
                   <img
                     src="/assets/aistudio/Gemini_Generated_Image_b1kwab1kwab1kwab_83d54e8a.png"
                     alt="Logo"
                     className="w-8 h-8 object-contain"
                   />
-                  <h3 className="font-bold text-white text-sm">Social Command</h3>
+                  <h3 className={`font-bold text-sm ${isLight ? 'text-slate-950 font-black' : 'text-white'}`}>Social Command</h3>
                 </div>
                 <button
                   onClick={() => setIsMobileSidebarOpen(false)}
-                  className="p-1 rounded-lg text-slate-400 hover:text-white"
+                  className={`p-1 rounded-lg ${isLight ? 'text-slate-400 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -413,7 +431,7 @@ export const SocialCommandCenterLayout: React.FC<SocialCommandCenterLayoutProps>
                     openCreatePostModal();
                     setIsMobileSidebarOpen(false);
                   }}
-                  className="w-full py-2.5 rounded-xl bg-cyan-500 text-slate-950 font-bold text-xs flex items-center justify-center gap-2"
+                  className="w-full py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs flex items-center justify-center gap-2"
                 >
                   <Plus className="w-4 h-4" /> New Post
                 </button>
@@ -422,6 +440,7 @@ export const SocialCommandCenterLayout: React.FC<SocialCommandCenterLayoutProps>
               <div className="flex-1 overflow-y-auto space-y-1">
                 {visibleNavItems.map((item) => {
                   const Icon = item.icon;
+                  const isActive = currentTab === item.id;
                   return (
                     <button
                       key={item.id}
@@ -430,7 +449,9 @@ export const SocialCommandCenterLayout: React.FC<SocialCommandCenterLayoutProps>
                         setIsMobileSidebarOpen(false);
                       }}
                       className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold ${
-                        currentTab === item.id ? 'bg-cyan-500/20 text-cyan-300' : 'text-slate-400'
+                        isActive 
+                          ? (isLight ? 'bg-emerald-50 text-emerald-800 border border-emerald-300 font-bold' : 'bg-cyan-500/20 text-cyan-300 font-bold') 
+                          : (isLight ? 'text-slate-700 hover:bg-slate-100' : 'text-slate-400 hover:text-white')
                       }`}
                     >
                       <div className="flex items-center gap-3">
@@ -447,19 +468,23 @@ export const SocialCommandCenterLayout: React.FC<SocialCommandCenterLayoutProps>
                 })}
               </div>
 
-              <div className="mt-auto space-y-2 pt-2 border-t border-slate-800">
+              <div className={`mt-auto space-y-2 pt-2 border-t ${isLight ? 'border-slate-200' : 'border-slate-800'}`}>
                 <button
                   onClick={() => {
                     setIsMobileSidebarOpen(false);
                     logout();
                   }}
-                  className="w-full py-2.5 rounded-xl bg-rose-500/10 text-rose-300 text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-2.5 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-300 text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <span>Sign Out</span>
                 </button>
                 <button
                   onClick={onBackToWebsite}
-                  className="w-full py-2.5 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer"
+                  className={`w-full py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer border ${
+                    isLight 
+                      ? 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-300' 
+                      : 'bg-slate-800 text-slate-300 border-slate-700'
+                  }`}
                 >
                   <ArrowLeft className="w-4 h-4" /> Return to Website
                 </button>

@@ -112,7 +112,7 @@ export const SEO_CASE_STUDIES: SeoCaseStudy[] = [
         serpFeature: 'People Also Ask'
       },
       {
-        term: 'b2b SaaS conversion optimization experts',
+        term: 'b2b cloud platform conversion optimization experts',
         volume: '1,800/mo',
         initialRank: 29,
         currentRank: 1,

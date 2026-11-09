@@ -326,7 +326,7 @@ export const DigitalGrowthLeadModal: React.FC = () => {
                     <span>Zero Vendor Tax</span>
                   </div>
                   <span className="text-neutral-400 [data-theme=clean-light]:text-slate-500">
-                    100% full code ownership with zero SaaS lock-in.
+                    100% full code ownership with zero proprietary lock-in.
                   </span>
                 </div>
               </div>

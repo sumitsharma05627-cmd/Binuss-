@@ -127,7 +127,7 @@ export function generateDigitalGrowthBlueprintPdf(recipient: BlueprintRecipient)
     { num: '01', title: 'Sub-Second Speed Protocol (<1s FCP & Core Web Vitals Mastery)' },
     { num: '02', title: 'Google Local 3-Pack Schema & Search Domination Blueprint' },
     { num: '03', title: '1-Tap Frictionless WhatsApp Lead Conversion Architecture' },
-    { num: '04', title: 'Full Code Ownership & Zero SaaS Vendor Tax Guarantee' },
+    { num: '04', title: 'Full Code Ownership & Zero Vendor Tax Lock-in Guarantee' },
     { num: '05', title: 'Executive Implementation Audit & Direct Engineer Consultation' }
   ];
 

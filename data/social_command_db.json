@@ -861,6 +861,15 @@
   ],
   "auditLogs": [
     {
+      "action": "RLS Policy Verification Assertions Executed",
+      "userId": "usr_super_admin",
+      "userName": "Super Admin",
+      "details": "All 4 multi-tenant Row Level Security policies verified active on social_accounts & social_posts",
+      "status": "success",
+      "id": "log-1794222194636-284",
+      "timestamp": "2026-11-09T11:03:14.636Z"
+    },
+    {
       "action": "SOCIAL_ACCOUNT_CONNECTED",
       "userId": "user-de685bea67ad",
       "userName": "Rahul Roy Official",

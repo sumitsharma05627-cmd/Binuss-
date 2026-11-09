@@ -143,15 +143,15 @@ export const UnifiedInboxView: React.FC = () => {
            ========================================================================= */}
         <div className="lg:col-span-4 border-r border-slate-200 dark:border-slate-800 flex flex-col h-full bg-slate-50/50 dark:bg-[#080d19]">
           {/* Search & Platform Filter Pills */}
-          <div className="p-3.5 border-b border-slate-800 space-y-2.5">
+          <div className="p-3.5 border-b border-slate-200 dark:border-slate-800 space-y-2.5">
             <div className="relative">
-              <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-500" />
+              <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400 dark:text-slate-500" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search leads, DMs, phone, tags..."
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-emerald-400"
+                className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl pl-8 pr-3 py-1.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-emerald-400"
               />
             </div>
 
@@ -161,8 +161,8 @@ export const UnifiedInboxView: React.FC = () => {
                 onClick={() => setActivePlatformFilter('all')}
                 className={`px-2.5 py-1 rounded-lg font-semibold shrink-0 cursor-pointer ${
                   activePlatformFilter === 'all'
-                    ? 'bg-slate-800 text-white shadow-sm'
-                    : 'text-slate-400 hover:text-slate-200 bg-slate-900/60'
+                    ? 'bg-slate-900 dark:bg-slate-800 text-white shadow-sm'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-transparent'
                 }`}
               >
                 All
@@ -177,7 +177,7 @@ export const UnifiedInboxView: React.FC = () => {
                     className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold shrink-0 cursor-pointer ${
                       isActive
                         ? `${meta.bgBadge} ${meta.textColor} border ${meta.borderBadge}`
-                        : 'text-slate-400 hover:text-slate-200 bg-slate-900/60'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-transparent'
                     }`}
                   >
                     {getPlatformIcon(p, 'w-3 h-3')}
@@ -189,7 +189,7 @@ export const UnifiedInboxView: React.FC = () => {
           </div>
 
           {/* Conversations Scrollable Stream */}
-          <div className="flex-1 overflow-y-auto divide-y divide-slate-800/60">
+          <div className="flex-1 overflow-y-auto divide-y divide-slate-200 dark:divide-slate-800/60">
             {filteredConversations.length === 0 ? (
               <div className="p-8 text-center text-xs text-slate-500">
                 No conversations match current filters.
@@ -205,8 +205,8 @@ export const UnifiedInboxView: React.FC = () => {
                     onClick={() => setSelectedConversationId(conv.id)}
                     className={`p-3.5 transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-[#0f172a] border-l-4 border-emerald-400'
-                        : 'hover:bg-slate-900/60'
+                        ? 'bg-emerald-50/80 dark:bg-[#0f172a] border-l-4 border-emerald-500 dark:border-emerald-400'
+                        : 'hover:bg-slate-100 dark:hover:bg-slate-900/60'
                     }`}
                   >
                     <div className="flex items-start justify-between gap-2 mb-1">
@@ -273,26 +273,26 @@ export const UnifiedInboxView: React.FC = () => {
         {/* =========================================================================
             COLUMN 2: Chat Thread & Response Composer (5.5 cols)
            ========================================================================= */}
-        <div className="lg:col-span-5 flex flex-col h-full bg-[#070b16] border-r border-slate-800">
+        <div className="lg:col-span-5 flex flex-col h-full bg-white dark:bg-[#070b16] border-r border-slate-200 dark:border-slate-800">
           {activeConversation ? (
             <>
               {/* Thread Header */}
-              <div className="p-3.5 border-b border-slate-800 bg-[#090f1f] flex items-center justify-between">
+              <div className="p-3.5 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#090f1f] flex items-center justify-between">
                 <div className="flex items-center gap-2.5 min-w-0">
                   <img
                     src={activeConversation.customer.avatarUrl}
                     alt={activeConversation.customer.name}
-                    className="w-8 h-8 rounded-full object-cover border border-slate-700"
+                    className="w-8 h-8 rounded-full object-cover border border-slate-300 dark:border-slate-700"
                   />
                   <div className="min-w-0">
-                    <h3 className="font-bold text-xs sm:text-sm text-white truncate flex items-center gap-1.5">
+                    <h3 className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate flex items-center gap-1.5">
                       <span>{activeConversation.customer.name}</span>
-                      <span className="text-[10px] px-1.5 py-0.2 rounded bg-slate-900 text-slate-400 font-mono">
+                      <span className="text-[10px] px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-400 font-mono">
                         {activeConversation.platform.toUpperCase()}
                       </span>
                     </h3>
-                    <div className="text-[10px] text-emerald-400 font-mono flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                    <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                       <span>Customer Verified via Official Webhook</span>
                     </div>
                   </div>
@@ -308,8 +308,8 @@ export const UnifiedInboxView: React.FC = () => {
                     }
                     className={`px-3 py-1 rounded-xl text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1 ${
                       activeConversation.status === 'resolved'
-                        ? 'bg-slate-800 text-slate-300'
-                        : 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/25'
+                        ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+                        : 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/25'
                     }`}
                   >
                     <CheckCircle2 className="w-3.5 h-3.5" />
@@ -327,14 +327,14 @@ export const UnifiedInboxView: React.FC = () => {
                       key={msg.id}
                       className={`flex flex-col ${isAgent ? 'items-end' : 'items-start'}`}
                     >
-                      <div className="text-[10px] text-slate-400 mb-1 font-mono">
+                      <div className="text-[10px] text-slate-500 dark:text-slate-400 mb-1 font-mono">
                         {msg.senderName} • {msg.timestamp}
                       </div>
                       <div
                         className={`max-w-[85%] p-3 rounded-2xl text-xs leading-relaxed ${
                           isAgent
                             ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-br-xs shadow-md'
-                            : 'bg-slate-900 border border-slate-800 text-slate-100 rounded-bl-xs'
+                            : 'bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 rounded-bl-xs'
                         }`}
                       >
                         {msg.text}
@@ -345,17 +345,17 @@ export const UnifiedInboxView: React.FC = () => {
               </div>
 
               {/* Response Composer */}
-              <div className="p-3 border-t border-slate-800 bg-[#090f1f] space-y-2">
-                <div className="flex items-center justify-between text-[11px] text-slate-400">
+              <div className="p-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#090f1f] space-y-2">
+                <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
                   <span className="flex items-center gap-1 font-mono">
-                    <Check className="w-3 h-3 text-emerald-400" />
+                    <Check className="w-3 h-3 text-emerald-500 dark:text-emerald-400" />
                     <span>Replying as: <strong>{currentUser?.name || 'Support Agent'} ({currentUser?.role ? currentUser.role.replace('_', ' ') : 'Member'})</strong></span>
                   </span>
                   <button
                     onClick={() => setActiveRightTab('templates')}
-                    className="text-sky-400 hover:underline flex items-center gap-1 cursor-pointer font-medium"
+                    className="text-sky-600 dark:text-sky-400 hover:underline flex items-center gap-1 cursor-pointer font-medium"
                   >
-                    <Sparkles className="w-3 h-3 text-amber-300" />
+                    <Sparkles className="w-3 h-3 text-amber-500 dark:text-amber-300" />
                     <span>Insert Saved Reply</span>
                   </button>
                 </div>
@@ -372,7 +372,7 @@ export const UnifiedInboxView: React.FC = () => {
                     }}
                     placeholder={`Write official reply to ${activeConversation.customer.name}... (Press Enter to send)`}
                     rows={2}
-                    className="flex-1 bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-emerald-400 resize-none font-sans"
+                    className="flex-1 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl p-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-emerald-400 resize-none font-sans"
                   />
                   <button
                     onClick={handleSendReply}
@@ -395,15 +395,17 @@ export const UnifiedInboxView: React.FC = () => {
         {/* =========================================================================
             COLUMN 3: Customer Profile, Internal Notes & Templates (3 cols)
            ========================================================================= */}
-        <div className="lg:col-span-3 flex flex-col h-full bg-[#080d19] overflow-y-auto">
+        <div className="lg:col-span-3 flex flex-col h-full bg-slate-50 dark:bg-[#080d19] overflow-y-auto">
           {activeConversation ? (
             <>
               {/* Tab Selector */}
-              <div className="flex border-b border-slate-800 p-2 gap-1 bg-[#090f1f]">
+              <div className="flex border-b border-slate-200 dark:border-slate-800 p-2 gap-1 bg-white dark:bg-[#090f1f]">
                 <button
                   onClick={() => setActiveRightTab('profile')}
                   className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
-                    activeRightTab === 'profile' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-white'
+                    activeRightTab === 'profile'
+                      ? 'bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
+                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
                   Profile
@@ -411,7 +413,9 @@ export const UnifiedInboxView: React.FC = () => {
                 <button
                   onClick={() => setActiveRightTab('notes')}
                   className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
-                    activeRightTab === 'notes' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-white'
+                    activeRightTab === 'notes'
+                      ? 'bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
+                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
                   Notes ({activeConversation.internalNotes.length})
@@ -419,7 +423,9 @@ export const UnifiedInboxView: React.FC = () => {
                 <button
                   onClick={() => setActiveRightTab('templates')}
                   className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
-                    activeRightTab === 'templates' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-white'
+                    activeRightTab === 'templates'
+                      ? 'bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
+                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
                   Templates
@@ -429,16 +435,16 @@ export const UnifiedInboxView: React.FC = () => {
               {/* Tab 1: Customer Profile */}
               {activeRightTab === 'profile' && (
                 <div className="p-4 space-y-4 text-xs">
-                  <div className="text-center pb-3 border-b border-slate-800">
+                  <div className="text-center pb-3 border-b border-slate-200 dark:border-slate-800">
                     <img
                       src={activeConversation.customer.avatarUrl}
                       alt={activeConversation.customer.name}
-                      className="w-16 h-16 rounded-2xl mx-auto object-cover border border-slate-700 shadow-lg mb-2"
+                      className="w-16 h-16 rounded-2xl mx-auto object-cover border border-slate-300 dark:border-slate-700 shadow-md mb-2"
                     />
-                    <h3 className="font-bold text-sm text-white">{activeConversation.customer.name}</h3>
-                    <div className="text-slate-400 font-mono text-[11px]">{activeConversation.customer.handle}</div>
+                    <h3 className="font-bold text-sm text-slate-900 dark:text-white">{activeConversation.customer.name}</h3>
+                    <div className="text-slate-500 dark:text-slate-400 font-mono text-[11px]">{activeConversation.customer.handle}</div>
                     {activeConversation.customer.lifetimeOrdersOrValue && (
-                      <span className="inline-block mt-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[10px]">
+                      <span className="inline-block mt-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 font-mono text-[10px]">
                         {activeConversation.customer.lifetimeOrdersOrValue}
                       </span>
                     )}
@@ -446,13 +452,13 @@ export const UnifiedInboxView: React.FC = () => {
 
                   {/* Assign to Team Member */}
                   <div>
-                    <label className="block text-[10px] font-mono text-slate-400 uppercase mb-1">
+                    <label className="block text-[10px] font-mono text-slate-500 dark:text-slate-400 uppercase mb-1">
                       Assigned Agent:
                     </label>
                     <select
                       value={activeConversation.assignedTo || ''}
                       onChange={(e) => assignConversation(activeConversation.id, e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white"
+                      className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-1.5 text-xs text-slate-900 dark:text-white"
                     >
                       <option value="">Unassigned</option>
                       {teamMembers.map((m) => (
@@ -464,14 +470,14 @@ export const UnifiedInboxView: React.FC = () => {
                   </div>
 
                   {/* Contact Details */}
-                  <div className="p-3 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2">
-                    <div className="font-bold text-slate-200">Contact Details</div>
-                    <div className="text-[11px] text-slate-300">
+                  <div className="p-3 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-2">
+                    <div className="font-bold text-slate-800 dark:text-slate-200">Contact Details</div>
+                    <div className="text-[11px] text-slate-700 dark:text-slate-300">
                       <div className="text-slate-500 text-[10px]">Phone / WhatsApp:</div>
                       <div>{activeConversation.customer.phone || 'Direct Social DM'}</div>
                     </div>
                     {activeConversation.customer.email && (
-                      <div className="text-[11px] text-slate-300">
+                      <div className="text-[11px] text-slate-700 dark:text-slate-300">
                         <div className="text-slate-500 text-[10px]">Email:</div>
                         <div className="truncate">{activeConversation.customer.email}</div>
                       </div>
@@ -480,14 +486,14 @@ export const UnifiedInboxView: React.FC = () => {
 
                   {/* Tags Manager */}
                   <div>
-                    <label className="block text-[10px] font-mono text-slate-400 uppercase mb-1.5">
+                    <label className="block text-[10px] font-mono text-slate-500 dark:text-slate-400 uppercase mb-1.5">
                       Customer Labels & Tags:
                     </label>
                     <div className="flex flex-wrap gap-1.5 mb-2">
                       {activeConversation.customer.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="px-2 py-0.5 rounded-md bg-slate-800 text-sky-300 font-mono text-[10px] border border-slate-700"
+                          className="px-2 py-0.5 rounded-md bg-slate-200 dark:bg-slate-800 text-sky-700 dark:text-sky-300 font-mono text-[10px] border border-slate-300 dark:border-slate-700"
                         >
                           {tag}
                         </span>
@@ -499,11 +505,11 @@ export const UnifiedInboxView: React.FC = () => {
                         value={newTagInput}
                         onChange={(e) => setNewTagInput(e.target.value)}
                         placeholder="Add tag (e.g. VIP Lead)..."
-                        className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-white"
+                        className="flex-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-2.5 py-1 text-xs text-slate-900 dark:text-white"
                       />
                       <button
                         onClick={handleAddTag}
-                        className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 cursor-pointer"
+                        className="px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-xs text-slate-800 dark:text-slate-200 cursor-pointer"
                       >
                         Add
                       </button>
@@ -516,7 +522,7 @@ export const UnifiedInboxView: React.FC = () => {
               {activeRightTab === 'notes' && (
                 <div className="p-4 space-y-3 text-xs flex-1 flex flex-col justify-between">
                   <div className="space-y-2.5 overflow-y-auto">
-                    <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[10px] flex items-center gap-1.5">
+                    <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-800 dark:text-amber-300 text-[10px] flex items-center gap-1.5">
                       <ShieldCheck className="w-3.5 h-3.5" />
                       <span>Internal Notes are 100% private to your team and invisible to the client.</span>
                     </div>
@@ -527,30 +533,30 @@ export const UnifiedInboxView: React.FC = () => {
                       activeConversation.internalNotes.map((note) => (
                         <div
                           key={note.id}
-                          className="p-3 rounded-xl bg-slate-900 border border-slate-800 space-y-1"
+                          className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-1"
                         >
-                          <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono">
-                            <span className="font-bold text-slate-200">{note.authorName}</span>
+                          <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 font-mono">
+                            <span className="font-bold text-slate-800 dark:text-slate-200">{note.authorName}</span>
                             <span>{new Date(note.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                           </div>
-                          <p className="text-slate-300 leading-relaxed text-[11px]">{note.text}</p>
+                          <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-[11px]">{note.text}</p>
                         </div>
                       ))
                     )}
                   </div>
 
-                  <div className="pt-2 border-t border-slate-800 space-y-2">
+                  <div className="pt-2 border-t border-slate-200 dark:border-slate-800 space-y-2">
                     <textarea
                       value={newNoteInput}
                       onChange={(e) => setNewNoteInput(e.target.value)}
                       placeholder="Add private note for team members..."
                       rows={2}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-white resize-none"
+                      className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl p-2 text-xs text-slate-900 dark:text-white resize-none"
                     />
                     <button
                       onClick={handleAddNote}
                       disabled={!newNoteInput.trim()}
-                      className="w-full py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs disabled:opacity-50 cursor-pointer"
+                      className="w-full py-1.5 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs disabled:opacity-50 cursor-pointer"
                     >
                       Post Internal Note
                     </button>
@@ -561,7 +567,7 @@ export const UnifiedInboxView: React.FC = () => {
               {/* Tab 3: Quick Reply Templates */}
               {activeRightTab === 'templates' && (
                 <div className="p-4 space-y-2.5 text-xs overflow-y-auto">
-                  <div className="text-slate-400 text-[11px]">
+                  <div className="text-slate-500 dark:text-slate-400 text-[11px]">
                     Tap any verified template to immediately populate into response composer:
                   </div>
 
@@ -569,13 +575,13 @@ export const UnifiedInboxView: React.FC = () => {
                     <div
                       key={idx}
                       onClick={() => setReplyInput(reply.text)}
-                      className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-emerald-500/40 hover:bg-slate-900 transition-all cursor-pointer space-y-1"
+                      className="p-3 rounded-xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 hover:border-emerald-500/40 hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer space-y-1 shadow-xs"
                     >
-                      <div className="font-bold text-white text-[11px] flex items-center justify-between">
+                      <div className="font-bold text-slate-900 dark:text-white text-[11px] flex items-center justify-between">
                         <span>{reply.title}</span>
-                        <span className="text-[9px] text-emerald-400 font-mono">Insert →</span>
+                        <span className="text-[9px] text-emerald-600 dark:text-emerald-400 font-mono">Insert →</span>
                       </div>
-                      <p className="text-[11px] text-slate-400 line-clamp-2">{reply.text}</p>
+                      <p className="text-[11px] text-slate-600 dark:text-slate-400 line-clamp-2">{reply.text}</p>
                     </div>
                   ))}
                 </div>

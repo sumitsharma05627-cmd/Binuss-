@@ -3,6 +3,7 @@ import { useSocialCommand } from '../../context/SocialCommandContext';
 import { SubscriptionConfig, PaymentTransaction } from '../../types';
 import { 
   ShieldAlert, 
+  ShieldCheck,
   Activity, 
   Cpu, 
   Database, 
@@ -28,6 +29,7 @@ import {
   Sparkles,
   Calendar
 } from 'lucide-react';
+import { RlsPolicyMonitor } from '../admin/RlsPolicyMonitor';
 
 interface ManagedUser {
   id: string;
@@ -54,7 +56,7 @@ export const SuperAdminView: React.FC = () => {
     addNotification 
   } = useSocialCommand();
 
-  const [activeTab, setActiveTab] = useState<'users' | 'pricing' | 'transactions' | 'health'>('users');
+  const [activeTab, setActiveTab] = useState<'users' | 'pricing' | 'transactions' | 'health' | 'rls'>('users');
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [users, setUsers] = useState<ManagedUser[]>([]);
 
@@ -228,13 +230,24 @@ export const SuperAdminView: React.FC = () => {
           </p>
         </div>
 
-        <button
-          onClick={handleRefresh}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 font-semibold text-xs transition-all cursor-pointer"
-        >
-          <RefreshCw className={`w-4 h-4 text-rose-500 ${isRefreshing ? 'animate-spin' : ''}`} />
-          <span>Ping API Infrastructure</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setActiveTab('rls')}
+            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 font-mono text-xs font-semibold cursor-pointer transition-colors"
+            title="Inspect PostgreSQL Row Level Security status"
+          >
+            <ShieldCheck className="w-4 h-4 text-emerald-500" />
+            <span>RLS Active: social_accounts &amp; social_posts</span>
+          </button>
+
+          <button
+            onClick={handleRefresh}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 font-semibold text-xs transition-all cursor-pointer"
+          >
+            <RefreshCw className={`w-4 h-4 text-rose-500 ${isRefreshing ? 'animate-spin' : ''}`} />
+            <span>Ping API Infrastructure</span>
+          </button>
+        </div>
       </div>
 
       {/* Cluster Health Metrics */}
@@ -277,10 +290,10 @@ export const SuperAdminView: React.FC = () => {
       </div>
 
       {/* ADMIN SECTION TABS */}
-      <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+      <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2 overflow-x-auto scrollbar-none">
         <button
           onClick={() => setActiveTab('users')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
             activeTab === 'users'
               ? 'bg-slate-900 text-white dark:bg-rose-500 dark:text-slate-950 shadow-sm'
               : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -290,7 +303,7 @@ export const SuperAdminView: React.FC = () => {
         </button>
         <button
           onClick={() => setActiveTab('pricing')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
             activeTab === 'pricing'
               ? 'bg-slate-900 text-white dark:bg-rose-500 dark:text-slate-950 shadow-sm'
               : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -300,7 +313,7 @@ export const SuperAdminView: React.FC = () => {
         </button>
         <button
           onClick={() => setActiveTab('transactions')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
             activeTab === 'transactions'
               ? 'bg-slate-900 text-white dark:bg-rose-500 dark:text-slate-950 shadow-sm'
               : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -310,13 +323,25 @@ export const SuperAdminView: React.FC = () => {
         </button>
         <button
           onClick={() => setActiveTab('health')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
             activeTab === 'health'
               ? 'bg-slate-900 text-white dark:bg-rose-500 dark:text-slate-950 shadow-sm'
               : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           }`}
         >
           API Gateways &amp; Logs
+        </button>
+        <button
+          onClick={() => setActiveTab('rls')}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+            activeTab === 'rls'
+              ? 'bg-emerald-600 text-white dark:bg-emerald-500 dark:text-slate-950 shadow-sm'
+              : 'text-emerald-700 dark:text-emerald-400 hover:text-slate-900 dark:hover:text-white hover:bg-emerald-500/10'
+          }`}
+        >
+          <ShieldCheck className="w-3.5 h-3.5" />
+          <span>RLS Security Policies</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse ml-0.5" />
         </button>
       </div>
 
@@ -717,6 +742,11 @@ export const SuperAdminView: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* TAB 5: ROW LEVEL SECURITY MONITOR */}
+      {activeTab === 'rls' && (
+        <RlsPolicyMonitor />
       )}
 
       {/* GRANT PREMIUM ACCESS MODAL */}

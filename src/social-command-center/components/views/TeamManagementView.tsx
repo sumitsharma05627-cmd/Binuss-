@@ -134,35 +134,35 @@ export const TeamManagementView: React.FC = () => {
         {['super_admin', 'agency_admin', 'content_creator'].map((roleKey) => {
           const role = roleDefinitions[roleKey as UserRole];
           return (
-            <div key={roleKey} className="bg-slate-900/70 border border-slate-800 p-4 rounded-xl">
+            <div key={roleKey} className="bg-white dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 p-4 rounded-xl shadow-xs">
               <div className="flex items-center justify-between mb-2">
                 <span className={`px-2.5 py-0.5 rounded text-xs font-semibold border ${role.color}`}>
                   {role.label}
                 </span>
-                <ShieldCheck className="w-4 h-4 text-slate-500" />
+                <ShieldCheck className="w-4 h-4 text-slate-400 dark:text-slate-500" />
               </div>
-              <p className="text-xs text-slate-400 leading-relaxed">{role.desc}</p>
+              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{role.desc}</p>
             </div>
           );
         })}
       </div>
 
       {/* Team Roster */}
-      <div className="bg-slate-900/70 border border-slate-800 rounded-2xl overflow-hidden">
-        <div className="p-5 border-b border-slate-800 flex items-center justify-between">
+      <div className="bg-white dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-xs">
+        <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
           <div>
-            <h3 className="font-semibold text-white text-base">Active Agency &amp; Client Users</h3>
-            <p className="text-xs text-slate-400 mt-0.5">Showing {teamMembers.length} users with assigned workspace permissions</p>
+            <h3 className="font-semibold text-slate-900 dark:text-white text-base">Active Agency &amp; Client Users</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Showing {teamMembers.length} users with assigned workspace permissions</p>
           </div>
-          <div className="flex items-center gap-2 text-xs text-slate-400">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" /> Active
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-400 ml-2" /> Invited
+          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 dark:bg-emerald-400" /> Active
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 dark:bg-amber-400 ml-2" /> Invited
           </div>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-950/60 text-slate-400 font-semibold border-b border-slate-800 uppercase tracking-wider">
+            <thead className="bg-slate-50 dark:bg-slate-950/60 text-slate-600 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-slate-800 uppercase tracking-wider">
               <tr>
                 <th className="py-3 px-4">User</th>
                 <th className="py-3 px-4">Role</th>
@@ -171,21 +171,21 @@ export const TeamManagementView: React.FC = () => {
                 <th className="py-3 px-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60 text-slate-300">
+            <tbody className="divide-y divide-slate-200 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300">
               {teamMembers.map((member) => {
                 const role = roleDefinitions[member.role];
                 return (
-                  <tr key={member.id} className="hover:bg-slate-800/30 transition-all">
+                  <tr key={member.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-all">
                     <td className="py-3.5 px-4">
                       <div className="flex items-center gap-3">
                         <img
                           src={member.avatarUrl}
                           alt={member.name}
-                          className="w-9 h-9 rounded-full object-cover border border-slate-700"
+                          className="w-9 h-9 rounded-full object-cover border border-slate-300 dark:border-slate-700"
                         />
                         <div>
-                          <p className="font-semibold text-white text-sm">{member.name}</p>
-                          <p className="text-slate-400 text-xs">{member.email}</p>
+                          <p className="font-semibold text-slate-900 dark:text-white text-sm">{member.name}</p>
+                          <p className="text-slate-500 dark:text-slate-400 text-xs">{member.email}</p>
                         </div>
                       </div>
                     </td>
@@ -203,7 +203,7 @@ export const TeamManagementView: React.FC = () => {
                           return (
                             <span
                               key={cId}
-                              className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 text-[10px]"
+                              className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 text-[10px]"
                             >
                               {client?.name || cId}
                             </span>
@@ -215,10 +215,10 @@ export const TeamManagementView: React.FC = () => {
                     <td className="py-3.5 px-4">
                       <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase ${
                         member.status === 'active'
-                          ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                          : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                          ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
+                          : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20'
                       }`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${member.status === 'active' ? 'bg-emerald-400' : 'bg-amber-400'}`} />
+                        <span className={`w-1.5 h-1.5 rounded-full ${member.status === 'active' ? 'bg-emerald-500 dark:bg-emerald-400' : 'bg-amber-500 dark:bg-amber-400'}`} />
                         {member.status}
                       </span>
                     </td>
@@ -226,7 +226,7 @@ export const TeamManagementView: React.FC = () => {
                     <td className="py-3.5 px-4 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all"
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer"
                           title="Edit Permissions"
                         >
                           <Edit2 className="w-3.5 h-3.5" />
@@ -243,16 +243,16 @@ export const TeamManagementView: React.FC = () => {
 
       {/* INVITE MODAL */}
       {showInviteModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
-            <div className="p-6 border-b border-slate-800 flex items-center justify-between">
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
+            <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-bold text-white">Invite Team Member</h3>
-                <p className="text-xs text-slate-400 mt-0.5">Assign agency role and workspace permissions</p>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Invite Team Member</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Assign agency role and workspace permissions</p>
               </div>
               <button
                 onClick={() => setShowInviteModal(false)}
-                className="text-slate-400 hover:text-white text-lg font-bold"
+                className="text-slate-400 hover:text-slate-800 dark:hover:text-white text-lg font-bold cursor-pointer"
               >
                 &times;
               </button>
@@ -260,35 +260,35 @@ export const TeamManagementView: React.FC = () => {
 
             <form onSubmit={handleInviteSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Full Name</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Full Name</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g., Rohit V."
                   value={inviteName}
                   onChange={(e) => setInviteName(e.target.value)}
-                  className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-500"
+                  className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-purple-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Work Email</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Work Email</label>
                 <input
                   type="email"
                   required
                   placeholder="name@gwaliorweblabs.com"
                   value={inviteEmail}
                   onChange={(e) => setInviteEmail(e.target.value)}
-                  className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-500"
+                  className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-purple-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Role Assignment</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Role Assignment</label>
                 <select
                   value={inviteRole}
                   onChange={(e) => setInviteRole(e.target.value as UserRole)}
-                  className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-purple-500"
+                  className="w-full bg-white dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-purple-500"
                 >
                   <option value="content_creator">Content Creator (Drafts &amp; Media)</option>
                   <option value="customer_support">Customer Support (Inbox &amp; Replies)</option>
@@ -299,11 +299,11 @@ export const TeamManagementView: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Primary Workspace</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Primary Workspace</label>
                 <select
                   value={inviteClientId}
                   onChange={(e) => setInviteClientId(e.target.value)}
-                  className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-purple-500"
+                  className="w-full bg-white dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-purple-500"
                 >
                   {clients.map(c => (
                     <option key={c.id} value={c.id}>{c.name}</option>
@@ -311,17 +311,17 @@ export const TeamManagementView: React.FC = () => {
                 </select>
               </div>
 
-              <div className="pt-3 flex items-center justify-end gap-3 border-t border-slate-800">
+              <div className="pt-3 flex items-center justify-end gap-3 border-t border-slate-200 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setShowInviteModal(false)}
-                  className="px-4 py-2 rounded-xl text-slate-400 hover:text-white text-sm font-medium"
+                  className="px-4 py-2 rounded-xl text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white text-sm font-medium cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-sm transition-all shadow-md shadow-purple-600/20"
+                  className="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-sm transition-all shadow-md shadow-purple-600/20 cursor-pointer"
                 >
                   Send Invitation
                 </button>

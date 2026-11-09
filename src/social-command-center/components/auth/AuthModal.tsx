@@ -18,8 +18,12 @@ import {
   KeyRound
 } from 'lucide-react';
 import { useSocialCommand } from '../../context/SocialCommandContext';
+import { useTheme } from '../../../context/ThemeContext';
 
 export const AuthModal: React.FC = () => {
+  const { themeConfig } = useTheme();
+  const isLight = !themeConfig.isDark;
+
   const { 
     isAuthModalOpen, 
     closeAuthModal, 
@@ -190,18 +194,28 @@ export const AuthModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md overflow-y-auto">
+    <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md overflow-y-auto ${
+      isLight ? 'bg-slate-900/40' : 'bg-slate-950/80'
+    }`}>
       <div 
-        className="relative w-full max-w-lg my-8 bg-slate-900 border border-cyan-500/30 rounded-3xl p-6 sm:p-8 shadow-2xl text-slate-100 overflow-hidden"
+        className={`relative w-full max-w-lg my-8 rounded-3xl p-6 sm:p-8 shadow-2xl overflow-hidden border ${
+          isLight 
+            ? 'bg-white border-slate-200 text-slate-900' 
+            : 'bg-slate-900 border-cyan-500/30 text-slate-100'
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Ambient Top Glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-72 h-32 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none" />
+        <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-72 h-32 rounded-full blur-3xl pointer-events-none ${
+          isLight ? 'bg-cyan-500/10' : 'bg-cyan-500/15'
+        }`} />
 
         {/* Close Button */}
         <button
           onClick={closeAuthModal}
-          className="absolute top-5 right-5 p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+          className={`absolute top-5 right-5 p-2 rounded-xl transition-colors cursor-pointer ${
+            isLight ? 'text-slate-400 hover:text-slate-900 hover:bg-slate-100' : 'text-slate-400 hover:text-white hover:bg-slate-800'
+          }`}
           aria-label="Close"
         >
           <X className="w-5 h-5" />
@@ -209,7 +223,9 @@ export const AuthModal: React.FC = () => {
 
         {/* Header Crest & Title */}
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-slate-950 border border-slate-700 p-1 flex items-center justify-center">
+          <div className={`w-10 h-10 rounded-xl border p-1 flex items-center justify-center ${
+            isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950 border-slate-700'
+          }`}>
             <img
               src="/assets/aistudio/Gemini_Generated_Image_b1kwab1kwab1kwab_83d54e8a.png"
               alt="GWL Crest"
@@ -217,22 +233,30 @@ export const AuthModal: React.FC = () => {
             />
           </div>
           <div>
-            <h3 className="font-black text-lg text-white tracking-tight">Gwalior Web Labs</h3>
-            <p className="text-xs text-cyan-400 font-semibold uppercase tracking-wider">Social Command Center</p>
+            <h3 className={`font-black text-lg tracking-tight ${isLight ? 'text-slate-950' : 'text-white'}`}>Gwalior Web Labs</h3>
+            <p className={`text-xs font-semibold uppercase tracking-wider ${isLight ? 'text-cyan-700 font-bold' : 'text-cyan-400'}`}>Social Command Center</p>
           </div>
         </div>
 
         {/* Feedback Alerts */}
         {errorMessage && (
-          <div className="mb-4 p-3 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+          <div className={`mb-4 p-3 rounded-xl border text-xs flex items-center gap-2 ${
+            isLight 
+              ? 'bg-rose-50 border-rose-200 text-rose-800' 
+              : 'bg-rose-500/15 border-rose-500/30 text-rose-300'
+          }`}>
+            <AlertCircle className={`w-4 h-4 shrink-0 ${isLight ? 'text-rose-600' : 'text-rose-400'}`} />
             <span>{errorMessage}</span>
           </div>
         )}
 
         {successMessage && (
-          <div className="mb-4 p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
+          <div className={`mb-4 p-3 rounded-xl border text-xs flex items-center gap-2 ${
+            isLight 
+              ? 'bg-emerald-50 border-emerald-200 text-emerald-800' 
+              : 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
+          }`}>
+            <CheckCircle2 className={`w-4 h-4 shrink-0 ${isLight ? 'text-emerald-600' : 'text-emerald-400'}`} />
             <span>{successMessage}</span>
           </div>
         )}
@@ -241,7 +265,7 @@ export const AuthModal: React.FC = () => {
         {currentView === 'login' && (
           <form onSubmit={handleLoginSubmit} className="space-y-4">
             <div className="flex items-center justify-between mb-2">
-              <h2 className="text-xl font-bold text-white">Sign In to Command Center</h2>
+              <h2 className={`text-xl font-bold ${isLight ? 'text-slate-950' : 'text-white'}`}>Sign In to Command Center</h2>
               <button
                 type="button"
                 onClick={() => {
@@ -249,14 +273,16 @@ export const AuthModal: React.FC = () => {
                   setSuccessMessage(null);
                   setAuthModalView('register');
                 }}
-                className="text-xs text-cyan-400 hover:underline font-semibold cursor-pointer"
+                className={`text-xs hover:underline font-bold cursor-pointer ${
+                  isLight ? 'text-cyan-700' : 'text-cyan-400'
+                }`}
               >
                 Create Account &rarr;
               </button>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Email Address</label>
+              <label className={`block text-xs font-semibold mb-1 ${isLight ? 'text-slate-700 font-bold' : 'text-slate-300'}`}>Email Address</label>
               <div className="relative">
                 <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
                 <input
@@ -265,14 +291,18 @@ export const AuthModal: React.FC = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@company.com"
-                  className="w-full bg-slate-950/80 border border-slate-700 focus:border-cyan-400 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-slate-500 transition-colors"
+                  className={`w-full rounded-xl pl-10 pr-4 py-2.5 text-xs transition-colors border ${
+                    isLight 
+                      ? 'bg-slate-50 border-slate-300 focus:border-cyan-600 focus:bg-white text-slate-900 placeholder-slate-400' 
+                      : 'bg-slate-950/80 border-slate-700 focus:border-cyan-400 text-white placeholder-slate-500'
+                  }`}
                 />
               </div>
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-semibold text-slate-300">Password</label>
+                <label className={`text-xs font-semibold ${isLight ? 'text-slate-700 font-bold' : 'text-slate-300'}`}>Password</label>
                 <button
                   type="button"
                   onClick={() => {
@@ -280,7 +310,7 @@ export const AuthModal: React.FC = () => {
                     setSuccessMessage(null);
                     setAuthModalView('forgot');
                   }}
-                  className="text-[11px] text-cyan-400 hover:underline"
+                  className={`text-[11px] hover:underline font-semibold ${isLight ? 'text-cyan-700' : 'text-cyan-400'}`}
                 >
                   Forgot password?
                 </button>
@@ -293,12 +323,16 @@ export const AuthModal: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full bg-slate-950/80 border border-slate-700 focus:border-cyan-400 rounded-xl pl-10 pr-10 py-2.5 text-xs text-white placeholder-slate-500 transition-colors"
+                  className={`w-full rounded-xl pl-10 pr-10 py-2.5 text-xs transition-colors border ${
+                    isLight 
+                      ? 'bg-slate-50 border-slate-300 focus:border-cyan-600 focus:bg-white text-slate-900 placeholder-slate-400' 
+                      : 'bg-slate-950/80 border-slate-700 focus:border-cyan-400 text-white placeholder-slate-500'
+                  }`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-2.5 text-slate-400 hover:text-white"
+                  className={`absolute right-3.5 top-2.5 ${isLight ? 'text-slate-400 hover:text-slate-700' : 'text-slate-400 hover:text-white'}`}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -306,12 +340,12 @@ export const AuthModal: React.FC = () => {
             </div>
 
             <div className="flex items-center justify-between text-xs">
-              <label className="flex items-center gap-2 cursor-pointer text-slate-400">
+              <label className={`flex items-center gap-2 cursor-pointer ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
                 <input
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="rounded border-slate-700 text-cyan-500 focus:ring-0"
+                  className="rounded border-slate-300 dark:border-slate-700 text-cyan-600 focus:ring-0"
                 />
                 <span>Remember this workstation</span>
               </label>
@@ -320,7 +354,7 @@ export const AuthModal: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 transition-all cursor-pointer disabled:opacity-50"
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 transition-all cursor-pointer disabled:opacity-50"
             >
               {loading ? (
                 <span>Authenticating...</span>
@@ -333,15 +367,23 @@ export const AuthModal: React.FC = () => {
             </button>
 
             <div className="relative my-3 text-center">
-              <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-800" /></div>
-              <span className="relative bg-slate-900 px-3 text-[10px] text-slate-500 uppercase font-mono">Or continue with</span>
+              <div className="absolute inset-0 flex items-center">
+                <div className={`w-full border-t ${isLight ? 'border-slate-200' : 'border-slate-800'}`} />
+              </div>
+              <span className={`relative px-3 text-[10px] uppercase font-mono ${
+                isLight ? 'bg-white text-slate-500' : 'bg-slate-900 text-slate-500'
+              }`}>Or continue with</span>
             </div>
 
             <button
               type="button"
               onClick={handleGoogleSignIn}
               disabled={loading}
-              className="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs flex items-center justify-center gap-2.5 transition-all shadow-md cursor-pointer disabled:opacity-60"
+              className={`w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2.5 transition-all shadow-sm cursor-pointer disabled:opacity-60 border ${
+                isLight 
+                  ? 'bg-slate-50 hover:bg-slate-100 border-slate-300 text-slate-800' 
+                  : 'bg-white hover:bg-slate-100 border-transparent text-slate-900'
+              }`}
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -352,13 +394,15 @@ export const AuthModal: React.FC = () => {
               <span>Sign in with Google</span>
             </button>
 
-            <div className="pt-3 border-t border-slate-800 text-center">
-              <p className="text-xs text-slate-400">
+            <div className={`pt-3 border-t text-center ${isLight ? 'border-slate-200' : 'border-slate-800'}`}>
+              <p className={`text-xs ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
                 Don't have an account yet?{' '}
                 <button
                   type="button"
                   onClick={() => setAuthModalView('register')}
-                  className="text-cyan-400 hover:text-cyan-300 font-bold transition-colors cursor-pointer"
+                  className={`font-bold transition-colors cursor-pointer ${
+                    isLight ? 'text-cyan-700 hover:text-cyan-800' : 'text-cyan-400 hover:text-cyan-300'
+                  }`}
                 >
                   Create your free account
                 </button>
@@ -371,7 +415,7 @@ export const AuthModal: React.FC = () => {
         {currentView === 'register' && (
           <form onSubmit={handleRegisterSubmit} className="space-y-3">
             <div className="flex items-center justify-between mb-2">
-              <h2 className="text-xl font-bold text-white">Create New Workspace</h2>
+              <h2 className={`text-xl font-bold ${isLight ? 'text-slate-950' : 'text-white'}`}>Create New Workspace</h2>
               <button
                 type="button"
                 onClick={() => {
@@ -379,7 +423,9 @@ export const AuthModal: React.FC = () => {
                   setSuccessMessage(null);
                   setAuthModalView('login');
                 }}
-                className="text-xs text-cyan-400 hover:underline font-semibold cursor-pointer"
+                className={`text-xs hover:underline font-bold cursor-pointer ${
+                  isLight ? 'text-cyan-700' : 'text-cyan-400'
+                }`}
               >
                 &larr; Back to Sign In
               </button>
@@ -387,7 +433,7 @@ export const AuthModal: React.FC = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Full Name</label>
+                <label className={`block text-xs font-semibold mb-1 ${isLight ? 'text-slate-700 font-bold' : 'text-slate-300'}`}>Full Name</label>
                 <div className="relative">
                   <User className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
                   <input
@@ -396,13 +442,17 @@ export const AuthModal: React.FC = () => {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="e.g. Jane Doe"
-                    className="w-full bg-slate-950/80 border border-slate-700 focus:border-cyan-400 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500"
+                    className={`w-full rounded-xl pl-9 pr-3 py-2 text-xs border ${
+                      isLight 
+                        ? 'bg-slate-50 border-slate-300 focus:border-cyan-600 focus:bg-white text-slate-900 placeholder-slate-400' 
+                        : 'bg-slate-950/80 border-slate-700 focus:border-cyan-400 text-white placeholder-slate-500'
+                    }`}
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Email Address</label>
+                <label className={`block text-xs font-semibold mb-1 ${isLight ? 'text-slate-700 font-bold' : 'text-slate-300'}`}>Email Address</label>
                 <div className="relative">
                   <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
                   <input
@@ -411,7 +461,11 @@ export const AuthModal: React.FC = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@company.com"
-                    className="w-full bg-slate-950/80 border border-slate-700 focus:border-cyan-400 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500"
+                    className={`w-full rounded-xl pl-9 pr-3 py-2 text-xs border ${
+                      isLight 
+                        ? 'bg-slate-50 border-slate-300 focus:border-cyan-600 focus:bg-white text-slate-900 placeholder-slate-400' 
+                        : 'bg-slate-950/80 border-slate-700 focus:border-cyan-400 text-white placeholder-slate-500'
+                    }`}
                   />
                 </div>
               </div>
@@ -419,21 +473,25 @@ export const AuthModal: React.FC = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Mobile Number (Optional)</label>
+                <label className={`block text-xs font-semibold mb-1 ${isLight ? 'text-slate-700 font-bold' : 'text-slate-300'}`}>Mobile Number (Optional)</label>
                 <div className="relative">
                   <Phone className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
                   <input
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    placeholder="+91 75879 39722"
-                    className="w-full bg-slate-950/80 border border-slate-700 focus:border-cyan-400 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500"
+                    placeholder="+91 98765 43210"
+                    className={`w-full rounded-xl pl-9 pr-3 py-2 text-xs border ${
+                      isLight 
+                        ? 'bg-slate-50 border-slate-300 focus:border-cyan-600 focus:bg-white text-slate-900 placeholder-slate-400' 
+                        : 'bg-slate-950/80 border-slate-700 focus:border-cyan-400 text-white placeholder-slate-500'
+                    }`}
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Country</label>
+                <label className={`block text-xs font-semibold mb-1 ${isLight ? 'text-slate-700 font-bold' : 'text-slate-300'}`}>Country</label>
                 <div className="relative">
                   <Globe className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
                   <input
@@ -442,7 +500,11 @@ export const AuthModal: React.FC = () => {
                     value={country}
                     onChange={(e) => setCountry(e.target.value)}
                     placeholder="India"
-                    className="w-full bg-slate-950/80 border border-slate-700 focus:border-cyan-400 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500"
+                    className={`w-full rounded-xl pl-9 pr-3 py-2 text-xs border ${
+                      isLight 
+                        ? 'bg-slate-50 border-slate-300 focus:border-cyan-600 focus:bg-white text-slate-900 placeholder-slate-400' 
+                        : 'bg-slate-950/80 border-slate-700 focus:border-cyan-400 text-white placeholder-slate-500'
+                    }`}
                   />
                 </div>
               </div>
@@ -450,42 +512,54 @@ export const AuthModal: React.FC = () => {
 
             {/* 5 Distinct Account Types */}
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Account Type</label>
+              <label className={`block text-xs font-semibold mb-1 ${isLight ? 'text-slate-700 font-bold' : 'text-slate-300'}`}>Account Type</label>
               <select
                 value={accountType}
                 onChange={(e) => setAccountType(e.target.value as any)}
-                className="w-full bg-slate-950/80 border border-slate-700 focus:border-cyan-400 rounded-xl px-3 py-2 text-xs text-white cursor-pointer"
+                className={`w-full rounded-xl px-3 py-2 text-xs cursor-pointer border ${
+                  isLight 
+                    ? 'bg-slate-50 border-slate-300 text-slate-900' 
+                    : 'bg-slate-950/80 border-slate-700 text-white'
+                }`}
               >
-                <option value="agency">3. Digital Marketing Agency (Multi-Client &amp; Team)</option>
-                <option value="freelancer">2. Freelancer (Multi-Channel Solo)</option>
-                <option value="business_owner">4. Business Owner (In-House Brand)</option>
-                <option value="individual">1. Individual Marketer / Creator</option>
-                <option value="marketing_team">5. Marketing Team (Enterprise Department)</option>
+                <option value="agency">Digital Marketing Agency (Multi-Client &amp; Team)</option>
+                <option value="freelancer">Freelancer (Multi-Channel Solo)</option>
+                <option value="business_owner">Business Owner (In-House Brand)</option>
+                <option value="individual">Individual Marketer / Creator</option>
+                <option value="marketing_team">Marketing Team (Enterprise Department)</option>
               </select>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Password</label>
+                <label className={`block text-xs font-semibold mb-1 ${isLight ? 'text-slate-700 font-bold' : 'text-slate-300'}`}>Password</label>
                 <input
                   type={showPassword ? 'text' : 'password'}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="At least 6 characters"
-                  className="w-full bg-slate-950/80 border border-slate-700 focus:border-cyan-400 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500"
+                  className={`w-full rounded-xl px-3 py-2 text-xs border ${
+                    isLight 
+                      ? 'bg-slate-50 border-slate-300 focus:border-cyan-600 focus:bg-white text-slate-900 placeholder-slate-400' 
+                      : 'bg-slate-950/80 border-slate-700 focus:border-cyan-400 text-white placeholder-slate-500'
+                  }`}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Confirm Password</label>
+                <label className={`block text-xs font-semibold mb-1 ${isLight ? 'text-slate-700 font-bold' : 'text-slate-300'}`}>Confirm Password</label>
                 <input
                   type={showPassword ? 'text' : 'password'}
                   required
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Re-type password"
-                  className="w-full bg-slate-950/80 border border-slate-700 focus:border-cyan-400 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500"
+                  className={`w-full rounded-xl px-3 py-2 text-xs border ${
+                    isLight 
+                      ? 'bg-slate-50 border-slate-300 focus:border-cyan-600 focus:bg-white text-slate-900 placeholder-slate-400' 
+                      : 'bg-slate-950/80 border-slate-700 focus:border-cyan-400 text-white placeholder-slate-500'
+                  }`}
                 />
               </div>
             </div>
@@ -493,21 +567,29 @@ export const AuthModal: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 transition-all cursor-pointer disabled:opacity-50 mt-2"
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 transition-all cursor-pointer disabled:opacity-50 mt-2"
             >
               {loading ? <span>Creating Workspace...</span> : <span>Create Account &amp; Continue &rarr;</span>}
             </button>
 
             <div className="relative my-3 text-center">
-              <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-800" /></div>
-              <span className="relative bg-slate-900 px-3 text-[10px] text-slate-500 uppercase font-mono">Or quick register with</span>
+              <div className="absolute inset-0 flex items-center">
+                <div className={`w-full border-t ${isLight ? 'border-slate-200' : 'border-slate-800'}`} />
+              </div>
+              <span className={`relative px-3 text-[10px] uppercase font-mono ${
+                isLight ? 'bg-white text-slate-500' : 'bg-slate-900 text-slate-500'
+              }`}>Or quick register with</span>
             </div>
 
             <button
               type="button"
               onClick={handleGoogleSignIn}
               disabled={loading}
-              className="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs flex items-center justify-center gap-2.5 transition-all shadow-md cursor-pointer disabled:opacity-60"
+              className={`w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2.5 transition-all shadow-sm cursor-pointer disabled:opacity-60 border ${
+                isLight 
+                  ? 'bg-slate-50 hover:bg-slate-100 border-slate-300 text-slate-800' 
+                  : 'bg-white hover:bg-slate-100 border-transparent text-slate-900'
+              }`}
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -524,23 +606,27 @@ export const AuthModal: React.FC = () => {
         {currentView === 'verify' && (
           <form onSubmit={handleVerifySubmit} className="space-y-4">
             <div className="text-center space-y-2">
-              <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center mx-auto">
+              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mx-auto border ${
+                isLight ? 'bg-cyan-50 border-cyan-200 text-cyan-700' : 'bg-cyan-500/10 border-cyan-500/30 text-cyan-400'
+              }`}>
                 <KeyRound className="w-6 h-6" />
               </div>
-              <h2 className="text-xl font-bold text-white">Enter 6-Digit Verification PIN</h2>
-              <p className="text-xs text-slate-400">
-                A verification PIN was dispatched for <strong className="text-white">{pendingVerificationEmail || email || 'your account'}</strong>.
+              <h2 className={`text-xl font-bold ${isLight ? 'text-slate-950' : 'text-white'}`}>Enter 6-Digit Verification PIN</h2>
+              <p className={`text-xs ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
+                A verification PIN was dispatched for <strong className={isLight ? 'text-slate-900' : 'text-white'}>{pendingVerificationEmail || email || 'your account'}</strong>.
               </p>
             </div>
 
             {lastGeneratedPin && (
-              <div className="p-3 rounded-xl bg-blue-950/60 border border-blue-500/30 text-center">
-                <div className="text-[10px] text-cyan-300 font-mono uppercase">Simulation Sandbox Code:</div>
-                <div className="text-2xl font-black text-white tracking-widest my-1">{lastGeneratedPin}</div>
+              <div className={`p-3 rounded-xl border text-center ${
+                isLight ? 'bg-blue-50 border-blue-200' : 'bg-blue-950/60 border-blue-500/30'
+              }`}>
+                <div className={`text-[10px] font-mono uppercase ${isLight ? 'text-blue-700 font-bold' : 'text-cyan-300'}`}>Simulation Sandbox Code:</div>
+                <div className={`text-2xl font-black tracking-widest my-1 ${isLight ? 'text-blue-950' : 'text-white'}`}>{lastGeneratedPin}</div>
                 <button
                   type="button"
                   onClick={() => setPin(lastGeneratedPin)}
-                  className="text-[11px] text-cyan-400 hover:underline cursor-pointer"
+                  className={`text-[11px] hover:underline cursor-pointer font-bold ${isLight ? 'text-blue-700' : 'text-cyan-400'}`}
                 >
                   Click to Auto-Fill PIN &rarr;
                 </button>
@@ -555,7 +641,11 @@ export const AuthModal: React.FC = () => {
                 value={pin}
                 onChange={(e) => setPin(e.target.value)}
                 placeholder="123456"
-                className="w-full bg-slate-950 border border-slate-700 text-center text-2xl font-mono tracking-widest text-cyan-400 py-3 rounded-xl focus:border-cyan-400"
+                className={`w-full text-center text-2xl font-mono tracking-widest py-3 rounded-xl border transition-colors ${
+                  isLight 
+                    ? 'bg-slate-50 border-slate-300 text-cyan-800 focus:border-cyan-600 focus:bg-white' 
+                    : 'bg-slate-950 border-slate-700 text-cyan-400 focus:border-cyan-400'
+                }`}
               />
             </div>
 
@@ -573,14 +663,14 @@ export const AuthModal: React.FC = () => {
         {currentView === 'forgot' && (
           <form onSubmit={handleForgotPassword} className="space-y-4">
             <div>
-              <h2 className="text-xl font-bold text-white mb-1">Reset Your Password</h2>
-              <p className="text-xs text-slate-400 mb-3">
+              <h2 className={`text-xl font-bold mb-1 ${isLight ? 'text-slate-950' : 'text-white'}`}>Reset Your Password</h2>
+              <p className={`text-xs mb-3 ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
                 Enter your registered email. We will generate an authentic verification PIN to reset your credentials.
               </p>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Account Email</label>
+              <label className={`block text-xs font-semibold mb-1 ${isLight ? 'text-slate-700 font-bold' : 'text-slate-300'}`}>Account Email</label>
               <div className="relative">
                 <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
                 <input
@@ -588,23 +678,29 @@ export const AuthModal: React.FC = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="gwaliorweblabs@gmail.com"
-                  className="w-full bg-slate-950/80 border border-slate-700 focus:border-cyan-400 rounded-xl pl-9 pr-3 py-2.5 text-xs text-white"
+                  placeholder="name@company.com"
+                  className={`w-full rounded-xl pl-9 pr-3 py-2.5 text-xs border ${
+                    isLight 
+                      ? 'bg-slate-50 border-slate-300 focus:border-cyan-600 focus:bg-white text-slate-900 placeholder-slate-400' 
+                      : 'bg-slate-950/80 border-slate-700 focus:border-cyan-400 text-white placeholder-slate-500'
+                  }`}
                 />
               </div>
             </div>
 
             {lastGeneratedPin && (
-              <div className="p-3 rounded-xl bg-amber-950/50 border border-amber-500/30 text-amber-300 text-xs">
-                <div>Recovery PIN: <strong className="font-mono text-white text-base">{lastGeneratedPin}</strong></div>
-                <div className="text-[11px] mt-1 text-slate-400">Use this code along with your new password.</div>
+              <div className={`p-3 rounded-xl border text-xs ${
+                isLight ? 'bg-amber-50 border-amber-200 text-amber-900' : 'bg-amber-950/50 border-amber-500/30 text-amber-300'
+              }`}>
+                <div>Recovery PIN: <strong className={`font-mono text-base ${isLight ? 'text-amber-950' : 'text-white'}`}>{lastGeneratedPin}</strong></div>
+                <div className={`text-[11px] mt-1 ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Use this code along with your new password.</div>
               </div>
             )}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs uppercase tracking-wider"
+              className="w-full py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs uppercase tracking-wider"
             >
               {loading ? <span>Dispatching PIN...</span> : <span>Send Reset PIN</span>}
             </button>
@@ -612,7 +708,7 @@ export const AuthModal: React.FC = () => {
             <button
               type="button"
               onClick={() => setAuthModalView('login')}
-              className="w-full text-center text-xs text-slate-400 hover:text-white"
+              className={`w-full text-center text-xs font-semibold ${isLight ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}
             >
               &larr; Back to Sign In
             </button>

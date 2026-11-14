@@ -48,24 +48,19 @@ export default function App() {
   const [viewMode, setViewMode] = useState<'website' | 'social-command-center'>(() => {
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
-      // Check if traditional agency site is explicitly requested
-      if (urlParams.get('app') === 'agency' || urlParams.get('mode') === 'agency' || urlParams.get('view') === 'agency') {
-        return 'website';
-      }
-      if (window.location.hash === '#agency' || window.location.hash === '#agency-services' || window.location.hash === '#website') {
-        return 'website';
-      }
-      try {
-        const savedMode = localStorage.getItem('gwl_active_app_view');
-        if (savedMode === 'website') {
-          return 'website';
-        }
-      } catch {
-        // ignore
+      const appParam = urlParams.get('app') || urlParams.get('mode') || urlParams.get('view');
+      // Open Social Command Center only when explicitly requested via URL param or hash
+      if (
+        appParam === 'social-command-center' ||
+        appParam === 'command-center' ||
+        window.location.hash === '#social-command-center' ||
+        window.location.hash === '#command-center'
+      ) {
+        return 'social-command-center';
       }
     }
-    // Main website default is now Social Command Center
-    return 'social-command-center';
+    // Main website default is the GWL WebLab Agency Website
+    return 'website';
   });
 
   // Initial page view tracking
@@ -93,10 +88,16 @@ export default function App() {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash;
-      if (hash === '#agency' || hash === '#agency-services' || hash === '#website' || hash === '#home') {
-        setViewMode('website');
-      } else if (hash === '#social-command-center' || hash === '#command-center' || hash === '#saas') {
+      if (hash === '#social-command-center' || hash === '#command-center') {
         setViewMode('social-command-center');
+      } else if (
+        hash === '' ||
+        hash === '#agency' ||
+        hash === '#agency-services' ||
+        hash === '#website' ||
+        hash === '#home'
+      ) {
+        setViewMode('website');
       }
     };
     window.addEventListener('hashchange', handleHashChange);
@@ -105,15 +106,10 @@ export default function App() {
 
   const handleSwitchMode = (mode: 'website' | 'social-command-center') => {
     setViewMode(mode);
-    try {
-      localStorage.setItem('gwl_active_app_view', mode);
-    } catch {
-      // ignore
-    }
     if (mode === 'social-command-center') {
       window.location.hash = '#social-command-center';
-    } else {
-      window.location.hash = '#agency';
+    } else if (typeof window !== 'undefined') {
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
     }
     window.scrollTo({ top: 0, behavior: 'instant' });
   };

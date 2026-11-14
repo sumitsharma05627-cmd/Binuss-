@@ -159,10 +159,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenProjectModal, onOpenSearch
             <button
               id="nav-social-command-btn"
               onClick={onOpenSocialCommandCenter}
-              className="group relative inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold rounded-full bg-gradient-to-r from-cyan-500/15 via-blue-500/15 to-indigo-500/15 hover:from-cyan-500/30 hover:to-indigo-500/30 text-cyan-300 hover:text-white border border-cyan-500/40 hover:border-cyan-300 transition-all transform hover:-translate-y-0.5 shadow-sm cursor-pointer"
+              className={`group relative inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold rounded-full border transition-all transform hover:-translate-y-0.5 shadow-sm cursor-pointer ${
+                isLight
+                  ? 'bg-cyan-50 hover:bg-cyan-100 text-cyan-800 hover:text-cyan-950 border-cyan-300 hover:border-cyan-500'
+                  : 'bg-gradient-to-r from-cyan-500/15 via-blue-500/15 to-indigo-500/15 hover:from-cyan-500/30 hover:to-indigo-500/30 text-cyan-300 hover:text-white border-cyan-500/40 hover:border-cyan-300'
+              }`}
               title="Gwalior Web Labs – All-in-One Social Media Command Center"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+              <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${isLight ? 'bg-cyan-600' : 'bg-cyan-400'}`} />
               <span>Social Command</span>
               <span className="px-1.5 py-0.5 rounded text-[9px] bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-black uppercase tracking-wider">
                 SUITE

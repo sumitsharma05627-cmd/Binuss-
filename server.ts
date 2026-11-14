@@ -1182,7 +1182,8 @@ async function startServer() {
       },
       appType: 'spa',
     });
-    app.use('/sitecraft', express.static(path.resolve(__dirname, 'public/sitecraft')));
+    app.use('/sitecraft', express.static(path.resolve(__dirname, 'public/sitecraft'), { maxAge: '1h' }));
+    app.use('/assets', express.static(path.resolve(__dirname, 'public/assets'), { maxAge: '7d' }));
     app.use(vite.middlewares);
 
     app.get('*', async (req: Request, res: Response, next: NextFunction) => {
@@ -1199,8 +1200,9 @@ async function startServer() {
       }
     });
   } else {
-    app.use('/sitecraft', express.static(path.resolve(__dirname, 'public/sitecraft')));
-    app.use(express.static(path.resolve(__dirname, 'dist')));
+    app.use('/sitecraft', express.static(path.resolve(__dirname, 'public/sitecraft'), { maxAge: '7d' }));
+    app.use('/assets', express.static(path.resolve(__dirname, 'dist/assets'), { maxAge: '1y', immutable: true }));
+    app.use(express.static(path.resolve(__dirname, 'dist'), { maxAge: '1d' }));
     app.get('*', (_req: Request, res: Response) => {
       res.sendFile(path.resolve(__dirname, 'dist', 'index.html'));
     });

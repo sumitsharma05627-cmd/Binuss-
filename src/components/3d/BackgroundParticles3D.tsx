@@ -86,7 +86,8 @@ export const BackgroundParticles3D: React.FC = () => {
 
     const animate = () => {
       animId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      if (document.hidden) return;
+      const delta = Math.min(clock.getDelta(), 0.05);
 
       scrollY += (targetScrollY - scrollY) * 0.05;
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTheme } from '../context/ThemeContext';
 
-export const GWL_LOGO_IMAGE_PATH = '/assets/aistudio/Gemini_Generated_Image_b1kwab1kwab1kwab_83d54e8a.png';
+export const GWL_LOGO_IMAGE_PATH = '/assets/gwl-crest.webp';
 
 interface GwlLogoProps {
   variant?: 'icon' | 'full' | 'stacked' | 'badge';
@@ -64,6 +64,7 @@ export const GwlLogo: React.FC<GwlLogoProps> = ({
           onError={() => setImageError(true)}
           className="relative z-10 w-full h-full object-cover object-center rounded-xl shadow-md border border-amber-400/40 group-hover:border-amber-300/80 transition-all duration-300 transform group-hover:scale-105"
           loading="eager"
+          decoding="async"
         />
       ) : (
         // Elegant SVG fallback in case network blocked the PNG

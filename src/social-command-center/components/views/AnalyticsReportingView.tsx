@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useSocialCommand } from '../../context/SocialCommandContext';
 import { PLATFORM_REGISTRY, getPlatformIcon } from '../../utils/platformMeta';
 import { SocialPlatformType } from '../../types';
-import jsPDF from 'jspdf';
 import {
   TrendingUp,
   Download,
@@ -99,9 +98,10 @@ export const AnalyticsReportingView: React.FC = () => {
     : '0.0%';
 
   // Export PDF Report using jsPDF
-  const handleExportPdfReport = () => {
+  const handleExportPdfReport = async () => {
     setIsExportingPdf(true);
     try {
+      const { default: jsPDF } = await import('jspdf');
       const doc = new jsPDF();
       const workspaceName = activeClient ? activeClient.name : 'All Workspaces (Agency Master)';
 

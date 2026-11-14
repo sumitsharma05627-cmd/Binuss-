@@ -1,11 +1,13 @@
-import React from 'react';
-import { ArrowRight, Sparkles, ShieldCheck, Zap, Palette, Box, Layers } from 'lucide-react';
-import { motion } from 'motion/react';
+import React, { Suspense, lazy } from 'react';
+import { ArrowRight, Sparkles, ShieldCheck, Zap, Box, Layers } from 'lucide-react';
 import { HeroCore2D } from './2d/HeroCore2D';
-import { HeroCore3D } from './3d/HeroCore3D';
 import { useSectionSequence } from '../context/ScrollSequenceContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
+
+const HeroCore3D = lazy(() =>
+  import('./3d/HeroCore3D').then((m) => ({ default: m.HeroCore3D }))
+);
 
 interface HeroProps {
   onStartProject: () => void;
@@ -40,12 +42,9 @@ export const Hero: React.FC<HeroProps> = ({ onStartProject, onViewPlans }) => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center min-h-[calc(100vh-6rem)]">
           {/* Left Hero Content with Synchronized Motion Sequence */}
           <div className="lg:col-span-7 flex flex-col justify-center text-left z-10">
-            {/* Small text / badge with Theme-Adaptive Pill - Enters at Stage 2 */}
+            {/* Small text / badge with Theme-Adaptive Pill - Instant First Paint */}
             <div className="flex flex-wrap items-center gap-2.5 mb-6">
-              <motion.div
-                initial={{ opacity: 0, y: -12 }}
-                animate={stage >= 2 ? { opacity: 1, y: 0 } : { opacity: 0, y: -12 }}
-                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              <div
                 className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase backdrop-blur-md ${
                   isLight
                     ? 'bg-emerald-50 border border-emerald-300 text-emerald-800'
@@ -54,13 +53,9 @@ export const Hero: React.FC<HeroProps> = ({ onStartProject, onViewPlans }) => {
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
                 {t.hero.badge}
-              </motion.div>
+              </div>
 
-              <motion.div
-                key={themeConfig.id}
-                initial={{ opacity: 0, scale: 0.92 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.35 }}
+              <div
                 className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono ${
                   isLight
                     ? 'bg-slate-100 border border-slate-300 text-slate-700'
@@ -70,14 +65,11 @@ export const Hero: React.FC<HeroProps> = ({ onStartProject, onViewPlans }) => {
                 <Zap className="w-3 h-3 text-emerald-500" />
                 <span className="text-emerald-600 font-semibold">{themeConfig.accentTag}</span>
                 <span className={`hidden sm:inline ${isLight ? 'text-slate-500' : 'text-neutral-400'}`}>• {themeConfig.personality}</span>
-              </motion.div>
+              </div>
             </div>
 
-            {/* Primary Headline - Enters at Stage 2 with slight stagger */}
-            <motion.h1
-              initial={{ opacity: 0, y: 24 }}
-              animate={stage >= 2 ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
-              transition={{ duration: 0.7, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
+            {/* Primary Headline - Instant First Paint */}
+            <h1
               className={`font-display font-extrabold tracking-tight text-4xl sm:text-6xl xl:text-7xl leading-[1.08] mb-4 ${
                 isLight ? 'text-slate-950' : 'text-white'
               }`}
@@ -89,27 +81,19 @@ export const Hero: React.FC<HeroProps> = ({ onStartProject, onViewPlans }) => {
               <span className="theme-gradient-text">
                 {t.hero.headlineGradient}
               </span>
-            </motion.h1>
+            </h1>
 
-            {/* Supporting Text - Enters at Stage 3 */}
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={stage >= 3 ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            {/* Supporting Text */}
+            <p
               className={`text-base sm:text-lg lg:text-xl font-normal leading-relaxed max-w-2xl mb-8 ${
                 isLight ? 'text-slate-700' : 'text-neutral-300'
               }`}
             >
               {t.hero.subtitle}
-            </motion.p>
+            </p>
 
-            {/* Action Buttons - Enters at Stage 3 with slight offset */}
-            <motion.div
-              initial={{ opacity: 0, y: 18 }}
-              animate={stage >= 3 ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
-              transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-10"
-            >
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-10">
               <button
                 id="hero-start-project-btn"
                 onClick={onStartProject}
@@ -130,13 +114,10 @@ export const Hero: React.FC<HeroProps> = ({ onStartProject, onViewPlans }) => {
               >
                 <span>{t.hero.secondaryCta}</span>
               </button>
-            </motion.div>
+            </div>
 
-            {/* Trust highlights - Enters at Stage 4 */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={stage >= 4 ? { opacity: 1 } : { opacity: 0 }}
-              transition={{ duration: 0.7 }}
+            {/* Trust highlights */}
+            <div
               className={`flex flex-wrap items-center gap-6 pt-6 border-t text-xs sm:text-sm ${
                 isLight
                   ? 'border-slate-200 text-slate-600'
@@ -151,16 +132,12 @@ export const Hero: React.FC<HeroProps> = ({ onStartProject, onViewPlans }) => {
                 <Sparkles className={`w-4 h-4 ${isLight ? 'text-emerald-600' : 'text-emerald-400'}`} />
                 <span className={isLight ? 'text-slate-700 font-medium' : ''}>{t.hero.trustConversion}</span>
               </div>
-            </motion.div>
+            </div>
+            {/* End Left Hero Wrapper */}
           </div>
 
-          {/* Right 3D Scene - Starts at Stage 1 synchronized with text entry */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.92 }}
-            animate={isVisible ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.92 }}
-            transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
-            className="lg:col-span-5 relative h-[420px] sm:h-[500px] lg:h-[620px] w-full flex flex-col items-center justify-center"
-          >
+          {/* Right 3D Scene */}
+          <div className="lg:col-span-5 relative h-[420px] sm:h-[500px] lg:h-[620px] w-full flex flex-col items-center justify-center">
             {/* Visualizer Mode Toggle */}
             <div className="absolute top-2 z-20 flex items-center gap-1.5 p-1 rounded-full bg-slate-950/70 border border-white/10 backdrop-blur-xl shadow-lg">
               <button
@@ -195,15 +172,17 @@ export const Hero: React.FC<HeroProps> = ({ onStartProject, onViewPlans }) => {
               <div className="w-[200px] h-[200px] sm:w-[280px] sm:h-[280px] rounded-full border border-amber-400/10 animate-spin-slow" style={{ animationDirection: 'reverse', animationDuration: '35s' }}></div>
             </div>
 
-            {/* Render 3D WebGL Core or 2D Blueprint Cards */}
+            {/* Render 3D WebGL Core lazily with instant 2D fallback */}
             <div className="w-full h-full pt-10">
               {visualMode === '3d' ? (
-                <HeroCore3D isVisible={isVisible} className="w-full h-full" />
+                <Suspense fallback={<HeroCore2D isVisible={true} className="w-full h-full" />}>
+                  <HeroCore3D isVisible={isVisible} className="w-full h-full" />
+                </Suspense>
               ) : (
                 <HeroCore2D isVisible={isVisible} className="w-full h-full" />
               )}
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </section>

@@ -6,6 +6,7 @@ import { LanguageSwitcher } from './LanguageSwitcher';
 import { GwlLogo } from './GwlLogo';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
+import { requestMountSection } from './LazySection';
 
 interface NavbarProps {
   onOpenProjectModal: () => void;
@@ -44,10 +45,16 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenProjectModal, onOpenSearch
   const handleLinkClick = (href: string) => {
     setMobileMenuOpen(false);
     window.dispatchEvent(new CustomEvent('close-all-overlays'));
-    const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
+    const targetId = href.replace(/^#/, '');
+    requestMountSection(targetId);
+    const scrollTarget = () => {
+      const element = document.querySelector(href);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    };
+    scrollTarget();
+    setTimeout(scrollTarget, 120);
   };
 
   return (

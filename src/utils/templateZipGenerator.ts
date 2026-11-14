@@ -1,4 +1,3 @@
-import JSZip from 'jszip';
 import { WebsiteTemplate } from '../components/WebsiteTemplates';
 
 export interface CustomizationData {
@@ -855,6 +854,7 @@ export async function downloadMultipageZip(
   template: WebsiteTemplate,
   data: CustomizationData
 ): Promise<void> {
+  const { default: JSZip } = await import('jszip');
   const zip = new JSZip();
   const brand = data.businessName.trim() || template.name;
   const folderName = brand.toLowerCase().replace(/[^a-z0-9]/g, '-') || 'multipage-site';

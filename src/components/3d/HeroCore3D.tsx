@@ -57,15 +57,14 @@ export const HeroCore3D: React.FC<HeroCore3DProps> = ({
 
     // 1. Central Floating Geometric Core (Icosahedron + Wireframe cage)
     const coreGeo = new THREE.IcosahedronGeometry(isCompact ? 1.0 : 1.3, isMobile ? 1 : 2);
-    const coreMat = new THREE.MeshPhysicalMaterial({
+    const coreMat = new THREE.MeshStandardMaterial({
       color: 0x051a14,
       metalness: 0.85,
-      roughness: 0.15,
-      transmission: 0.5,
-      thickness: 1.2,
-      reflectivity: 0.9,
-      clearcoat: 0.8,
-      clearcoatRoughness: 0.1
+      roughness: 0.18,
+      emissive: primaryHex,
+      emissiveIntensity: 0.16,
+      transparent: true,
+      opacity: 0.92
     });
     const coreMesh = new THREE.Mesh(coreGeo, coreMat);
     masterGroup.add(coreMesh);
@@ -81,17 +80,15 @@ export const HeroCore3D: React.FC<HeroCore3DProps> = ({
 
     // Central Floating 3D GWL Shield Crest
     const textureLoader = new THREE.TextureLoader();
-    const crestTexture = textureLoader.load('/assets/aistudio/Gemini_Generated_Image_b1kwab1kwab1kwab_83d54e8a.png');
+    const crestTexture = textureLoader.load('/assets/gwl-crest.webp');
     crestTexture.colorSpace = THREE.SRGBColorSpace;
 
     const crestGeo = new THREE.PlaneGeometry(isCompact ? 1.5 : 1.9, isCompact ? 1.5 : 1.9);
-    const crestMat = new THREE.MeshPhysicalMaterial({
+    const crestMat = new THREE.MeshStandardMaterial({
       map: crestTexture,
       transparent: true,
-      metalness: 0.65,
+      metalness: 0.5,
       roughness: 0.25,
-      clearcoat: 0.9,
-      clearcoatRoughness: 0.1,
       side: THREE.DoubleSide
     });
     const crestMesh = new THREE.Mesh(crestGeo, crestMat);
@@ -311,56 +308,58 @@ export const HeroCore3D: React.FC<HeroCore3DProps> = ({
 
     window.addEventListener('pointermove', handlePointerMove, { passive: true });
 
-    // Animation Loop
+    // Animation Loop with viewport & tab-visibility pausing
     let animationFrameId: number;
+    let isInViewport = true;
     let clock = new THREE.Clock();
-    let entranceProgress = isVisibleRef.current ? 0.3 : 0.0;
+    let entranceProgress = isVisibleRef.current ? 0.35 : 0.0;
 
     const animate = () => {
-       animationFrameId = requestAnimationFrame(animate);
-       const delta = clock.getDelta();
-       const elapsedTime = clock.getElapsedTime();
+      animationFrameId = requestAnimationFrame(animate);
+      if (!isInViewport || document.hidden) return;
+      const delta = Math.min(clock.getDelta(), 0.05);
+      const elapsedTime = clock.getElapsedTime();
 
-       // Synchronized entrance interpolation (smooth ease-out)
-       const targetProgress = isVisibleRef.current ? 1.0 : 0.0;
-       entranceProgress += (targetProgress - entranceProgress) * 0.045;
+      // Synchronized entrance interpolation (smooth ease-out)
+      const targetProgress = isVisibleRef.current ? 1.0 : 0.0;
+      entranceProgress += (targetProgress - entranceProgress) * 0.06;
 
-       // Smooth interpolation for mouse
-       mouseX += (targetX - mouseX) * 0.05;
-       mouseY += (targetY - mouseY) * 0.05;
+      // Smooth interpolation for mouse
+      mouseX += (targetX - mouseX) * 0.05;
+      mouseY += (targetY - mouseY) * 0.05;
 
-       if (!reducedMotion) {
-         // Master group entrance scale & slow autonomous rotation
-         const entranceScale = 0.82 + entranceProgress * 0.18;
-         masterGroup.scale.set(entranceScale, entranceScale, entranceScale);
+      if (!reducedMotion) {
+        // Master group entrance scale & slow autonomous rotation
+        const entranceScale = 0.85 + entranceProgress * 0.15;
+        masterGroup.scale.set(entranceScale, entranceScale, entranceScale);
 
-         // Ring opacities synchronize with entrance
-         ringMat.opacity = 0.45 * entranceProgress;
-         ring2Mat.opacity = 0.35 * entranceProgress;
-         cageMat.opacity = 0.28 * entranceProgress;
+        // Ring opacities synchronize with entrance
+        ringMat.opacity = 0.45 * entranceProgress;
+        ring2Mat.opacity = 0.35 * entranceProgress;
+        cageMat.opacity = 0.28 * entranceProgress;
 
-         masterGroup.rotation.y += delta * 0.25;
-         masterGroup.rotation.x = Math.sin(elapsedTime * 0.3) * 0.15 + mouseY * 0.6;
-         masterGroup.rotation.z = mouseX * 0.4;
+        masterGroup.rotation.y += delta * 0.25;
+        masterGroup.rotation.x = Math.sin(elapsedTime * 0.3) * 0.15 + mouseY * 0.6;
+        masterGroup.rotation.z = mouseX * 0.4;
 
-         // Animate 3D Crest & Golden Frame
-         crestMesh.rotation.y = Math.sin(elapsedTime * 0.7) * 0.18 + mouseX * 0.25;
-         crestMesh.position.y = Math.sin(elapsedTime * 1.4) * 0.07;
-         frameMesh.rotation.z += delta * 0.22;
-         frameMesh.rotation.x = Math.sin(elapsedTime * 0.5) * 0.1;
+        // Animate 3D Crest & Golden Frame
+        crestMesh.rotation.y = Math.sin(elapsedTime * 0.7) * 0.18 + mouseX * 0.25;
+        crestMesh.position.y = Math.sin(elapsedTime * 1.4) * 0.07;
+        frameMesh.rotation.z += delta * 0.22;
+        frameMesh.rotation.x = Math.sin(elapsedTime * 0.5) * 0.1;
 
-         // Counter-rotation of inner core
-         innerCore.rotation.x -= delta * 0.4;
-         innerCore.rotation.y -= delta * 0.5;
+        // Counter-rotation of inner core
+        innerCore.rotation.x -= delta * 0.4;
+        innerCore.rotation.y -= delta * 0.5;
 
-         // Rings rotation
-         ring1.rotation.z += delta * 0.3;
-         ring2.rotation.z -= delta * 0.25;
+        // Rings rotation
+        ring1.rotation.z += delta * 0.3;
+        ring2.rotation.z -= delta * 0.25;
 
-         // Floating breath effect
-         const breath = Math.sin(elapsedTime * 1.5) * 0.03;
-         coreMesh.scale.set(1 + breath, 1 + breath, 1 + breath);
-         cageMesh.scale.set(1 - breath * 0.5, 1 - breath * 0.5, 1 - breath * 0.5);
+        // Floating breath effect
+        const breath = Math.sin(elapsedTime * 1.5) * 0.03;
+        coreMesh.scale.set(1 + breath, 1 + breath, 1 + breath);
+        cageMesh.scale.set(1 - breath * 0.5, 1 - breath * 0.5, 1 - breath * 0.5);
 
         // Subtle camera tracking
         camera.position.x = mouseX * 0.8;
@@ -378,6 +377,14 @@ export const HeroCore3D: React.FC<HeroCore3DProps> = ({
 
       renderer.render(scene, camera);
     };
+
+    const visibilityObserver = new IntersectionObserver(
+      (entries) => {
+        isInViewport = entries[0]?.isIntersecting ?? true;
+      },
+      { threshold: 0.01 }
+    );
+    visibilityObserver.observe(container);
 
     animate();
 
@@ -398,6 +405,7 @@ export const HeroCore3D: React.FC<HeroCore3DProps> = ({
     return () => {
       window.removeEventListener('pointermove', handlePointerMove);
       cancelAnimationFrame(animationFrameId);
+      visibilityObserver.disconnect();
       resizeObserver.disconnect();
 
       // Dispose Three.js objects

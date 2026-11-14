@@ -1,55 +1,122 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { ScrollSequenceProvider } from './context/ScrollSequenceContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { LanguageProvider } from './context/LanguageContext';
-import { BackgroundParticles3D } from './components/3d/BackgroundParticles3D';
 import { Navbar } from './components/Navbar';
-import { SearchOverlay } from './components/SearchOverlay';
 import { Hero } from './components/Hero';
-import { ProblemSection } from './components/ProblemSection';
-import { Services } from './components/Services';
-import { GrowthSystem } from './components/GrowthSystem';
-import { Pricing } from './components/Pricing';
-import { PlanBuilder } from './components/PlanBuilder';
-import { RoiValueSection } from './components/RoiValueSection';
-import { BeforeAfterSection } from './components/BeforeAfterSection';
-import { WhyKBSR } from './components/WhyKBSR';
-import { TrustSection } from './components/TrustSection';
-import { Portfolio } from './components/Portfolio';
-import { WebsiteTemplates } from './components/WebsiteTemplates';
-import { TestimonialSlider } from './components/TestimonialSlider';
-import { Process } from './components/Process';
-import { DigitalInsights } from './components/DigitalInsights';
-import { ObjectionFaqSection } from './components/ObjectionFaqSection';
-import { TransparencyCommitment } from './components/TransparencyCommitment';
-import { About } from './components/About';
-import { GlobalReach } from './components/GlobalReach';
-import { Contact } from './components/Contact';
-import { FinalCTA } from './components/FinalCTA';
-import { Footer } from './components/Footer';
-import { FloatingContactBar } from './components/FloatingContactBar';
-import { FloatingThemeButton } from './components/FloatingThemeButton';
-import { PlanOnboardingModal } from './components/PlanOnboardingModal';
-import { DoubtResolverChatbot } from './components/DoubtResolverChatbot';
-import { DigitalGrowthLeadModal } from './components/DigitalGrowthLeadModal';
+import { AppModeSwitcherDock } from './components/AppModeSwitcherDock';
+import { LazySection, requestMountSection } from './components/LazySection';
 import { PricingPlan } from './data/pricing';
 import { trackCtaClick, trackEvent } from './utils/analytics';
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import { SocialCommandProvider } from './social-command-center/context/SocialCommandContext';
-import { SocialCommandCenterLayout } from './social-command-center/components/SocialCommandCenterLayout';
-import { SocialCommandCenterFeatureSection } from './components/SocialCommandCenterFeatureSection';
-import { AppModeSwitcherDock } from './components/AppModeSwitcherDock';
+import { SpeedInsights } from '@vercel/speed-insights/next';
+
+// Code-split heavy Social Command Center suite so Agency Website loads instantaneously
+const SocialCommandApp = lazy(() => import('./social-command-center/SocialCommandApp'));
+
+// Code-split ambient 3D particles & overlays to keep First Contentful Paint unblocked
+const BackgroundParticles3D = lazy(() =>
+  import('./components/3d/BackgroundParticles3D').then((m) => ({ default: m.BackgroundParticles3D }))
+);
+const SearchOverlay = lazy(() =>
+  import('./components/SearchOverlay').then((m) => ({ default: m.SearchOverlay }))
+);
+const FloatingContactBar = lazy(() =>
+  import('./components/FloatingContactBar').then((m) => ({ default: m.FloatingContactBar }))
+);
+const FloatingThemeButton = lazy(() =>
+  import('./components/FloatingThemeButton').then((m) => ({ default: m.FloatingThemeButton }))
+);
+const PlanOnboardingModal = lazy(() =>
+  import('./components/PlanOnboardingModal').then((m) => ({ default: m.PlanOnboardingModal }))
+);
+const DoubtResolverChatbot = lazy(() =>
+  import('./components/DoubtResolverChatbot').then((m) => ({ default: m.DoubtResolverChatbot }))
+);
+const DigitalGrowthLeadModal = lazy(() =>
+  import('./components/DigitalGrowthLeadModal').then((m) => ({ default: m.DigitalGrowthLeadModal }))
+);
+
+// Code-split all below-the-fold Agency Website sections
+const ProblemSection = lazy(() =>
+  import('./components/ProblemSection').then((m) => ({ default: m.ProblemSection }))
+);
+const Services = lazy(() =>
+  import('./components/Services').then((m) => ({ default: m.Services }))
+);
+const SocialCommandCenterFeatureSection = lazy(() =>
+  import('./components/SocialCommandCenterFeatureSection').then((m) => ({
+    default: m.SocialCommandCenterFeatureSection
+  }))
+);
+const GrowthSystem = lazy(() =>
+  import('./components/GrowthSystem').then((m) => ({ default: m.GrowthSystem }))
+);
+const Pricing = lazy(() =>
+  import('./components/Pricing').then((m) => ({ default: m.Pricing }))
+);
+const PlanBuilder = lazy(() =>
+  import('./components/PlanBuilder').then((m) => ({ default: m.PlanBuilder }))
+);
+const RoiValueSection = lazy(() =>
+  import('./components/RoiValueSection').then((m) => ({ default: m.RoiValueSection }))
+);
+const BeforeAfterSection = lazy(() =>
+  import('./components/BeforeAfterSection').then((m) => ({ default: m.BeforeAfterSection }))
+);
+const WhyKBSR = lazy(() =>
+  import('./components/WhyKBSR').then((m) => ({ default: m.WhyKBSR }))
+);
+const TrustSection = lazy(() =>
+  import('./components/TrustSection').then((m) => ({ default: m.TrustSection }))
+);
+const Portfolio = lazy(() =>
+  import('./components/Portfolio').then((m) => ({ default: m.Portfolio }))
+);
+const WebsiteTemplates = lazy(() =>
+  import('./components/WebsiteTemplates').then((m) => ({ default: m.WebsiteTemplates }))
+);
+const TestimonialSlider = lazy(() =>
+  import('./components/TestimonialSlider').then((m) => ({ default: m.TestimonialSlider }))
+);
+const Process = lazy(() =>
+  import('./components/Process').then((m) => ({ default: m.Process }))
+);
+const DigitalInsights = lazy(() =>
+  import('./components/DigitalInsights').then((m) => ({ default: m.DigitalInsights }))
+);
+const ObjectionFaqSection = lazy(() =>
+  import('./components/ObjectionFaqSection').then((m) => ({ default: m.ObjectionFaqSection }))
+);
+const TransparencyCommitment = lazy(() =>
+  import('./components/TransparencyCommitment').then((m) => ({ default: m.TransparencyCommitment }))
+);
+const About = lazy(() =>
+  import('./components/About').then((m) => ({ default: m.About }))
+);
+const GlobalReach = lazy(() =>
+  import('./components/GlobalReach').then((m) => ({ default: m.GlobalReach }))
+);
+const Contact = lazy(() =>
+  import('./components/Contact').then((m) => ({ default: m.Contact }))
+);
+const FinalCTA = lazy(() =>
+  import('./components/FinalCTA').then((m) => ({ default: m.FinalCTA }))
+);
+const Footer = lazy(() =>
+  import('./components/Footer').then((m) => ({ default: m.Footer }))
+);
 
 export default function App() {
   const [selectedServiceForInquiry, setSelectedServiceForInquiry] = useState<string>('Website');
   const [selectedMessageForInquiry, setSelectedMessageForInquiry] = useState<string>('');
   const [activeOnboardingPlan, setActiveOnboardingPlan] = useState<PricingPlan | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [idleReady, setIdleReady] = useState(false);
+
   const [viewMode, setViewMode] = useState<'website' | 'social-command-center'>(() => {
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
       const appParam = urlParams.get('app') || urlParams.get('mode') || urlParams.get('view');
-      // Open Social Command Center only when explicitly requested via URL param or hash
       if (
         appParam === 'social-command-center' ||
         appParam === 'command-center' ||
@@ -59,9 +126,23 @@ export default function App() {
         return 'social-command-center';
       }
     }
-    // Main website default is the GWL WebLab Agency Website
     return 'website';
   });
+
+  // Defer ambient 3D particles & secondary overlays until browser is idle after initial paint
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const w = window as Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    if (w.requestIdleCallback) {
+      const id = w.requestIdleCallback(() => setIdleReady(true), { timeout: 600 });
+      return () => w.cancelIdleCallback?.(id);
+    }
+    const timer = window.setTimeout(() => setIdleReady(true), 350);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   // Initial page view tracking
   useEffect(() => {
@@ -115,7 +196,24 @@ export default function App() {
   };
 
   const handleOpenSocialCommandCenter = () => handleSwitchMode('social-command-center');
-  const handleBackToWebsite = () => handleSwitchMode('website');
+
+  const scrollToLazySection = (sectionId: string, focusInputId?: string) => {
+    requestMountSection(sectionId);
+    const attemptScroll = () => {
+      const el = document.getElementById(sectionId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+        if (focusInputId) {
+          setTimeout(() => {
+            const input = document.getElementById(focusInputId);
+            if (input) input.focus();
+          }, 550);
+        }
+      }
+    };
+    attemptScroll();
+    setTimeout(attemptScroll, 140);
+  };
 
   const handleStartProject = (serviceName?: string, message?: string) => {
     trackCtaClick('Start Project', {
@@ -129,35 +227,21 @@ export default function App() {
     if (message) {
       setSelectedMessageForInquiry(message);
     }
-    const contactSection = document.getElementById('contact');
-    if (contactSection) {
-      contactSection.scrollIntoView({ behavior: 'smooth' });
-      // Focus the name input after scroll completes
-      setTimeout(() => {
-        const input = document.getElementById('contact-name');
-        if (input) input.focus();
-      }, 600);
-    }
+    scrollToLazySection('contact', 'contact-name');
   };
 
   const handleViewPlans = () => {
     trackCtaClick('View Plans', {
       source: 'Hero / Navigation CTA'
     });
-    const plansSection = document.getElementById('plans');
-    if (plansSection) {
-      plansSection.scrollIntoView({ behavior: 'smooth' });
-    }
+    scrollToLazySection('plans');
   };
 
   const handleExploreServices = () => {
     trackCtaClick('Explore Services', {
       source: 'Section Action Button'
     });
-    const servicesSection = document.getElementById('services');
-    if (servicesSection) {
-      servicesSection.scrollIntoView({ behavior: 'smooth' });
-    }
+    scrollToLazySection('services');
   };
 
   const handlePlanSelect = (plan: PricingPlan) => {
@@ -182,7 +266,6 @@ export default function App() {
       hasBusinessName: Boolean(data.businessName),
       hasEmail: Boolean(data.email)
     });
-    // Close modal and forward to contact section with pre-filled details
     setActiveOnboardingPlan(null);
     setSelectedServiceForInquiry(`${data.planName} Plan`);
     handleStartProject(`${data.planName} Plan`);
@@ -208,154 +291,214 @@ export default function App() {
       <LanguageProvider>
         <ScrollSequenceProvider>
           {viewMode === 'social-command-center' ? (
-            <SocialCommandProvider>
-              <SocialCommandCenterLayout onBackToWebsite={() => handleSwitchMode('website')} />
+            <Suspense
+              fallback={
+                <div className="min-h-screen flex items-center justify-center bg-slate-950 text-cyan-400 text-sm font-semibold">
+                  Loading Social Command Center...
+                </div>
+              }
+            >
+              <SocialCommandApp onBackToWebsite={() => handleSwitchMode('website')} />
               <AppModeSwitcherDock currentMode="social-command-center" onSwitchMode={handleSwitchMode} />
-              <DoubtResolverChatbot />
-            </SocialCommandProvider>
+              {idleReady && <DoubtResolverChatbot />}
+            </Suspense>
           ) : (
             <div className="relative min-h-screen text-slate-900 dark:text-white selection:bg-emerald-500/30 selection:text-emerald-200 transition-colors duration-300">
-              {/* Ambient 3D Particle Constellation in Background */}
-              <BackgroundParticles3D />
+              {/* Ambient 3D Particle Constellation deferred until idle */}
+              {idleReady && (
+                <Suspense fallback={null}>
+                  <BackgroundParticles3D />
+                </Suspense>
+              )}
 
-          {/* Floating Navigation with Search & Social Command Suite Button */}
-          <Navbar
-            onOpenProjectModal={() => handleStartProject()}
-            onOpenSearch={() => setIsSearchOpen(true)}
-            onOpenSocialCommandCenter={handleOpenSocialCommandCenter}
-          />
+              {/* Floating Navigation with Search & Social Command Suite Button */}
+              <Navbar
+                onOpenProjectModal={() => handleStartProject()}
+                onOpenSearch={() => setIsSearchOpen(true)}
+                onOpenSocialCommandCenter={handleOpenSocialCommandCenter}
+              />
 
-          {/* Quick Search Sliding Overlay */}
-          <SearchOverlay
-            isOpen={isSearchOpen}
-            onClose={() => setIsSearchOpen(false)}
-            onSelectService={(serviceTitle) => handleStartProject(serviceTitle)}
-            onSelectPlan={(plan) => handlePlanSelect(plan)}
-          />
+              {/* Quick Search Sliding Overlay (fetched on demand) */}
+              {isSearchOpen && (
+                <Suspense fallback={null}>
+                  <SearchOverlay
+                    isOpen={isSearchOpen}
+                    onClose={() => setIsSearchOpen(false)}
+                    onSelectService={(serviceTitle) => handleStartProject(serviceTitle)}
+                    onSelectPlan={(plan) => handlePlanSelect(plan)}
+                  />
+                </Suspense>
+              )}
 
-          <main className="relative z-10">
-            {/* 1. 3D Hero Section */}
-            <Hero
-              onStartProject={() => handleStartProject()}
-              onViewPlans={handleViewPlans}
-            />
+              <main className="relative z-10">
+                {/* 1. 3D Hero Section (Eager above-the-fold) */}
+                <Hero
+                  onStartProject={() => handleStartProject()}
+                  onViewPlans={handleViewPlans}
+                />
 
-            {/* 2. Problem Section ("Your Business May Be Losing Customers") */}
-            <ProblemSection onExploreSolution={handleExploreServices} />
+                {/* 2. Problem Section */}
+                <LazySection anchorId="problem" minHeight="420px">
+                  <ProblemSection onExploreSolution={handleExploreServices} />
+                </LazySection>
 
-            {/* 3. Solution / Services Section (8 Interactive 3D Service Cards) */}
-            <Services
-              onSelectServiceForInquiry={(serviceTitle) => handleStartProject(serviceTitle)}
-            />
+                {/* 3. Solution / Services Section */}
+                <LazySection anchorId="services" minHeight="680px">
+                  <Services
+                    onSelectServiceForInquiry={(serviceTitle) => handleStartProject(serviceTitle)}
+                  />
+                </LazySection>
 
-            {/* Standalone Platform Feature Showcase & Launchpad */}
-            <SocialCommandCenterFeatureSection
-              onLaunchCommandCenter={() => handleSwitchMode('social-command-center')}
-            />
+                {/* Standalone Platform Feature Showcase & Launchpad */}
+                <LazySection anchorId="social-command-center-feature" minHeight="520px">
+                  <SocialCommandCenterFeatureSection
+                    onLaunchCommandCenter={() => handleSwitchMode('social-command-center')}
+                  />
+                </LazySection>
 
-            {/* 4. Customer Journey & Growth System Pipeline ("From Attention to Growth") */}
-            <GrowthSystem />
+                {/* 4. Customer Journey & Growth System Pipeline */}
+                <LazySection anchorId="growth-system" minHeight="560px">
+                  <GrowthSystem />
+                </LazySection>
 
-            {/* 5. Transparent Pricing & Growth Plans (Starter, Business, Growth & Creator Partnerships) */}
-            <Pricing
-              onSelectPlan={handlePlanSelect}
-              onRequestCustomPlan={() => handleStartProject('Custom Plan')}
-              onSelectCollabForInquiry={(tierName) => handleStartProject(tierName)}
-            />
+                {/* 5. Transparent Pricing & Growth Plans */}
+                <LazySection anchorId="plans" minHeight="720px">
+                  <Pricing
+                    onSelectPlan={handlePlanSelect}
+                    onRequestCustomPlan={() => handleStartProject('Custom Plan')}
+                    onSelectCollabForInquiry={(tierName) => handleStartProject(tierName)}
+                  />
+                </LazySection>
 
-            {/* 6. Interactive Plan & Package Builder */}
-            <PlanBuilder onProceedWithCustomPlan={handleProceedWithCustomPlan} />
+                {/* 6. Interactive Plan & Package Builder */}
+                <LazySection anchorId="plan-builder" minHeight="540px">
+                  <PlanBuilder onProceedWithCustomPlan={handleProceedWithCustomPlan} />
+                </LazySection>
 
-            {/* 7. ROI & Value Breakdown Section (24/7 Digital Representative + Calculator) */}
-            <RoiValueSection onStartProject={() => handleStartProject()} />
+                {/* 7. ROI & Value Breakdown Section */}
+                <LazySection anchorId="roi" minHeight="480px">
+                  <RoiValueSection onStartProject={() => handleStartProject()} />
+                </LazySection>
 
-            {/* 8. Before and After Transformation Comparison */}
-            <BeforeAfterSection />
+                {/* 8. Before and After Transformation Comparison */}
+                <LazySection anchorId="before-after" minHeight="480px">
+                  <BeforeAfterSection />
+                </LazySection>
 
-            {/* 9. Why GWL Weblab ("We Build Digital Growth Systems" 3D Ecosystem) */}
-            <WhyKBSR />
+                {/* 9. Why GWL Weblab */}
+                <LazySection anchorId="why-gwl" minHeight="560px">
+                  <WhyKBSR />
+                </LazySection>
 
-            {/* 10. Why Smart Businesses Trust GWL Weblab (6 Trust Pillars) */}
-            <TrustSection onStartConversation={() => handleStartProject()} />
+                {/* 10. Trust Section */}
+                <LazySection anchorId="trust" minHeight="440px">
+                  <TrustSection onStartConversation={() => handleStartProject()} />
+                </LazySection>
 
-            {/* 11. 3D Portfolio ("Selected Work" Floating 3D Screens) */}
-            <Portfolio
-              onSelectProjectForInquiry={(projectName) => handleStartProject(projectName)}
-            />
+                {/* 11. 3D Portfolio */}
+                <LazySection anchorId="work" minHeight="680px">
+                  <Portfolio
+                    onSelectProjectForInquiry={(projectName) => handleStartProject(projectName)}
+                  />
+                </LazySection>
 
-            {/* 12. SiteCraft Live Turnkey Website Templates */}
-            <WebsiteTemplates
-              onSelectTemplateForInquiry={(templateName) => handleStartProject(templateName)}
-            />
+                {/* 12. SiteCraft Live Turnkey Website Templates */}
+                <LazySection anchorId="templates" minHeight="680px">
+                  <WebsiteTemplates
+                    onSelectTemplateForInquiry={(templateName) => handleStartProject(templateName)}
+                  />
+                </LazySection>
 
-            {/* 13. Client Testimonials Swiper Slider (Verified Outcomes & Social Proof) */}
-            <TestimonialSlider
-              onStartProject={() => handleStartProject()}
-              onExploreServices={handleExploreServices}
-            />
+                {/* 13. Client Testimonials Swiper Slider */}
+                <LazySection anchorId="testimonials" minHeight="500px">
+                  <TestimonialSlider
+                    onStartProject={() => handleStartProject()}
+                    onExploreServices={handleExploreServices}
+                  />
+                </LazySection>
 
-            {/* 13. 3D Process ("How We Build" 5-Stage Journey Road) */}
-            <Process />
+                {/* 14. 3D Process */}
+                <LazySection anchorId="process" minHeight="540px">
+                  <Process />
+                </LazySection>
 
-            {/* 14. Digital Insights & Tactical Blueprints (Engineering Blog & Knowledge Base) */}
-            <DigitalInsights onSelectInsightForInquiry={(topic) => handleStartProject(topic)} />
+                {/* 15. Digital Insights */}
+                <LazySection anchorId="insights" minHeight="600px">
+                  <DigitalInsights onSelectInsightForInquiry={(topic) => handleStartProject(topic)} />
+                </LazySection>
 
-            {/* 15. Objections & FAQs Section */}
-            <ObjectionFaqSection onStartConsultation={() => handleStartProject()} />
+                {/* 16. Objections & FAQs Section */}
+                <LazySection anchorId="faq" minHeight="520px">
+                  <ObjectionFaqSection onStartConsultation={() => handleStartProject()} />
+                </LazySection>
 
-            {/* 14. Professional Integrity & Guarantee Commitment */}
-            <TransparencyCommitment />
+                {/* 17. Transparency Commitment */}
+                <LazySection anchorId="transparency" minHeight="400px">
+                  <TransparencyCommitment />
+                </LazySection>
 
-            {/* 15. About ("Built for Businesses Ready to Grow" 3D Globe) */}
-            <About />
+                {/* 18. About */}
+                <LazySection anchorId="about" minHeight="480px">
+                  <About />
+                </LazySection>
 
-            {/* 16. Global Reach Visualization (Client Locations & 3D Orbital Globe) */}
-            <GlobalReach onSelectClientForInquiry={(clientName) => handleStartProject(clientName)} />
+                {/* 19. Global Reach Visualization */}
+                <LazySection anchorId="global-reach" minHeight="520px">
+                  <GlobalReach onSelectClientForInquiry={(clientName) => handleStartProject(clientName)} />
+                </LazySection>
 
-            {/* 17. Contact Form with 3D Confirmation Animation */}
-            <Contact
-              initialService={selectedServiceForInquiry}
-              initialMessage={selectedMessageForInquiry}
-            />
+                {/* 20. Contact Form */}
+                <LazySection anchorId="contact" minHeight="580px">
+                  <Contact
+                    initialService={selectedServiceForInquiry}
+                    initialMessage={selectedMessageForInquiry}
+                  />
+                </LazySection>
 
-            {/* 17. Final CTA Full-screen Closing Scene with 3D Core Visual Loop */}
-            <FinalCTA
-              onStartProject={() => handleStartProject()}
-              onExploreServices={handleExploreServices}
-            />
-          </main>
+                {/* 21. Final CTA */}
+                <LazySection anchorId="final-cta" minHeight="400px">
+                  <FinalCTA
+                    onStartProject={() => handleStartProject()}
+                    onExploreServices={handleExploreServices}
+                  />
+                </LazySection>
+              </main>
 
-          {/* Persistent Floating WhatsApp & Mobile Conversion Bar */}
-          <FloatingContactBar onStartConsultation={() => handleStartProject()} />
+              {/* Persistent Floating Bars & Modals deferred until idle */}
+              {idleReady && (
+                <Suspense fallback={null}>
+                  <FloatingContactBar onStartConsultation={() => handleStartProject()} />
+                  <FloatingThemeButton />
+                  <DoubtResolverChatbot />
+                  <DigitalGrowthLeadModal />
+                </Suspense>
+              )}
 
-          {/* Persistent Floating Separate Theme Button */}
-          <FloatingThemeButton />
+              {/* Plan Onboarding Modal (fetched on demand) */}
+              {activeOnboardingPlan && (
+                <Suspense fallback={null}>
+                  <PlanOnboardingModal
+                    plan={activeOnboardingPlan}
+                    onClose={() => setActiveOnboardingPlan(null)}
+                    onSubmitOnboarding={handleOnboardingSubmit}
+                  />
+                </Suspense>
+              )}
 
-          {/* AI Doubt Resolver Chatbot */}
-          <DoubtResolverChatbot />
+              {/* Floating App Mode Switcher Dock */}
+              <AppModeSwitcherDock currentMode="website" onSwitchMode={handleSwitchMode} />
 
-          {/* Smart Sales Flow: Mini Onboarding Modal for selected plans */}
-          <PlanOnboardingModal
-            plan={activeOnboardingPlan}
-            onClose={() => setActiveOnboardingPlan(null)}
-            onSubmitOnboarding={handleOnboardingSubmit}
-          />
+              {/* Footer */}
+              <LazySection minHeight="320px">
+                <Footer />
+              </LazySection>
 
-          {/* 15-Second Timed Free Digital Growth Blueprint PDF Lead Popup Modal */}
-          <DigitalGrowthLeadModal />
-
-          {/* Floating App Mode Switcher Dock */}
-          <AppModeSwitcherDock currentMode="website" onSwitchMode={handleSwitchMode} />
-
-          {/* Footer */}
-          <Footer />
-
-          {/* Vercel Speed Insights */}
-          <SpeedInsights />
-        </div>
-      )}
-      </ScrollSequenceProvider>
-    </LanguageProvider>
-  </ThemeProvider>
-);
+              {/* Vercel Speed Insights */}
+              <SpeedInsights />
+            </div>
+          )}
+        </ScrollSequenceProvider>
+      </LanguageProvider>
+    </ThemeProvider>
+  );
 }

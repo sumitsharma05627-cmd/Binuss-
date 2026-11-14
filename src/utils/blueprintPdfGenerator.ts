@@ -1,4 +1,4 @@
-import { jsPDF } from 'jspdf';
+// Dynamically imported inside generateDigitalGrowthBlueprintPdf to keep initial bundle lean
 
 export interface BlueprintRecipient {
   email: string;
@@ -10,7 +10,8 @@ export interface BlueprintRecipient {
  * Generates an executive, multi-page "Digital Growth Blueprint (2026 Edition)" PDF
  * and initiates an immediate browser download.
  */
-export function generateDigitalGrowthBlueprintPdf(recipient: BlueprintRecipient): void {
+export async function generateDigitalGrowthBlueprintPdf(recipient: BlueprintRecipient): Promise<void> {
+  const { jsPDF } = await import('jspdf');
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
